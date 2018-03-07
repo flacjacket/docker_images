@@ -7,7 +7,7 @@ function start_weechat()
 
 function start_tmux()
 {
-    if tmux has-session -t WeeChat 2>/dev/null; then
+    if tmux has-session -t weechat 2>/dev/null; then
         tmux attach -t weechat
     else
         tmux new -s weechat "$0"
