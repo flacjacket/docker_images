@@ -19,15 +19,20 @@ RUN  curl -sL $L4T_URL | tar xfj - \
 # Pull the rest of the jetpack libs for cuda/cudnn and install
 WORKDIR /tmp
 ARG JETPACK_URL=http://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2/pwv346/JetPackL4T_32_b157
-RUN  curl $JETPACK_URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo-l4t_arm64.deb \
-  && curl $JETPACK_URL/libcudnn7_7.0.5.13-1+cuda9.0_arm64.deb -so libcudnn_arm64.deb \
-  && curl $JETPACK_URL/libcudnn7-dev_7.0.5.13-1+cuda9.0_arm64.deb -so libcudnn-dev_arm64.deb \
-  && dpkg -i cuda-repo-l4t_arm64.deb \
-  && dpkg -i libcudnn_arm64.deb \
-  && dpkg -i libcudnn-dev_arm64.deb \
+RUN  curl $JETPACK_URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo-l4t-9-0-local.deb \
+  && curl $JETPACK_URL/libcudnn7_7.0.5.13-1+cuda9.0_arm64.deb -so libcudnn7.deb \
+  && curl $JETPACK_URL/libcudnn7-dev_7.0.5.13-1+cuda9.0_arm64.deb -so libcudnn7-dev.deb \
+  && dpkg -i cuda-repo-l4t-9-0-local.deb \
+  && dpkg -i libcudnn7.deb \
+  && dpkg -i libcudnn7-dev.deb \
   && apt-key add /var/cuda-repo-9-0-local/7fa2af80.pub \
   && apt-get update \
-  && apt-get install -y cuda-toolkit-9.0 \
+  && apt-get install -y --no-install-recommends cuda-core-9-0 \
+                                                cuda-command-line-tools-9-0 \
+                                                cuda-libraries-dev-9-0 \
+                                                cuda-nvml-dev-9-0 \
+  && apt-get remove -y cuda-repo-l4t-9-0-local \
+  && rm -rf /var/cache/apt /var/lib/apt/lists/* \
   && rm -rf /tmp/*
 
 # Re-link libs in /usr/lib/<arch>/tegra
