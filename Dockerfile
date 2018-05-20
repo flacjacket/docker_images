@@ -14,7 +14,7 @@ ARG L4T_URL=http://developer.nvidia.com/embedded/dlc/l4t-jetson-tx2-driver-packa
 RUN  curl -sL $L4T_URL | tar xfj - \
   && sed -ie 's/sudo //g' ./Linux_for_Tegra/apply_binaries.sh \
   && ./Linux_for_Tegra/apply_binaries.sh -r / \
-  && rm -rf /tmp
+  && rm -rf /tmp/*
 
 # Pull the rest of the jetpack libs for cuda/cudnn and install
 WORKDIR /tmp
@@ -28,7 +28,7 @@ RUN  curl $JETPACK_URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo
   && apt-key add /var/cuda-repo-9-0-local/7fa2af80.pub \
   && apt-get update \
   && apt-get install -y cuda-toolkit-9.0 \
-  && rm -rf /tmp
+  && rm -rf /tmp/*
 
 # Re-link libs in /usr/lib/<arch>/tegra
 RUN  ln -s libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so \
