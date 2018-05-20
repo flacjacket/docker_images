@@ -3,6 +3,8 @@
 No docker files are stored on master, each docker file is contained in the
 corresponding branch.
 
+CUDA TX2 libraries: [![](https://images.microbadger.com/badges/image/flacjacket/cuda-tx2.svg)](https://microbadger.com/images/flacjacket/cuda-tx2)
+
 HomeAssistant: [![](https://images.microbadger.com/badges/image/flacjacket/home_assistant.svg)](https://microbadger.com/images/flacjacket/home_assistant)
 
 NodeRed: [![](https://images.microbadger.com/badges/image/flacjacket/nodered.svg)](https://microbadger.com/images/flacjacket/nodered)
