@@ -33,7 +33,6 @@ RUN  curl $JETPACK_URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo
 # Re-link libs in /usr/lib/<arch>/tegra
 RUN  ln -s libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so \
   && ln -s libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.1 \
-  && ln -s libcuda.so.1.1 /usr/lib/aarch64-linux-gnu/tegra/libcuda.so \
   && ln -s libcuda.so.1.1 /usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1 \
   && ln -sf tegra/libGL.so /usr/lib/aarch64-linux-gnu/libGL.so
 
