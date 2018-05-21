@@ -32,6 +32,10 @@ RUN  curl $JETPACK_URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo
                                                 cuda-libraries-dev-9-0 \
                                                 cuda-nvml-dev-9-0 \
   && apt-get remove -y cuda-repo-l4t-9-0-local \
+  && rm /etc/apt/sources.list.d/cuda-9-0-local.list \
+  && apt-get -y remove ca-certificates curl \
+  && apt-get -y autoremove \
+  && apt-get -y autoclean \
   && rm -rf /var/cache/apt /var/lib/apt/lists/* \
   && rm -rf /tmp/*
 
@@ -39,14 +43,9 @@ RUN  curl $JETPACK_URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo
 RUN  ln -s libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so \
   && ln -s libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.1 \
   && ln -s libcuda.so.1.1 /usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1 \
-  && ln -sf tegra/libGL.so /usr/lib/aarch64-linux-gnu/libGL.so
+  && ln -sf tegra/libGL.so /usr/lib/aarch64-linux-gnu/libGL.so \
+  && ln -s cuda-9.0 /usr/local/cuda
 
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/aarch64-linux-gnu/tegra
-
-## Clean up
-RUN  apt-get -y remove ca-certificates curl \
-  && apt-get -y autoremove \
-  && apt-get -y autoclean \
-  && rm -rf /var/cache/apt /var/lib/apt/lists/*
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/usr/lib/aarch64-linux-gnu/tegra
 
 WORKDIR /
