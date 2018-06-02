@@ -21,4 +21,4 @@ RUN  apt-get update \
                                      wheel \
   && pip wheel $WHEEL_OPTS $PIP_OPTS $NUMPY_OPTS numpy \
   && apt-get remove -y --autoremove $build_deps \
-  && rm -rf /var/cache/apt /var/lib/apt/lists/*
+  && rm -rf /usr/local/lib /usr/local/bin /var/cache/apt /var/lib/apt/lists/*
