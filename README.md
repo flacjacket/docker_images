@@ -21,4 +21,6 @@ CUDA libraries: [![](https://images.microbadger.com/badges/image/flacjacket/cuda
 
 Python wheels: [![](https://images.microbadger.com/badges/image/flacjacket/wheels-tx2.svg)](https://microbadger.com/images/flacjacket/wheels-tx2)
 
+Pytorch: [![](https://images.microbadger.com/badges/image/flacjacket/pytorch-tx2.svg)](https://microbadger.com/images/flacjacket/pytorch-tx2)
+
 Tensorflow: [![](https://images.microbadger.com/badges/image/flacjacket/tensorflow-tx2.svg)](https://microbadger.com/images/flacjacket/tensorflow-tx2)
