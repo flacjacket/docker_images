@@ -19,7 +19,9 @@ RUN  apt-get update \
 
 FROM flacjacket/cuda-tx2:3.2.1-20180707 as opencv_builder
 
-COPY --from=cmake_builder /cmake-3.11.4.tar.gz /
+ARG CMAKE_VERSION=3.11.4
+
+COPY --from=cmake_builder /cmake-${CMAKE_VERSION}.tar.gz /
 RUN  tar -xf cmake-${CMAKE_VERSION}.tar.gz -C /usr --strip 1
 
 RUN mkdir /opencv
