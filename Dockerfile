@@ -64,15 +64,19 @@ RUN  echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" > /
   && apt-key adv --keyserver ipv4.pool.sks-keyservers.net --recv-keys C2518248EEA14886 \
   && apt-get update \
   && echo "debconf shared/accepted-oracle-license-v1-1 select true" | /usr/bin/debconf-set-selections \
-  && apt-get install -y --no-install-recommends oracle-java8-installer \
-                                                build-essential \
-                                                ca-certificates \
-                                                curl \
-                                                python \
-                                                python3-dev \
-                                                python3-numpy \
-                                                python3-setuptools \
-                                                python3-wheel \
+  && build_deps=' \
+      oracle-java8-installer \
+      build-essential \
+      ca-certificates \
+      curl \
+      python \
+      python3-dev \
+      python3-numpy \
+      python3-pip \
+      python3-setuptools \
+      python3-wheel \
+  ' \
+  && apt-get install -y --no-install-recommends $build_deps \
   && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz | tar -xzC . --strip 1 \
   && patch -p1 -u < png_build.patch \
   && ./configure \
@@ -85,5 +89,8 @@ RUN  echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" > /
      done \
   && bazel build --config=opt --config=cuda //tensorflow/tools/pip_package:build_pip_package \
   && bazel-bin/tensorflow/tools/pip_package/build_pip_package /tensorflow/ \
-  && rm -rf /tensorflow_build ~/.cache \
+  && pip3 install /tensorflow/*.whl --user \
+  && cp ~/.cache/pip/wheels/*/*/*/*/*.whl /tensorflow \
+  && apt-get purge -y --auto-remove $build_deps \
+  && rm -r ~/.cache ~/.local /tensorflow_build \
   && rm -rf /var/cache/apt /var/lib/apt/lists/*
