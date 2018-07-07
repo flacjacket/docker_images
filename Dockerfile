@@ -1,29 +1,36 @@
-FROM arm64v8/ubuntu:xenial
+FROM arm64v8/ubuntu:xenial-20180525
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
 RUN mkdir /cuda-libs
 WORKDIR /cuda-libs
 
-ARG L4T_URL=http://developer.nvidia.com/embedded/dlc/l4t-jetson-tx2-driver-package-28-2
-ARG JETPACK_URL=http://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2/pwv346/JetPackL4T_32_b157
+ARG JETPACK_URL=https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2.1/m8u2ki/JetPackL4T_321_b23
+ARG TEGRA_FILE=Tegra186_Linux_R28.2.1_aarch64.tbz2
+ARG CUDA_REPO_FILE=cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb
+ARG CUDNN_FILE=libcudnn7_7.0.5.15-1+cuda9.0_arm64.deb
+ARG CUDNN_DEV_FILE=libcudnn7-dev_7.0.5.15-1+cuda9.0_arm64.deb
+
+COPY manifest.md5 .
 
 RUN  apt-get update \
   && apt-get install -y --no-install-recommends bzip2 \
                                                 ca-certificates \
-                                                curl \
+                                                wget \
+  && wget --progress=bar:force:noscroll $JETPACK_URL/$TEGRA_FILE \
+                                        $JETPACK_URL/$CUDA_REPO_FILE \
+                                        $JETPACK_URL/$CUDNN_FILE \
+                                        $JETPACK_URL/$CUDNN_DEV_FILE \
+  && md5sum -c manifest.md5 \
   # run the tegra library installation
-  && curl -sL $L4T_URL | tar xfj - \
+  && tar -xjf $TEGRA_FILE \
   && sed -ie 's/sudo //g' ./Linux_for_Tegra/apply_binaries.sh \
   && ./Linux_for_Tegra/apply_binaries.sh -r / \
-  # Pull the rest of the jetpack libs for cuda/cudnn and install
-  && curl $JETPACK_URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo-l4t-9-0-local.deb \
-  && curl $JETPACK_URL/libcudnn7_7.0.5.13-1+cuda9.0_arm64.deb -so libcudnn7.deb \
-  && curl $JETPACK_URL/libcudnn7-dev_7.0.5.13-1+cuda9.0_arm64.deb -so libcudnn7-dev.deb \
-  && dpkg -i cuda-repo-l4t-9-0-local.deb \
-  && dpkg -i libcudnn7.deb \
-  && dpkg -i libcudnn7-dev.deb \
-  && apt-key add /var/cuda-repo-9-0-local/7fa2af80.pub \
+  # install the rest of the jetpack libs for cuda/cudnn
+  && dpkg -i $CUDA_REPO_FILE \
+  && dpkg -i $CUDNN_FILE \
+  && dpkg -i $CUDNN_DEV_FILE \
+  && apt-key add /var/cuda-repo-9-0-local/*.pub \
   && apt-get update \
   && apt-get install -y --no-install-recommends cuda-core-9-0 \
                                                 cuda-command-line-tools-9-0 \
@@ -31,7 +38,7 @@ RUN  apt-get update \
                                                 cuda-nvml-dev-9-0 \
   && apt-get remove -y cuda-repo-l4t-9-0-local \
   && rm /etc/apt/sources.list.d/cuda-9-0-local.list \
-  && apt-get remove -y --autoremove ca-certificates curl \
+  && apt-get remove -y --autoremove ca-certificates wget \
   && apt-get autoclean -y \
   && rm -rf /var/cache/apt /var/lib/apt/lists/* \
   && rm -rf /cuda-libs
