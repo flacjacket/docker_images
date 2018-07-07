@@ -66,12 +66,12 @@ RUN  apt-get update \
   && make package \
   && cp /opencv/build/OpenCV-unknown-aarch64.tar.gz /OpenCV-3.4.1.tar.gz
 
-FROM flacjacket/cuda-tx2:3.2
+FROM flacjacket/cuda-tx2:3.2.1-20180707
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
 COPY --from=opencv_builder /OpenCV-3.4.1.tar.gz /
-COPY --from=flacjacket/wheels-tx2:20180602 /wheelhouse/numpy*.whl /
+COPY --from=flacjacket/wheels-tx2:20180707 /wheelhouse/numpy*.whl /
 
 RUN  tar -xf /OpenCV-3.4.1.tar.gz -C /usr --strip 1 \
   && apt-get update \
