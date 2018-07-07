@@ -1,6 +1,6 @@
-FROM arm64v8/ubuntu:xenial as cmake_builder
+FROM arm64v8/ubuntu:xenial-20170525 as cmake_builder
 
-ARG CMAKE_VERSION=3.11.2
+ARG CMAKE_VERSION=3.11.4
 
 RUN mkdir /cmake
 WORKDIR /cmake
@@ -17,10 +17,10 @@ RUN  apt-get update \
   && cp /cmake/cmake-${CMAKE_VERSION}-Linux-aarch64.tar.gz /cmake-${CMAKE_VERSION}.tar.gz \
   && rm -rf /cmake /var/cache/apt /var/lib/apt/lists/*
 
-FROM flacjacket/cuda-tx2:3.2 as opencv_builder
+FROM flacjacket/cuda-tx2:3.2.1-20180707 as opencv_builder
 
-COPY --from=cmake_builder /cmake-3.11.2.tar.gz /
-RUN  tar -xf cmake-3.11.2.tar.gz -C /usr --strip 1
+COPY --from=cmake_builder /cmake-3.11.4.tar.gz /
+RUN  tar -xf cmake-${CMAKE_VERSION}.tar.gz -C /usr --strip 1
 
 RUN mkdir /opencv
 WORKDIR /opencv
