@@ -1,4 +1,4 @@
-FROM arm64v8/ubuntu:xenial as bazel_builder
+FROM arm64v8/ubuntu:xenial-20180525 as bazel_builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -24,7 +24,7 @@ RUN  echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" > /
   && rm -rf /bazel ~/.cache/bazel \
   && rm -rf /var/cache/apt /var/lib/apt/lists/*
 
-FROM flacjacket/cuda-tx2:3.2 as tf_builder
+FROM flacjacket/cuda-tx2:3.2.1-20180707 as tf_builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 
