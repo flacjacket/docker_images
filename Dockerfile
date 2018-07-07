@@ -1,6 +1,6 @@
-FROM arm64v8/ubuntu:xenial as cmake_builder
+FROM arm64v8/ubuntu:xenial-20180525 as cmake_builder
 
-ARG CMAKE_VERSION=3.11.2
+ARG CMAKE_VERSION=3.11.4
 
 RUN mkdir /cmake
 WORKDIR /cmake
@@ -17,14 +17,15 @@ RUN  apt-get update \
   && cp /cmake/cmake-${CMAKE_VERSION}-Linux-aarch64.tar.gz /cmake-${CMAKE_VERSION}.tar.gz \
   && rm -rf /cmake /var/cache/apt /var/lib/apt/lists/*
 
-FROM flacjacket/cuda-tx2:3.2 as pytorch_builder
+FROM flacjacket/cuda-tx2:3.2.1-20180707 as pytorch_builder
 
-ARG CMAKE_VER=3.11.2
+ARG CMAKE_VER=3.11.4
 ARG TORCH_CUDA_ARCH_LIST=6.2
 ARG TORCH_VERSION=0.4.0
 
 COPY --from=cmake_builder /cmake-${CMAKE_VER}.tar.gz /
-RUN tar -xf cmake-${CMAKE_VER}.tar.gz -C /usr --strip 1
+RUN  tar -xf cmake-${CMAKE_VER}.tar.gz -C /usr --strip 1 \
+  && rm /cmake-${CMAKE_VER}.tar.gz
 
 RUN  apt-get update \
   && apt-get install -y --no-install-recommends build-essential \
@@ -43,18 +44,17 @@ RUN  apt-get update \
   && cp dist/torch-${TORCH_VERSION}*-cp35-cp35m-linux_aarch64.whl /torch-${TORCH_VERSION}-cp35-cp35m-linux_aarch64.whl \
   && rm -rf /pytorch /var/cache/apt /var/lib/apt/lists/*
 
-FROM flacjacket/cuda-tx2:3.2
+FROM flacjacket/cuda-tx2:3.2.1-20180707
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
 ARG TORCH_VERSION=0.4.0
 
 COPY --from=pytorch_builder /torch-${TORCH_VERSION}-cp35-cp35m-linux_aarch64.whl /
-COPY --from=flacjacket/wheels-tx2:20180602 /wheelhouse/numpy-1.14.3-cp35-cp35m-linux_aarch64.whl /
-COPY --from=flacjacket/wheels-tx2:20180602 /wheelhouse/wheel-0.31.1-py2.py3-none-any.whl /
+COPY --from=flacjacket/wheels-tx2:20180707 /wheelhouse/numpy-*-cp35-cp35m-linux_aarch64.whl /
 
 RUN  apt-get update \
   && apt-get install -y --no-install-recommends python3-pip \
-  && pip3 install /numpy-1.14.3-cp35-cp35m-linux_aarch64.whl \
+  && pip3 install /numpy-*-cp35-cp35m-linux_aarch64.whl \
   && pip3 install /torch-${TORCH_VERSION}-cp35-cp35m-linux_aarch64.whl \
-  && rm -rf /var/cache/apt /var/lib/apt/lists/*
+  && rm -rf /numpy-*.whl /var/cache/apt /var/lib/apt/lists/*
