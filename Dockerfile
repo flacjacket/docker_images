@@ -11,6 +11,7 @@ RUN  apt-get update \
   && export build_deps=' \
        build-essential \
        ca-certificates \
+       libffi-dev \
        python3-dev \
      ' \
   && apt-get install -y --no-install-recommends python3-pip $build_deps \
