@@ -1,4 +1,4 @@
-FROM arm64v8/ubuntu:xenial-20170525 as cmake_builder
+FROM arm64v8/ubuntu:xenial-20180525 as cmake_builder
 
 ARG CMAKE_VERSION=3.11.4
 
