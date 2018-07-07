@@ -17,7 +17,8 @@ RUN  apt-get update \
   && pip3 install $PIP_OPTS --upgrade pip \
   && apt-get remove -y --autoremove python3-pip \
   && pip install $PIP_OPTS setuptools wheel \
-  && pip wheel $WHEEL_OPTS $PIP_OPTS grpcio \
+  && pip wheel $WHEEL_OPTS $PIP_OPTS cffi \
+                                     grpcio \
                                      wheel \
   && pip wheel $WHEEL_OPTS $PIP_OPTS $NUMPY_OPTS numpy \
   && apt-get remove -y --autoremove $build_deps \
