@@ -20,28 +20,35 @@ RUN  apt-get update \
 FROM flacjacket/cuda-tx2:3.2.1-20180707 as pytorch_builder
 
 ARG CMAKE_VER=3.11.4
+
+COPY --from=cmake_builder /cmake-${CMAKE_VER}.tar.gz /
+RUN  tar -xf cmake-${CMAKE_VER}.tar.gz -C /usr --strip 1
+
+COPY --from=flacjacket/wheels-tx2:3.6-20180711 /wheelhouse/numpy*.whl /
+
 ARG TORCH_CUDA_ARCH_LIST=6.2
 ARG TORCH_VERSION=0.4.0
 
-COPY --from=cmake_builder /cmake-${CMAKE_VER}.tar.gz /
-RUN  tar -xf cmake-${CMAKE_VER}.tar.gz -C /usr --strip 1 \
-  && rm /cmake-${CMAKE_VER}.tar.gz
-
-RUN  apt-get update \
+RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
+  && echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
+  && apt-key adv --keyserver pgp.mit.edu --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 \
+  && apt-get update \
   && apt-get install -y --no-install-recommends build-essential \
+                                                curl \
                                                 git \
-                                                python3-dev \
-                                                python3-numpy \
-                                                python3-setuptools \
-                                                python3-wheel \
-                                                python3-yaml \
+                                                python3.6-dev \
+  && ln -s python3.6 /usr/bin/python3 \
+  && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+  && python3 get-pip.py --no-cache-dir \
+  && pip install --no-cache-dir pyyaml \
+  && pip install --no-cache-dir /numpy*.whl \
   && git clone --recursive -b v${TORCH_VERSION} --depth 1 https://github.com/pytorch/pytorch \
   && ln -s tegra-egl/libEGL.so.1 /usr/lib/aarch64-linux-gnu/libEGL.so.1 \
   && ln -s tegra-egl/libGLESv2.so.2 /usr/lib/aarch64-linux-gnu/libGLESv2.so.2 \
   && cd pytorch \
   && python3 setup.py build_deps \
   && python3 setup.py bdist_wheel \
-  && cp dist/torch-${TORCH_VERSION}*-cp35-cp35m-linux_aarch64.whl /torch-${TORCH_VERSION}-cp35-cp35m-linux_aarch64.whl \
+  && cp dist/torch-${TORCH_VERSION}*.whl / \
   && rm -rf /pytorch /var/cache/apt /var/lib/apt/lists/*
 
 FROM flacjacket/cuda-tx2:3.2.1-20180707
@@ -50,11 +57,19 @@ LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
 ARG TORCH_VERSION=0.4.0
 
-COPY --from=pytorch_builder /torch-${TORCH_VERSION}-cp35-cp35m-linux_aarch64.whl /
-COPY --from=flacjacket/wheels-tx2:20180707 /wheelhouse/numpy-*-cp35-cp35m-linux_aarch64.whl /
+COPY --from=pytorch_builder /torch-${TORCH_VERSION}*.whl /
+COPY --from=flacjacket/wheels-tx2:3.6-20180711 /wheelhouse/numpy-*.whl /
 
-RUN  apt-get update \
-  && apt-get install -y --no-install-recommends python3-pip \
-  && pip3 install /numpy-*-cp35-cp35m-linux_aarch64.whl \
-  && pip3 install /torch-${TORCH_VERSION}-cp35-cp35m-linux_aarch64.whl \
-  && rm -rf /numpy-*.whl /var/cache/apt /var/lib/apt/lists/*
+RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
+  && echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
+  && apt-key adv --keyserver pgp.mit.edu --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends python3.6 \
+                                                curl \
+  && ln -s python3.6 /usr/bin/python3 \
+  && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+  && python3 get-pip.py --no-cache-dir \
+  && pip install /numpy-*.whl \
+  && pip install /torch-${TORCH_VERSION}*.whl \
+  && apt-get remove --autoremove -y curl \
+  && rm -rf /numpy-*.whl /var/cache/apt /var/lib/apt/lists/* get-pip.py
