@@ -24,14 +24,18 @@ ARG CMAKE_VERSION=3.11.4
 COPY --from=cmake_builder /cmake-${CMAKE_VERSION}.tar.gz /
 RUN  tar -xf cmake-${CMAKE_VERSION}.tar.gz -C /usr --strip 1
 
+COPY --from=flacjacket/wheels-tx2:3.6-20180711 /wheelhouse/numpy*.whl /
+
 RUN mkdir /opencv
 WORKDIR /opencv
 
-RUN  apt-get update \
+RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
+  && echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
+  && apt-key adv --keyserver pgp.mit.edu --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 \
+  && apt-get update \
   && apt-get install -y --no-install-recommends build-essential \
                                                 curl \
-                                                python3-dev \
-                                                python3-numpy \
+                                                python3.6-dev \
                                                 libpng12-dev \
                                                 libjpeg8-dev \
                                                 libjasper-dev \
@@ -39,6 +43,10 @@ RUN  apt-get update \
                                                 libgstreamer1.0-dev \
                                                 libgstreamer-plugins-base1.0-dev \
                                                 gstreamer1.0-plugins-base \
+  && ln -s python3.6 /usr/bin/python3 \
+  && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+  && python3 get-pip.py --no-cache-dir \
+  && pip install --no-cache-dir /numpy*.whl \
   && curl -LS https://github.com/opencv/opencv/archive/3.4.1.tar.gz | tar -xzC . --strip 1 \
   && mkdir build \
   && cd build \
@@ -73,20 +81,25 @@ FROM flacjacket/cuda-tx2:3.2.1-20180707
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
 COPY --from=opencv_builder /OpenCV-3.4.1.tar.gz /
-COPY --from=flacjacket/wheels-tx2:20180707 /wheelhouse/numpy*.whl /
+COPY --from=flacjacket/wheels-tx2:3.6-20180711 /wheelhouse/numpy*.whl /
 
 RUN  tar -xf /OpenCV-3.4.1.tar.gz -C /usr --strip 1 \
+  && echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
+  && echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
+  && apt-key adv --keyserver pgp.mit.edu --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 \
   && apt-get update \
-  && apt-get install -y --no-install-recommends gstreamer1.0-plugins-base \
+  && apt-get install -y --no-install-recommends curl \
+                                                gstreamer1.0-plugins-base \
                                                 libgstreamer1.0-0 \
                                                 libjasper1 \
                                                 libjpeg8 \
                                                 libpng12-0 \
                                                 libtiff5 \
-                                                python3 \
-                                                python3-pip \
-  && pip3 install --no-cache-dir /numpy*.whl \
-  && apt-get remove -y --autoremove python3-pip \
-  && rm /OpenCV-3.4.1.tar.gz \
-  && rm /numpy*.whl \
-  && rm -rf /var/cache/apt /var/lib/apt/lists/*
+                                                python3.6 \
+  && ln -s python3.6 /usr/bin/python3 \
+  && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+  && python3 get-pip.py --no-cache-dir \
+  && pip install --no-cache-dir --prefix=/usr /numpy*.whl \
+  && apt-get remove -y --autoremove curl \
+  && rm /OpenCV-3.4.1.tar.gz /numpy*.whl /get-pip.py \
+  && rm -rf /usr/local/{bin,lib} /var/cache/apt /var/lib/apt/lists/*
