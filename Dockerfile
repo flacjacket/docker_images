@@ -99,7 +99,7 @@ RUN  tar -xf /OpenCV-3.4.1.tar.gz -C /usr --strip 1 \
   && ln -s python3.6 /usr/bin/python3 \
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
   && python3 get-pip.py --no-cache-dir \
-  && pip install --no-cache-dir --prefix=/usr /numpy*.whl \
+  && pip install --no-cache-dir /numpy*.whl \
   && apt-get remove -y --autoremove curl \
   && rm /OpenCV-3.4.1.tar.gz /numpy*.whl /get-pip.py \
-  && rm -rf /usr/local/{bin,lib} /var/cache/apt /var/lib/apt/lists/*
+  && rm -rf /var/cache/apt /var/lib/apt/lists/*
