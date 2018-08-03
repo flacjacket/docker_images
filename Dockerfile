@@ -5,11 +5,11 @@ LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 RUN mkdir /cuda-libs
 WORKDIR /cuda-libs
 
-ARG JETPACK_URL=https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2.1/m8u2ki/JetPackL4T_321_b23
+ARG JETPACK_URL=https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39
 ARG TEGRA_FILE=Tegra186_Linux_R28.2.1_aarch64.tbz2
 ARG CUDA_REPO_FILE=cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb
-ARG CUDNN_FILE=libcudnn7_7.0.5.15-1+cuda9.0_arm64.deb
-ARG CUDNN_DEV_FILE=libcudnn7-dev_7.0.5.15-1+cuda9.0_arm64.deb
+ARG CUDNN_FILE=libcudnn7_7.1.5.14-1+cuda9.0_arm64.deb
+ARG CUDNN_DEV_FILE=libcudnn7-dev_7.1.5.14-1+cuda9.0_arm64.deb
 
 COPY manifest.md5 .
 

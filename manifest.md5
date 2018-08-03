@@ -1,4 +1,4 @@
 9385806be429ad92d49f0750f748e2b2  cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb
-6aab1d77a60871a0ee0d306aee6f9a0e  libcudnn7_7.0.5.15-1+cuda9.0_arm64.deb
-919feccd183273cd3b1efab1aca39f04  libcudnn7-dev_7.0.5.15-1+cuda9.0_arm64.deb
+b846bf9573a5cee7fc29f22171fc3cd0  libcudnn7_7.1.5.14-1+cuda9.0_arm64.deb
+54123b591320ff9157290b17c5d340b4  libcudnn7-dev_7.1.5.14-1+cuda9.0_arm64.deb
 0a00f9b4c6c7fcd73d301082019d09ea  Tegra186_Linux_R28.2.1_aarch64.tbz2
