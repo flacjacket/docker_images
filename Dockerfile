@@ -1,4 +1,4 @@
-FROM arm64v8/ubuntu:xenial-20180525
+FROM arm64v8/ubuntu:xenial-20180726
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
@@ -17,11 +17,13 @@ RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /e
        ca-certificates \
        curl \
        libffi-dev \
-       python3.6-dev \
+       python3.7-dev \
      ' \
   && apt-get install -y --no-install-recommends $build_deps \
+  && ln -s python3.7 /usr/bin/python \
+  && ln -s python3.7 /usr/bin/python3 \
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
-  && python3.6 get-pip.py $PIP_OPTS \
+  && python3.7 get-pip.py $PIP_OPTS \
   && pip wheel $WHEEL_OPTS $PIP_OPTS cffi \
                                      grpcio \
   && pip wheel $WHEEL_OPTS $PIP_OPTS $NUMPY_OPTS numpy \
