@@ -1,6 +1,6 @@
-FROM arm64v8/ubuntu:xenial-20180525 as cmake_builder
+FROM arm64v8/ubuntu:xenial-20180726 as cmake_builder
 
-ARG CMAKE_VERSION=3.11.4
+ARG CMAKE_VERSION=3.12.0
 
 RUN mkdir /cmake
 WORKDIR /cmake
@@ -15,16 +15,17 @@ RUN  apt-get update \
   && make -j7 \
   && make package \
   && cp /cmake/cmake-${CMAKE_VERSION}-Linux-aarch64.tar.gz /cmake-${CMAKE_VERSION}.tar.gz \
+  && mv /cmake-${CMAKE_VERSION}.tar.gz /cmake.tar.gz \
   && rm -rf /cmake /var/cache/apt /var/lib/apt/lists/*
 
-FROM flacjacket/cuda-tx2:3.2.1-20180707 as opencv_builder
+FROM flacjacket/cuda-tx2:3.3-20180802 as opencv_builder
 
-ARG CMAKE_VERSION=3.11.4
+COPY --from=cmake_builder /cmake.tar.gz /
+RUN  tar -xf cmake.tar.gz -C /usr --strip 1
 
-COPY --from=cmake_builder /cmake-${CMAKE_VERSION}.tar.gz /
-RUN  tar -xf cmake-${CMAKE_VERSION}.tar.gz -C /usr --strip 1
+COPY --from=flacjacket/wheels-tx2:3.7-20180802 /wheelhouse/numpy*.whl /
 
-COPY --from=flacjacket/wheels-tx2:3.6-20180711 /wheelhouse/numpy*.whl /
+ARG OPENCV_VERSION=3.4.2
 
 RUN mkdir /opencv
 WORKDIR /opencv
@@ -35,7 +36,7 @@ RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /e
   && apt-get update \
   && apt-get install -y --no-install-recommends build-essential \
                                                 curl \
-                                                python3.6-dev \
+                                                python3.7-dev \
                                                 libpng12-dev \
                                                 libjpeg8-dev \
                                                 libjasper-dev \
@@ -43,11 +44,12 @@ RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /e
                                                 libgstreamer1.0-dev \
                                                 libgstreamer-plugins-base1.0-dev \
                                                 gstreamer1.0-plugins-base \
-  && ln -s python3.6 /usr/bin/python3 \
+  && ln -s python3.7 /usr/bin/python3 \
+  && ln -sf python3.7 /usr/bin/python \
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
-  && python3 get-pip.py --no-cache-dir \
+  && python get-pip.py --no-cache-dir \
   && pip install --no-cache-dir /numpy*.whl \
-  && curl -LS https://github.com/opencv/opencv/archive/3.4.1.tar.gz | tar -xzC . --strip 1 \
+  && curl -LS https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz | tar -xzC . --strip 1 \
   && mkdir build \
   && cd build \
   && cmake -D CMAKE_BUILD_TYPE=RELEASE \
@@ -74,16 +76,16 @@ RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /e
            .. \
   && make -j7 \
   && make package \
-  && cp /opencv/build/OpenCV-unknown-aarch64.tar.gz /OpenCV-3.4.1.tar.gz
+  && cp /opencv/build/OpenCV-unknown-aarch64.tar.gz /OpenCV.tar.gz
 
-FROM flacjacket/cuda-tx2:3.2.1-20180707
+FROM flacjacket/cuda-tx2:3.3-20180802
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
-COPY --from=opencv_builder /OpenCV-3.4.1.tar.gz /
-COPY --from=flacjacket/wheels-tx2:3.6-20180711 /wheelhouse/numpy*.whl /
+COPY --from=opencv_builder /OpenCV.tar.gz /
+COPY --from=flacjacket/wheels-tx2:3.7-20180802 /wheelhouse/numpy*.whl /
 
-RUN  tar -xf /OpenCV-3.4.1.tar.gz -C /usr --strip 1 \
+RUN  tar -xf /OpenCV.tar.gz -C /usr --strip 1 \
   && echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
   && echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
   && apt-key adv --keyserver pgp.mit.edu --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 \
@@ -95,11 +97,12 @@ RUN  tar -xf /OpenCV-3.4.1.tar.gz -C /usr --strip 1 \
                                                 libjpeg8 \
                                                 libpng12-0 \
                                                 libtiff5 \
-                                                python3.6 \
-  && ln -s python3.6 /usr/bin/python3 \
+                                                python3.7 \
+  && ln -s python3.7 /usr/bin/python3 \
+  && ln -s python3.7 /usr/bin/python \
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
   && python3 get-pip.py --no-cache-dir \
   && pip install --no-cache-dir /numpy*.whl \
   && apt-get remove -y --autoremove curl \
-  && rm /OpenCV-3.4.1.tar.gz /numpy*.whl /get-pip.py \
+  && rm /OpenCV.tar.gz /numpy*.whl /get-pip.py \
   && rm -rf /var/cache/apt /var/lib/apt/lists/*
