@@ -55,9 +55,7 @@ FROM flacjacket/cuda-tx2:3.3-20180802
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
-ARG TORCH_VERSION=0.4.1
-
-COPY --from=pytorch_builder /torch-${TORCH_VERSION}*.whl /
+COPY --from=pytorch_builder /torch-*.whl /
 COPY --from=flacjacket/wheels-tx2:3.7-20180802 /wheelhouse/numpy-*.whl /
 
 RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
@@ -71,6 +69,6 @@ RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /e
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
   && python3 get-pip.py --no-cache-dir \
   && pip install /numpy-*.whl \
-  && pip install /torch-${TORCH_VERSION}*.whl \
+  && pip install /torch-*.whl \
   && apt-get remove --autoremove -y curl \
   && rm -rf /numpy-*.whl /var/cache/apt /var/lib/apt/lists/* get-pip.py
