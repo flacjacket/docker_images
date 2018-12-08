@@ -1,4 +1,4 @@
-FROM arm64v8/ubuntu:xenial-20180726
+FROM arm64v8/ubuntu:xenial-20181113
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
@@ -24,9 +24,9 @@ RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /e
   && ln -s python3.7 /usr/bin/python3 \
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
   && python3.7 get-pip.py $PIP_OPTS \
-  && pip wheel $WHEEL_OPTS $PIP_OPTS cffi \
-                                     grpcio \
-  && pip wheel $WHEEL_OPTS $PIP_OPTS $NUMPY_OPTS numpy \
+  && pip wheel $WHEEL_OPTS $PIP_OPTS cffi==1.11.5 \
+                                     grpcio==1.17.0 \
+  && pip wheel $WHEEL_OPTS $PIP_OPTS $NUMPY_OPTS numpy==1.15.4 \
   && apt-get remove -y --autoremove $build_deps \
   && rm /wheelhouse/six* /wheelhouse/pycparser* \
   && rm -rf /usr/local/lib /usr/local/bin /var/cache/apt /var/lib/apt/lists/* get-pip.py
