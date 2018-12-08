@@ -1,4 +1,4 @@
-FROM arm64v8/ubuntu:xenial-20180726
+FROM arm64v8/ubuntu:xenial-20181113
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
