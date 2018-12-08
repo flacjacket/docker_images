@@ -1,32 +1,12 @@
-FROM arm64v8/ubuntu:xenial-20180726 as cmake_builder
+FROM flacjacket/cuda-tx2:3.3-20181207 as pytorch_builder
 
-ARG CMAKE_VERSION=3.12.0
-
-RUN mkdir /cmake
-WORKDIR /cmake
-
-RUN  apt-get update \
-  && apt-get install -y --no-install-recommends build-essential \
-                                                ca-certificates \
-                                                curl \
-  && SHORT_VERSION=`expr match "$CMAKE_VERSION" '\([0-9]*\.[0-9]*\)'` \
-  && curl -LS https://cmake.org/files/v${SHORT_VERSION}/cmake-${CMAKE_VERSION}.tar.gz | tar -xzC . --strip 1 \
-  && ./bootstrap --parallel=7 \
-  && make -j7 \
-  && make package \
-  && cp /cmake/cmake-${CMAKE_VERSION}-Linux-aarch64.tar.gz /cmake-${CMAKE_VERSION}.tar.gz \
-  && mv /cmake-${CMAKE_VERSION}.tar.gz /cmake.tar.gz \
-  && rm -rf /cmake /var/cache/apt /var/lib/apt/lists/*
-
-FROM flacjacket/cuda-tx2:3.3-20180802 as pytorch_builder
-
-COPY --from=cmake_builder /cmake.tar.gz /
+COPY --from=flacjacket/cmake-tx2:3.13.1-20181207 /cmake.tar.gz /
 RUN  tar -xf cmake.tar.gz -C /usr --strip 1
 
-COPY --from=flacjacket/wheels-tx2:3.7-20180802 /wheelhouse/numpy*.whl /
+COPY --from=flacjacket/wheels-tx2:3.7-20181207 /wheelhouse/numpy*.whl /
 
 ARG TORCH_CUDA_ARCH_LIST=6.2
-ARG TORCH_VERSION=0.4.1
+ARG TORCH_VERSION=1.0.0
 
 RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
   && echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
@@ -51,12 +31,12 @@ RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /e
   && cp dist/torch*.whl / \
   && rm -rf /pytorch /var/cache/apt /var/lib/apt/lists/*
 
-FROM flacjacket/cuda-tx2:3.3-20180802
+FROM flacjacket/cuda-tx2:3.3-20181207
 
 LABEL maintainer="Sean Vig <sean.v.775@gmail.com>"
 
 COPY --from=pytorch_builder /torch-*.whl /
-COPY --from=flacjacket/wheels-tx2:3.7-20180802 /wheelhouse/numpy-*.whl /
+COPY --from=flacjacket/wheels-tx2:3.7-20181207 /wheelhouse/numpy-*.whl /
 
 RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
   && echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list \
