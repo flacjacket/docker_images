@@ -17,6 +17,8 @@ ZoneMinder: [![](https://images.microbadger.com/badges/image/flacjacket/zonemind
 
 ## Jetson TX2 Wheels
 
+CMake: [![](https://images.microbadger.com/badges/image/flacjacket/cmake-tx2.svg)](https://microbadger.com/images/flacjacket/cmake-tx2)
+
 CUDA libraries: [![](https://images.microbadger.com/badges/image/flacjacket/cuda-tx2.svg)](https://microbadger.com/images/flacjacket/cuda-tx2)
 
 OpenCV: [![](https://images.microbadger.com/badges/image/flacjacket/opencv-tx2.svg)](https://microbadger.com/images/flacjacket/opencv-tx2)
