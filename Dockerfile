@@ -24,10 +24,10 @@ RUN  echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /e
   && pip install --no-cache-dir /numpy*.whl \
   && git clone --recursive -b v${TORCH_VERSION} --depth 1 https://github.com/pytorch/pytorch \
   && ln -s tegra-egl/libEGL.so.1 /usr/lib/aarch64-linux-gnu/libEGL.so.1 \
-  && ln -s tegra-egl/libGLESv2.so.2 /usr/lib/aarch64-linux-gnu/libGLESv2.so.2 \
-  && cd pytorch \
-  && sed -i -e 's/option(USE_NCCL "Use NCCL" ON)/option(USE_NCCL "Use NCCL" OFF)/g' CMakeLists.txt \
-  && sed -i -e 's/USE_NCCL = USE_CUDA and not IS_DARWIN and not IS_WINDOWS/USE_NCCL = False/g' tools/setup_helpers/nccl.py \
+  && ln -s tegra-egl/libGLESv2.so.2 /usr/lib/aarch64-linux-gnu/libGLESv2.so.2
+COPY remove_nccl.patch /pytorch/
+RUN  cd pytorch \
+  && patch -p 1 < remove_nccl.patch \
   && python3 setup.py build_deps \
   && python3 setup.py bdist_wheel \
   && cp dist/torch*.whl / \

@@ -1,0 +1,74 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 159b153..6f7423d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -95,7 +95,7 @@ option(USE_LMDB "Use LMDB" ON)
+ option(USE_METAL "Use Metal for iOS build" ON)
+ option(USE_MOBILE_OPENGL "Use OpenGL for mobile code" ON)
+ option(USE_NATIVE_ARCH "Use -march=native" OFF)
+-option(USE_NCCL "Use NCCL" ON)
++option(USE_NCCL "Use NCCL" OFF)
+ option(USE_SYSTEM_NCCL "Use system-wide NCCL" OFF)
+ option(USE_NNAPI "Use NNAPI" OFF)
+ option(USE_NNPACK "Use NNPACK" ON)
+@@ -119,7 +119,7 @@ option(USE_TENSORRT "Using Nvidia TensorRT library" OFF)
+ option(USE_ZMQ "Use ZMQ" OFF)
+ option(USE_ZSTD "Use ZSTD" OFF)
+ option(USE_MKLDNN "Use MKLDNN" OFF)
+-option(USE_DISTRIBUTED "Use distributed" ON)
++option(USE_DISTRIBUTED "Use distributed" OFF)
+ cmake_dependent_option(
+     USE_MPI "Use MPI for Caffe2. Only available if USE_DISTRIBUTED is on." ON
+     "USE_DISTRIBUTED" OFF)
+diff --git a/tools/setup_helpers/dist_check.py b/tools/setup_helpers/dist_check.py
+index 8859fe1..5d2ed1c 100644
+--- a/tools/setup_helpers/dist_check.py
++++ b/tools/setup_helpers/dist_check.py
+@@ -6,7 +6,7 @@ from .env import IS_CONDA, IS_LINUX, IS_WINDOWS, CONDA_DIR, check_env_flag, chec
+ from .cuda import USE_CUDA
+ 
+ # On ROCm, RCCL development isn't complete. https://github.com/ROCmSoftwarePlatform/rccl
+-USE_DISTRIBUTED = not check_negative_env_flag("USE_DISTRIBUTED") and not IS_WINDOWS and not check_env_flag("USE_ROCM")
++USE_DISTRIBUTED = False
+ USE_GLOO_IBVERBS = False
+ 
+ IB_DEVINFO_CMD = "ibv_devinfo"
+diff --git a/tools/setup_helpers/nccl.py b/tools/setup_helpers/nccl.py
+index c1cc886..576f74e 100644
+--- a/tools/setup_helpers/nccl.py
++++ b/tools/setup_helpers/nccl.py
+@@ -9,7 +9,7 @@ from .env import IS_WINDOWS, IS_DARWIN, IS_CONDA, CONDA_DIR, check_negative_env_
+ from .cuda import USE_CUDA, CUDA_HOME
+ 
+ 
+-USE_NCCL = USE_CUDA and not IS_DARWIN and not IS_WINDOWS
++USE_NCCL = False
+ USE_SYSTEM_NCCL = False
+ NCCL_LIB_DIR = None
+ NCCL_SYSTEM_LIB = None
+diff --git a/torch/CMakeLists.txt b/torch/CMakeLists.txt
+index 9c4a018..6849cb1 100644
+--- a/torch/CMakeLists.txt
++++ b/torch/CMakeLists.txt
+@@ -690,7 +690,7 @@ if (BUILD_PYTHON)
+       list(APPEND TORCH_PYTHON_SRCS ${TORCH_SRC_DIR}/csrc/distributed/c10d/init.cpp)
+       list(APPEND TORCH_PYTHON_LINK_LIBRARIES c10d)
+       list(APPEND TORCH_PYTHON_COMPILE_DEFINITIONS USE_C10D)
+-      if (USE_CUDA)
++      if (USE_CUDA AND USE_NCCL)
+         list(APPEND TORCH_PYTHON_SRCS ${TORCH_SRC_DIR}/csrc/distributed/c10d/ddp.cpp)
+       endif()
+     endif()
+diff --git a/torch/csrc/distributed/c10d/init.cpp b/torch/csrc/distributed/c10d/init.cpp
+index 2b42e1e..11a866d 100644
+--- a/torch/csrc/distributed/c10d/init.cpp
++++ b/torch/csrc/distributed/c10d/init.cpp
+@@ -435,7 +435,7 @@ They are used in specifying strategies for reduction collectives, e.g.,
+           &::c10d::ProcessGroup::Work::wait,
+           py::call_guard<py::gil_scoped_release>());
+ 
+-#ifdef USE_CUDA
++#if defined(USE_CUDA) && defined(USE_TORCH)
+   module.def(
+       "_dist_bucket_tensors",
+       &::c10d::bucketTensors,
