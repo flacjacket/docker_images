@@ -1,6 +1,6 @@
-FROM arm64v8/ubuntu:xenial-20181113
+FROM arm64v8/ubuntu:bionic-20190912.1
 
-ARG CMAKE_VERSION=3.13.1
+ARG CMAKE_VERSION=3.15.3
 
 RUN mkdir /cmake
 WORKDIR /cmake
