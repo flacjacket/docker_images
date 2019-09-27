@@ -38,6 +38,7 @@ RUN  apt-get update \
   && dpkg -i $CUDNN_FILE \
   && dpkg -i $CUDNN_DEV_FILE \
   && apt-key add /var/cuda-repo-*/*.pub \
+  && apt-get remove -y --autoremove ca-certificates gnupg2 lbzip2 patch wget \
   && apt-get update \
   && apt-get install -y --no-install-recommends cuda-compiler-10-0 \
                                                 cuda-command-line-tools-10-0 \
@@ -45,7 +46,6 @@ RUN  apt-get update \
                                                 cuda-nvml-dev-10-0 \
   && apt-get remove -y cuda-repo-l4t-10-0-local-10.0.326 \
   && rm /etc/apt/sources.list.d/cuda-10-0-local-10.0.326.list \
-  && apt-get remove -y --autoremove ca-certificates gnupg2 lbzip2 patch wget \
   && apt-get autoclean -y \
   && rm -rf /var/cache/apt /var/lib/apt/lists/* \
   && rm -rf /cuda-libs
