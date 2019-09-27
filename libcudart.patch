@@ -1,8 +1,8 @@
 diff --git a/torch/cuda/__init__.py b/torch/cuda/__init__.py
-index 4591702..07e1268 100644
+index 411cfb7315..84766b0ee9 100644
 --- a/torch/cuda/__init__.py
 +++ b/torch/cuda/__init__.py
-@@ -59,7 +59,7 @@ def _load_cudart():
+@@ -76,7 +76,7 @@ def _load_cudart():
      if platform.system() == 'Windows':
          lib = find_cuda_windows_lib()
      else:
