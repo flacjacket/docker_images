@@ -1,0 +1,18 @@
+- alias: Update Tesla location as location updates
+  id: tesla_update_location_automation
+  mode: parallel
+  initial_state: on
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.latitude
+        - sensor.longitude
+  action:
+    - service: device_tracker.see
+      data_template:
+        dev_id: tesla_location
+        gps:
+          [
+            "{{ states.sensor.latitude.state }}",
+            "{{ states.sensor.longitude.state }}",
+          ]

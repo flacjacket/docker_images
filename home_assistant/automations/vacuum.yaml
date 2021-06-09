@@ -1,0 +1,15 @@
+- alias: Vacuum Schedule
+  id: vacuum_schedule_automation
+  trigger:
+    - platform: time
+      at: '14:30'
+  condition:
+    - condition: time
+      weekday:
+        - mon
+        - wed
+        - fri
+  action:
+    - service: vacuum.start
+      target:
+        entity_id: vacuum.robot

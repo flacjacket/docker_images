@@ -1,0 +1,93 @@
+device_tracker.android_5a63a66845c4fe35:
+  friendly_name: Sean's Phone
+  icon: mdi:cellphone-android
+device_tracker.hera:
+  friendly_name: Sean's Computer
+  icon: mdi:laptop
+device_tracker.iphone:
+  friendly_name: Kristin's Phone
+  icon: mdi:cellphone-iphone
+device_tracker.kristins_mbp:
+  friendly_name: Kristin's Computer
+  icon: mdi:laptop-mac
+device_tracker.tesla_model_3:
+  friendly_name: Tesla Model 3
+  icon: mdi:car
+binary_sensor.sensor:
+  friendly_name: Front Door
+  device_class: door
+binary_sensor.sensor_2:
+  friendly_name: Porch Door
+  device_class: door
+binary_sensor.sensor_3:
+  friendly_name: Side Door
+  device_class: door
+binary_sensor.sensor_4:
+  friendly_name: Garage Door
+  device_class: garage_door
+switch.basement:
+  icon: mdi:lightbulb
+switch.dining_room:
+  icon: mdi:lightbulb
+switch.downstairs:
+  icon: mdi:lightbulb
+switch.hall:
+  icon: mdi:lightbulb
+switch.kitchen:
+  icon: mdi:lightbulb
+switch.living_room:
+  icon: mdi:floor-lamp
+switch.office:
+  icon: mdi:lightbulb
+switch.porch:
+  icon: mdi:coach-lamp
+switch.upstairs:
+  icon: mdi:lightbulb
+sensor.alarm_level:
+  hidden: true
+sensor.alarm_level_2:
+  hidden: true
+sensor.alarm_level_3:
+  hidden: true
+sensor.alarm_level_4:
+  hidden: true
+sensor.alarm_type:
+  hidden: true
+sensor.alarm_type_2:
+  hidden: true
+sensor.alarm_type_3:
+  hidden: true
+sensor.alarm_type_4:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_power_management:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_power_management_2:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_power_management_3:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_access_control:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_access_control_2:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_access_control_3:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_burglar:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_burglar_2:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_burglar_3:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_sourcenodeid:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_sourcenodeid_2:
+  hidden: true
+sensor.ecolink_doorwindow_sensor_sourcenodeid_3:
+  hidden: true
+sensor.ecolink_garage_door_tilt_sensor_sourcenodeid:
+  hidden: true
+sensor.ecolink_garage_door_tilt_sensor_access_control:
+  hidden: true
+sensor.ecolink_garage_door_tilt_sensor_burglar:
+  hidden: true
+sensor.ecolink_garage_door_tilt_sensor_power_management:
+  hidden: true

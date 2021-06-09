@@ -1,9 +1,6 @@
 # Personal Dockerfiles
 
-No docker files are stored on master, each docker file is contained in the
-corresponding branch.
-
-## x86_64 Wheels
+## x86_64 Images
 
 HomeAssistant: [![](https://images.microbadger.com/badges/image/flacjacket/home_assistant.svg)](https://microbadger.com/images/flacjacket/home_assistant)
 
@@ -15,7 +12,7 @@ Weechat: [![](https://images.microbadger.com/badges/image/flacjacket/weechat.svg
 
 ZoneMinder: [![](https://images.microbadger.com/badges/image/flacjacket/zoneminder.svg)](https://microbadger.com/images/flacjacket/zoneminder)
 
-## Jetson TX2 Wheels
+## Jetson TX2 Images
 
 CMake: [![](https://images.microbadger.com/badges/image/flacjacket/cmake-tx2.svg)](https://microbadger.com/images/flacjacket/cmake-tx2)
 

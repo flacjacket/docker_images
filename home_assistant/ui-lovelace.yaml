@@ -1,0 +1,219 @@
+﻿title: Home
+views:
+  - icon: mdi:home-assistant
+    path: default
+    badges:
+      - entity: sensor.yr_symbol
+      - entity: sun.sun
+      - entity: binary_sensor.updater
+      - entity: binary_sensor.hydra_seanvig_com_1443
+      - entity: device_tracker.android_5a63a66845c4fe35
+      - entity: device_tracker.iphone
+      - entity: device_tracker.hera
+      - entity: device_tracker.kristins_mbp
+      - entity: device_tracker.tesla_model_3
+    cards:
+      - type: glance
+        show_state: false
+        entities:
+          - entity: switch.porch
+            name: Porch
+            tap_action:
+              action: toggle
+          - entity: switch.basement
+            name: Basement
+            tap_action:
+              action: toggle
+          - entity: switch.downstairs
+            name: Downstairs
+            tap_action:
+              action: toggle
+          - entity: switch.living_room
+            name: Living Room
+            tap_action:
+              action: toggle
+          - entity: switch.dining_room
+            name: Dining Room
+            tap_action:
+              action: toggle
+          - entity: switch.hall
+            name: Hall
+            tap_action:
+              action: toggle
+          - entity: switch.kitchen
+            name: Kitchen
+            tap_action:
+              action: toggle
+          - entity: switch.upstairs
+            name: Upstairs
+            tap_action:
+              action: toggle
+          - entity: switch.office
+            name: Office
+            tap_action:
+              action: toggle
+          - entity: input_boolean.vacation
+            name: Away
+            tap_action:
+              action: toggle
+      - type: glance
+        show_state: false
+        entities:
+          - entity: binary_sensor.sensor
+          - entity: binary_sensor.sensor_2
+          - entity: binary_sensor.sensor_3
+          - entity: binary_sensor.sensor_4
+      - type: glance
+        show_state: false
+        entities:
+          - entity: binary_sensor.basement_occupancy
+          - entity: binary_sensor.thermostat_occupancy
+          - entity: binary_sensor.living_room_occupancy
+          - entity: binary_sensor.guest_room_occupancy
+          - entity: binary_sensor.bedroom_occupancy
+          - entity: binary_sensor.office_occupancy
+      - type: thermostat
+        entity: climate.thermostat
+  - icon: mdi:cctv
+    path: cameras
+    cards:
+      - type: picture-entity
+        entity: camera.frontdoor
+      - type: picture-entity
+        entity: camera.frontwalk
+      - type: picture-entity
+        entity: camera.garage
+      - type: picture-entity
+        entity: camera.front_porch
+      - type: glance
+        show_state: false
+        entities:
+          - entity: binary_sensor.front_porch_motion_detected
+          - entity: binary_sensor.nvr_online
+          - entity: sensor.nvr_sd_used
+  - icon: mdi:thermostat
+    path: climate
+    cards:
+      - type: thermostat
+        entity: climate.thermostat
+      - type: history-graph
+        entities:
+          - sensor.basement_temperature
+          - sensor.thermostat_temperature
+          - sensor.living_room_temperature
+          - sensor.office_temperature
+          - sensor.bedroom_temperature
+          - sensor.guest_room_temperature
+      - type: history-graph
+        entities:
+          - sensor.thermostat_humidity
+      - type: weather-forecast
+        entity: weather.thermostat
+  - icon: mdi:home-floor-0
+    path: downstairs
+    badges:
+      - entity: binary_sensor.basement_occupancy
+      - entity: binary_sensor.sensor
+      - entity: binary_sensor.sensor_3
+      - entity: binary_sensor.sensor_4
+    cards:
+      - type: entities
+        title: Lights
+        entities:
+          - switch.downstairs
+          - switch.porch
+          - switch.basement
+          - switch.outdoor_switch
+      - type: history-graph
+        entities:
+          - sensor.basement_temperature
+      - type: picture-entity
+        entity: camera.frontdoor
+      - type: picture-entity
+        entity: camera.garage
+  - icon: mdi:home-floor-1
+    path: mainfloor
+    badges:
+      - entity: binary_sensor.thermostat_occupancy
+      - entity: binary_sensor.living_room_occupancy
+      - entity: binary_sensor.sensor_2
+    cards:
+      - type: media-control
+        entity: media_player.sonos
+      - type: media-control
+        entity: media_player.living_room_tv
+      - type: entities
+        title: Lights
+        entities:
+          - switch.living_room
+          - switch.dining_room
+          - switch.hall
+          - switch.kitchen
+      - type: history-graph
+        entities:
+          - sensor.thermostat_temperature
+          - sensor.living_room_temperature
+  - icon: mdi:home-floor-2
+    path: upstairs
+    badges:
+      - entity: binary_sensor.guest_room_occupancy
+      - entity: binary_sensor.bedroom_occupancy
+      - entity: binary_sensor.office_occupancy
+    cards:
+      - type: entities
+        title: Lights
+        entities:
+          - switch.office
+          - switch.upstairs
+      - type: history-graph
+        entities:
+          - sensor.office_temperature
+          - sensor.bedroom_temperature
+          - sensor.guest_room_temperature
+  - icon: mdi:table
+    path: other
+    badges:
+      - entity: sensor.my_smoke_probe_2
+      - entity: sensor.my_smoke_probe_1
+      - entity: sensor.moto_x4_battery_level
+      - entity: sensor.moto_x4_geocoded_location
+      - entity: sensor.moto_x4_wifi_connection
+    cards:
+      - type: entities
+        title: Switches
+        entities:
+          - switch.basement
+          - switch.dining_room
+          - switch.downstairs
+          - switch.hall
+          - switch.kitchen
+          - switch.living_room
+          - switch.office
+          - switch.outdoor_switch
+          - switch.porch
+          - switch.upstairs
+      - type: entities
+        title: Z-Wave
+        entities:
+          - zwave.aeotec_zw090_zstick_gen5_us
+          - zwave.ge_12720_outdoor_smart_switch
+          - zwave.back_door
+          - zwave.basement_switch
+          - zwave.dining_room_switch
+          - zwave.downstairs_switch
+          - zwave.front_door
+          - zwave.garage_door
+          - zwave.hall_switch
+          - zwave.kitchen_switch
+          - zwave.living_room_switch
+          - zwave.office_switch
+          - zwave.porch_switch
+          - zwave.side_door
+          - zwave.upstairs_switch
+      - type: entities
+        title: Sensor battery
+        entities:
+          - sensor.front_door_battery_level
+          - sensor.back_door_battery_level
+          - sensor.side_door_battery_level
+          - sensor.garage_door_battery_level

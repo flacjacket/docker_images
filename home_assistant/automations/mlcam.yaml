@@ -1,0 +1,29 @@
+- alias: Save all images
+  id: mlcam_save_images_automation
+  trigger:
+    - platform: time_pattern
+      seconds: /1
+  condition:
+    - condition: state
+      entity_id: binary_sensor.mlcam_detection
+      state: 'on'
+  action:
+    - service: camera.snapshot
+      data:
+        filename: '/tmp/det_{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg'
+      target:
+        entity_id: camera.mlcam_camera
+- alias: Save detections
+  id: mlcam_save_detections_automation
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.mlcam_detection
+      from: 'off'
+      to: 'on'
+  condition: []
+  action:
+    - service: camera.snapshot
+      data:
+        filename: '/tmp/first_{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg'
+      target:
+        entity_id: camera.mlcam_camera

@@ -1,0 +1,148 @@
+homeassistant:
+  name: Home
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: !secret elevation
+  unit_system: imperial
+  time_zone: America/New_York
+  customize: !include customize.yaml
+  allowlist_external_dirs:
+    - "/tmp"
+
+alexa:
+  smart_home:
+    endpoint: https://api.amazonalexa.com/v3/events
+    client_id: !secret alexa_client_id
+    client_secret: !secret alexa_client_secret
+    filter:
+      include_domains:
+        - camera
+        - group
+        - scene
+        - switch
+      include_entities:
+        - binary_sensor.sensor
+        - binary_sensor.sensor_2
+        - binary_sensor.sensor_3
+        - binary_sensor.sensor_4
+
+amcrest_nvr:
+  - name: NVR
+    host: !secret amcrest_url
+    username: !secret amcrest_user
+    password: !secret amcrest_pass
+    binary_sensors: [online]
+    sensors: [sdcard]
+    cameras:
+      - name: Front Porch
+        channel: 0
+        stream_source: rtsp
+        binary_sensors: [motion_detected]
+
+automation: !include_dir_merge_list automations/
+
+camera:
+  - platform: zoneminder
+  - platform: ffmpeg
+    name: Front Camera
+    input: !secret front_walk_camera_url
+
+config:
+
+conversation:
+
+device_tracker:
+
+discovery:
+
+ecobee:
+  api_key: !secret ecobee_api_key
+
+frontend:
+
+group:
+  first_floor:
+    name: First Floor
+    entities:
+      - media_player.living_room_tv
+      - switch.dining_room
+      - switch.hall
+      - switch.kitchen
+      - switch.living_room
+  second_floor:
+    name: Second Floor
+    entities:
+      - switch.office
+      - switch.upstairs
+
+history:
+
+http:
+  ssl_certificate: /etc/letsencrypt_certs/fullchain.pem
+  ssl_key: /etc/letsencrypt_certs/privkey.pem
+
+input_boolean:
+  vacation:
+    name: Vacation
+    icon: mdi:airplane
+
+logbook:
+
+logger:
+  default: info
+
+map:
+
+media_player:
+  - platform: braviatv
+    host: 10.10.10.83
+    name: Living Room TV
+
+# enable the mobile app support
+mobile_app:
+
+panel_iframe:
+  nodered:
+    title: "Node-Red"
+    icon: mdi:shuffle-variant
+    url: !secret nodered_url
+
+person:
+
+script: !include scripts.yaml
+
+sensor:
+
+scene: !include scenes.yaml
+
+sonos:
+  media_player:
+    hosts:
+      - 10.10.10.58
+    advertise_addr: 10.10.10.2
+
+stream:
+
+sun:
+
+system_health:
+
+tts:
+  - platform: google_translate
+    service_name: google_say
+
+updater:
+
+zeroconf:
+
+zone:
+
+zoneminder:
+  host: !secret zoneminder_url
+  username: admin
+  password: !secret zoneminder_pass
+  ssl: true
+
+zwave:
+  usb_path: /dev/zwave
+  network_key: !secret zwave_key
