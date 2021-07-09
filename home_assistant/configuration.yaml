@@ -94,9 +94,6 @@ logger:
 map:
 
 media_player:
-  - platform: braviatv
-    host: 10.10.10.83
-    name: Living Room TV
 
 # enable the mobile app support
 mobile_app:
