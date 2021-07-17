@@ -22,6 +22,7 @@ COPY *.yaml /static_config/
 COPY automations /static_config/automations
 COPY custom_components /static_config/custom_components
 RUN chmod 444 /static_config/*.yaml
-RUN python -m pip install --force-reinstall https://github.com/flacjacket/python-amcrest/archive/py3.tar.gz
+RUN python -m pip install --force-reinstall --no-deps \
+    https://github.com/flacjacket/python-amcrest/archive/py3.tar.gz
 
 HEALTHCHECK CMD /usr/local/bin/docker-healthcheck.sh || exit 1
