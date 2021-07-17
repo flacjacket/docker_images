@@ -215,7 +215,7 @@ class AmcrestBinarySensor(BinarySensorEntity):
         self._update_unique_id()
         self.async_write_ha_state()
 
-    def _update_unique_id(self):
+    def _update_unique_id(self) -> None:
         if self._unique_id is None:
             self._unique_id = (
                 f"{self._api.serial_number}-{self._channel}-{self._sensor_type}"

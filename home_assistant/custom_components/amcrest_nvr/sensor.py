@@ -52,12 +52,17 @@ class AmcrestSensor(SensorEntity):
         self._sensor_type = sensor_type
         self._state = None
         self._attrs = {}
+        self._unique_id: Optional[str] = None
         self._unsub_dispatcher: Optional[Callable[[], None]] = None
 
     @property
     def name(self) -> str:
         """Return the name of the sensor."""
         return self._name
+
+    @property
+    def unique_id(self) -> Optional[str]:
+        return self._unique_id
 
     @property
     def state(self):
@@ -90,6 +95,7 @@ class AmcrestSensor(SensorEntity):
             return
         _LOGGER.debug("Updating %s sensor", self._name)
 
+        self._update_unique_id()
         try:
             if self._sensor_type == SENSOR_PTZ_PRESET:
                 self._state = self._api.ptz_presets_count
@@ -101,6 +107,12 @@ class AmcrestSensor(SensorEntity):
                 self._state = storage["used_percent"]
         except AmcrestError as error:
             log_update_error(_LOGGER, "update", self.name, "sensor", error)
+
+    def _update_unique_id(self) -> None:
+        if self._unique_id is None:
+            self._unique_id = (
+                u"{self.serial_number}-{self._channel}-{self._sensor_type}"
+            )
 
     async def async_on_demand_update(self) -> None:
         """Update state."""
