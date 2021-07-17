@@ -96,16 +96,16 @@ _SRV_PTZ_SCHEMA = _SRV_SCHEMA.extend(
 )
 
 CAMERA_SERVICES = {
-    _SRV_EN_REC: ({}, "async_enable_recording", ()),
-    _SRV_DS_REC: ({}, "async_disable_recording", ()),
-    _SRV_EN_AUD: ({}, "async_enable_audio", ()),
-    _SRV_DS_AUD: ({}, "async_disable_audio", ()),
-    _SRV_EN_MOT_REC: ({}, "async_enable_motion_recording", ()),
-    _SRV_DS_MOT_REC: ({}, "async_disable_motion_recording", ()),
+    _SRV_EN_REC: (_SRV_SCHEMA, "async_enable_recording", ()),
+    _SRV_DS_REC: (_SRV_SCHEMA, "async_disable_recording", ()),
+    _SRV_EN_AUD: (_SRV_SCHEMA, "async_enable_audio", ()),
+    _SRV_DS_AUD: (_SRV_SCHEMA, "async_disable_audio", ()),
+    _SRV_EN_MOT_REC: (_SRV_SCHEMA, "async_enable_motion_recording", ()),
+    _SRV_DS_MOT_REC: (_SRV_SCHEMA, "async_disable_motion_recording", ()),
     _SRV_GOTO: (_SRV_GOTO_SCHEMA, "async_goto_preset", (_ATTR_PRESET,)),
     _SRV_CBW: (_SRV_CBW_SCHEMA, "async_set_color_bw", (_ATTR_COLOR_BW,)),
-    _SRV_TOUR_ON: ({}, "async_start_tour", ()),
-    _SRV_TOUR_OFF: ({}, "async_stop_tour", ()),
+    _SRV_TOUR_ON: (_SRV_SCHEMA, "async_start_tour", ()),
+    _SRV_TOUR_OFF: (_SRV_SCHEMA, "async_stop_tour", ()),
     _SRV_PTZ_CTRL: (
         _SRV_PTZ_SCHEMA,
         "async_ptz_control",
@@ -124,6 +124,10 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     camera_name = discovery_info[CONF_NAME]
     device = hass.data[DATA_AMCREST][DEVICES][camera_name]
     async_add_entities([AmcrestCam(camera_name, device, hass.data[DATA_FFMPEG])], True)
+
+
+class CannotSnapshot(Exception):
+    """Conditions are not valid for taking a snapshot."""
 
 
 class AmcrestCommandFailed(Exception):
@@ -145,8 +149,8 @@ class AmcrestCam(Camera):
         self._stream_source = device.stream_source
         self._resolution = device.resolution
         self._token = self._auth = device.authentication
-        self._control_light = device.control_light
         self._snapshot_lock = asyncio.Lock()
+        self._control_light = device.control_light
         self._is_recording: Optional[bool] = False
         self._motion_detection_enabled: Optional[bool] = None
         self._brand: Optional[str] = None
@@ -159,7 +163,7 @@ class AmcrestCam(Camera):
         self._unsub_dispatcher: List[Callable[[], None]] = []
         self._update_succeeded = False
 
-    def _check_snapshot_ok(self):
+    def _check_snapshot_ok(self) -> bool:
         available = self.available
         if not available or not self.is_on:
             _LOGGER.warning(
@@ -278,7 +282,7 @@ class AmcrestCam(Camera):
         return self._unique_id
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the Amcrest-specific camera state attributes."""
         attr = {}
         if self._audio_enabled is not None:

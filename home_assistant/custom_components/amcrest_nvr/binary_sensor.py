@@ -1,6 +1,7 @@
 """Support for Amcrest IP camera binary sensors."""
 from __future__ import annotations
 
+from contextlib import suppress
 from datetime import timedelta
 import logging
 from typing import TYPE_CHECKING, Callable, List, Optional
@@ -44,6 +45,8 @@ BINARY_SENSOR_AUDIO_DETECTED_POLLED = "audio_detected_polled"
 BINARY_SENSOR_MOTION_DETECTED = "motion_detected"
 BINARY_SENSOR_MOTION_DETECTED_POLLED = "motion_detected_polled"
 BINARY_SENSOR_ONLINE = "online"
+BINARY_SENSOR_CROSSLINE_DETECTED = "crossline_detected"
+BINARY_SENSOR_CROSSLINE_DETECTED_POLLED = "crossline_detected_polled"
 BINARY_POLLED_SENSORS = [
     BINARY_SENSOR_AUDIO_DETECTED_POLLED,
     BINARY_SENSOR_MOTION_DETECTED_POLLED,
@@ -59,6 +62,11 @@ _MOTION_DETECTED_PARAMS = {
     SENSOR_DEVICE_CLASS: DEVICE_CLASS_MOTION,
     SENSOR_EVENT_CODE: "VideoMotion",
 }
+_CROSSLINE_DETECTED_PARAMS = {
+    SENSOR_NAME: "CrossLine Detected",
+    SENSOR_DEVICE_CLASS: DEVICE_CLASS_MOTION,
+    SENSOR_EVENT_CODE: "CrossLineDetection",
+}
 _ONLINE_PARAMS = {
     SENSOR_NAME: "Online",
     SENSOR_DEVICE_CLASS: DEVICE_CLASS_CONNECTIVITY,
@@ -69,14 +77,17 @@ CAMERA_BINARY_SENSORS = {
     BINARY_SENSOR_AUDIO_DETECTED_POLLED: _AUDIO_DETECTED_PARAMS,
     BINARY_SENSOR_MOTION_DETECTED: _MOTION_DETECTED_PARAMS,
     BINARY_SENSOR_MOTION_DETECTED_POLLED: _MOTION_DETECTED_PARAMS,
+    BINARY_SENSOR_CROSSLINE_DETECTED: _CROSSLINE_DETECTED_PARAMS,
+    BINARY_SENSOR_CROSSLINE_DETECTED_POLLED: _CROSSLINE_DETECTED_PARAMS,
 }
 DEVICE_BINARY_SENSORS = {
     BINARY_SENSOR_ONLINE: _ONLINE_PARAMS,
 }
-BINARY_SENSORS = {**CAMERA_BINARY_SENSORS, **DEVICE_BINARY_SENSORS}
+BINARY_SENSORS = CAMERA_BINARY_SENSORS | DEVICE_BINARY_SENSORS
 _EXCLUSIVE_OPTIONS = [
     {BINARY_SENSOR_AUDIO_DETECTED, BINARY_SENSOR_AUDIO_DETECTED_POLLED},
     {BINARY_SENSOR_MOTION_DETECTED, BINARY_SENSOR_MOTION_DETECTED_POLLED},
+    {BINARY_SENSOR_CROSSLINE_DETECTED, BINARY_SENSOR_CROSSLINE_DETECTED_POLLED},
 ]
 
 _UPDATE_MSG = "Updating %s binary sensor"
@@ -170,16 +181,13 @@ class AmcrestBinarySensor(BinarySensorEntity):
             # Send a command to the camera to test if we can still communicate with it.
             # Override of Http.command() in __init__.py will set self._api.available
             # accordingly.
-            try:
+            with suppress(AmcrestError):
                 self._api.current_time
-            except AmcrestError:
-                pass
         self._state = self._api.available
 
     def _update_others(self):
         if not self.available:
             return
-
         _LOGGER.debug(_UPDATE_MSG, self._name)
 
         self._update_unique_id()
