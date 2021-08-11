@@ -1,0 +1,159 @@
+diff --git a/app.ts b/app.ts
+index d55c89a..4d8255f 100644
+--- a/app.ts
++++ b/app.ts
+@@ -919,14 +919,6 @@ app.post(
+ 
+ 			await jsonStore.put(store.settings, settings)
+ 
+-			if (gw && gw.zwave) {
+-				if (enableStatistics) {
+-					gw.zwave.enableStatistics()
+-				} else {
+-					gw.zwave.disableStatistics()
+-				}
+-			}
+-
+ 			res.json({
+ 				success: true,
+ 				enabled: enableStatistics,
+diff --git a/lib/ZwaveClient.ts b/lib/ZwaveClient.ts
+index ea15e08..706f384 100644
+--- a/lib/ZwaveClient.ts
++++ b/lib/ZwaveClient.ts
+@@ -1116,10 +1116,6 @@ class ZwaveClient extends TypedEventEmitter<ZwaveClientEventCallbacks> {
+ 					})
+ 				}
+ 
+-				if (this.cfg.enableStatistics) {
+-					this.enableStatistics()
+-				}
+-
+ 				this.status = ZwaveClientStatus.CONNECTED
+ 				this._connected = true
+ 			} catch (error) {
+@@ -1375,13 +1371,6 @@ class ZwaveClient extends TypedEventEmitter<ZwaveClientEventCallbacks> {
+ 	 *
+ 	 */
+ 	enableStatistics() {
+-		this._driver.enableStatistics({
+-			applicationName:
+-				pkgjson.name +
+-				(this.cfg.serverEnabled ? ' / zwave-js-server' : ''),
+-			applicationVersion: pkgjson.version,
+-		})
+-
+ 		logger.info('Zwavejs usage statistics ENABLED')
+ 	}
+ 
+@@ -1390,8 +1379,6 @@ class ZwaveClient extends TypedEventEmitter<ZwaveClientEventCallbacks> {
+ 	 *
+ 	 */
+ 	disableStatistics() {
+-		this._driver.disableStatistics()
+-
+ 		logger.info('Zwavejs usage statistics DISABLED')
+ 	}
+ 
+diff --git a/src/store/mutations.js b/src/store/mutations.js
+index 33e650f..120a46f 100644
+--- a/src/store/mutations.js
++++ b/src/store/mutations.js
+@@ -12,7 +12,7 @@ export const state = {
+     logLevel: 'info',
+     logToFile: false,
+     serverEnabled: false,
+-    enableStatistics: undefined, // keep it undefined so the user dialog will show up
++    enableStatistics: false,
+     serverPort: 3000
+   },
+   mqtt: {
+diff --git a/yarn.lock b/yarn.lock
+index 0e271ed..759a015 100644
+--- a/yarn.lock
++++ b/yarn.lock
+@@ -1246,84 +1246,6 @@
+     conventional-recommended-bump "^6.1.0"
+     prepend-file "^2.0.0"
+ 
+-"@sentry/core@6.10.0":
+-  version "6.10.0"
+-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-6.10.0.tgz#70af9dc72bb6a5b59062a31b7de023f7f1878357"
+-  integrity sha512-5KlxHJlbD7AMo+b9pMGkjxUOfMILtsqCtGgI7DMvZNfEkdohO8QgUY+hPqr540kmwArFS91ipQYWhqzGaOhM3Q==
+-  dependencies:
+-    "@sentry/hub" "6.10.0"
+-    "@sentry/minimal" "6.10.0"
+-    "@sentry/types" "6.10.0"
+-    "@sentry/utils" "6.10.0"
+-    tslib "^1.9.3"
+-
+-"@sentry/hub@6.10.0":
+-  version "6.10.0"
+-  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-6.10.0.tgz#d59be18016426fd3a5e8d38712c2080466aafe3c"
+-  integrity sha512-MV8wjhWiFAXZAhmj7Ef5QdBr2IF93u8xXiIo2J+dRZ7eVa4/ZszoUiDbhUcl/TPxczaw4oW2a6tINBNFLzXiig==
+-  dependencies:
+-    "@sentry/types" "6.10.0"
+-    "@sentry/utils" "6.10.0"
+-    tslib "^1.9.3"
+-
+-"@sentry/integrations@^6.10.0":
+-  version "6.10.0"
+-  resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-6.10.0.tgz#f8f9e7efd55ec44d0408bd4493df1c9ceabaaa63"
+-  integrity sha512-NMtB0jjFYFZRxyjYu2dWLThk9YPIwqhi4hYywmWkbv4/ILzi5Rwnh+aqNW6yrj8qG4b9itNMh3YvEzmf0aqauw==
+-  dependencies:
+-    "@sentry/types" "6.10.0"
+-    "@sentry/utils" "6.10.0"
+-    localforage "^1.8.1"
+-    tslib "^1.9.3"
+-
+-"@sentry/minimal@6.10.0":
+-  version "6.10.0"
+-  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-6.10.0.tgz#9404b93fae649b6c48e1da8f0991b87cf9999561"
+-  integrity sha512-yarm046UgUFIBoxqnBan2+BEgaO9KZCrLzsIsmALiQvpfW92K1lHurSawl5W6SR7wCYBnNn7CPvPE/BHFdy4YA==
+-  dependencies:
+-    "@sentry/hub" "6.10.0"
+-    "@sentry/types" "6.10.0"
+-    tslib "^1.9.3"
+-
+-"@sentry/node@^6.10.0":
+-  version "6.10.0"
+-  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-6.10.0.tgz#d91a6877f3447d7349a7f343a1fcadc319002c09"
+-  integrity sha512-buGmOjsTnxebHSfa3r/rhpjDk8xmrILG4xslTgV1C2JpbUtf96QnYNNydfsfAGcZrLWO0gid/wigxsx1fdXT8A==
+-  dependencies:
+-    "@sentry/core" "6.10.0"
+-    "@sentry/hub" "6.10.0"
+-    "@sentry/tracing" "6.10.0"
+-    "@sentry/types" "6.10.0"
+-    "@sentry/utils" "6.10.0"
+-    cookie "^0.4.1"
+-    https-proxy-agent "^5.0.0"
+-    lru_map "^0.3.3"
+-    tslib "^1.9.3"
+-
+-"@sentry/tracing@6.10.0":
+-  version "6.10.0"
+-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-6.10.0.tgz#8dcdc28cccfad976540a3c801acb6914b9c0802e"
+-  integrity sha512-jZj6Aaf8kU5wgyNXbAJHosHn8OOFdK14lgwYPb/AIDsY35g9a9ncTOqIOBp8X3KkmSR8lcBzAEyiUzCxAis2jA==
+-  dependencies:
+-    "@sentry/hub" "6.10.0"
+-    "@sentry/minimal" "6.10.0"
+-    "@sentry/types" "6.10.0"
+-    "@sentry/utils" "6.10.0"
+-    tslib "^1.9.3"
+-
+-"@sentry/types@6.10.0":
+-  version "6.10.0"
+-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-6.10.0.tgz#6b1f44e5ed4dbc2710bead24d1b32fb08daf04e1"
+-  integrity sha512-M7s0JFgG7/6/yNVYoPUbxzaXDhnzyIQYRRJJKRaTD77YO4MHvi4Ke8alBWqD5fer0cPIfcSkBqa9BLdqRqcMWw==
+-
+-"@sentry/utils@6.10.0":
+-  version "6.10.0"
+-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-6.10.0.tgz#839a099fa0a1f0ca0893c7ce8c55ba0608c1d80f"
+-  integrity sha512-F9OczOcZMFtazYVZ6LfRIe65/eOfQbiAedIKS0li4npuMz0jKYRbxrjd/U7oLiNQkPAp4/BujU4m1ZIwq6a+tg==
+-  dependencies:
+-    "@sentry/types" "6.10.0"
+-    tslib "^1.9.3"
+-
+ "@serialport/binding-abstract@^9.0.7":
+   version "9.0.7"
+   resolved "https://registry.yarnpkg.com/@serialport/binding-abstract/-/binding-abstract-9.0.7.tgz#d2c7ecea0f100bdf20187bfc0d34ba90f5504e1e"
