@@ -12,8 +12,8 @@ RUN git clone -b v8.0.8 --depth 1 https://github.com/zwave-js/node-zwave-js
 RUN git clone -b v5.4.5 --depth 1 https://github.com/zwave-js/zwavejs2mqtt
 
 WORKDIR /home/node/node-zwave-js
-COPY zwave-js-sentry.patch .
-RUN git apply zwave-js-sentry.patch
+COPY node-zwave-js.patch .
+RUN git apply node-zwave-js.patch
 RUN yarn install --immutable
 RUN yarn lerna run build
 RUN sed -i '/yarnPath/d' .yarnrc.yml
@@ -29,8 +29,8 @@ RUN cd packages/zwave-js && \
     yarn link
 
 WORKDIR /home/node/zwavejs2mqtt
-COPY zwavejs2mqtt-sentry.patch .
-RUN git apply zwavejs2mqtt-sentry.patch
+COPY zwavejs2mqtt.patch .
+RUN git apply zwavejs2mqtt.patch
 RUN yarn install --immutable
 RUN yarn run build
 RUN yarn link zwave-js @zwave-js/core @zwave-js/config @zwave-js/serial @zwave-js/shared
