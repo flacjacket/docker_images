@@ -5,7 +5,9 @@ RUN chmod +x /usr/local/bin/docker-healthcheck.sh
 
 RUN addgroup -g 1000 home_assistant \
  && adduser -D -u 1000 -h /config -G home_assistant home_assistant \
- && adduser home_assistant audio
+ && adduser home_assistant audio \
+ && chmod +x /etc/services.d/home-assistant/run \
+ && chmod +x /etc/services.d/home-assistant/finish
 
 RUN mkdir -p /static_config/custom_components
 RUN mkdir /static_config/custom_components/hacs && \
