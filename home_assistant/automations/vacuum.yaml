@@ -12,4 +12,4 @@
   action:
     - service: vacuum.start
       target:
-        entity_id: vacuum.robot
+        entity_id: vacuum.tom_servo
