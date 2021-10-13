@@ -2,30 +2,3 @@
   name: Bedtime
   icon: mdi:bed
   entities:
-    switch.porch:
-      value_id: '72057594294386688'
-      state: 'off'
-    switch.living_room:
-      value_id: '72057594093060096'
-      state: 'off'
-    switch.basement:
-      value_id: '72057594277609472'
-      state: 'off'
-    switch.downstairs:
-      value_id: '72057594076282880'
-      state: 'off'
-    switch.dining_room:
-      value_id: '72057594227277824'
-      state: 'off'
-    switch.hall:
-      value_id: '72057594210500608'
-      state: 'off'
-    switch.kitchen:
-      value_id: '72057594193723392'
-      state: 'off'
-    switch.upstairs:
-      value_id: '72057594244055040'
-      state: 'off'
-    switch.office:
-      value_id: '72057594260832256'
-      state: 'off'

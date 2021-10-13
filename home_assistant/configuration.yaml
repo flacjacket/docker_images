@@ -5,141 +5,146 @@ homeassistant:
   elevation: !secret elevation
   unit_system: imperial
   time_zone: America/New_York
-  customize: !include customize.yaml
-  allowlist_external_dirs:
-    - "/tmp"
+
+automation: !include_dir_merge_list automations/
+group: !include groups.yaml
+scene: !include scenes.yaml
+script: !include scripts.yaml
 
 alexa:
   smart_home:
     endpoint: https://api.amazonalexa.com/v3/events
     client_id: !secret alexa_client_id
     client_secret: !secret alexa_client_secret
-    filter:
-      include_domains:
-        - camera
-        - group
-        - scene
-        - switch
-      include_entities:
-        - binary_sensor.sensor
-        - binary_sensor.sensor_2
-        - binary_sensor.sensor_3
-        - binary_sensor.sensor_4
+    #filter:
+    #  include_domains:
+    #    - camera
+    #    - group
+    #    - scene
+    #    - switch
+    #  include_entities:
+    #    - binary_sensor.sensor
+    #    - binary_sensor.sensor_2
+    #    - binary_sensor.sensor_3
+    #    - binary_sensor.sensor_4
 
-amcrest_nvr:
-  - name: NVR
-    host: !secret amcrest_url
-    username: !secret amcrest_user
-    password: !secret amcrest_pass
-    binary_sensors: [online]
-    sensors: [sdcard]
-    cameras:
-      - name: Front Porch
-        channel: 0
-        stream_source: rtsp
-        binary_sensors: [motion_detected]
+#amcrest_nvr:
+#  - name: NVR
+#    host: !secret amcrest_url
+#    username: !secret amcrest_user
+#    password: !secret amcrest_pass
+#    binary_sensors: [online]
+#    sensors: [sdcard]
+#    cameras:
+#      - name: Front Porch
+#        channel: 0
+#        stream_source: rtsp
+#        binary_sensors: [motion_detected]
 
-automation: !include_dir_merge_list automations/
+#camera:
+#  - platform: zoneminder
+#  - platform: ffmpeg
+#    name: Front Camera
+#    input: !secret front_walk_camera_url
 
-camera:
-  - platform: zoneminder
-  - platform: ffmpeg
-    name: Front Camera
-    input: !secret front_walk_camera_url
+default_config:
 
-config:
+#config:
 
-conversation:
+#conversation:
 
-device_tracker:
+#device_tracker:
 
-discovery:
+#discovery:
 
-ecobee:
-  api_key: !secret ecobee_api_key
+#ecobee:
+#  api_key: !secret ecobee_api_key
 
-frontend:
+#frontend:
 
-group:
-  first_floor:
-    name: First Floor
-    entities:
-      - media_player.living_room_tv
-      - switch.dining_room
-      - switch.hall
-      - switch.kitchen
-      - switch.living_room
-  second_floor:
-    name: Second Floor
-    entities:
-      - switch.office
-      - switch.upstairs
+#group:
+#  first_floor:
+#    name: First Floor
+#    entities:
+#      - media_player.living_room_tv
+#      - switch.dining_room
+#      - switch.hall
+#      - switch.kitchen
+#      - switch.living_room
+#  second_floor:
+#    name: Second Floor
+#    entities:
+#      - switch.office
+#      - switch.upstairs
 
-history:
+#history:
 
-http:
-  ssl_certificate: /etc/letsencrypt_certs/fullchain.pem
-  ssl_key: /etc/letsencrypt_certs/privkey.pem
+#http:
+#  ssl_certificate: /etc/letsencrypt_certs/fullchain.pem
+#  ssl_key: /etc/letsencrypt_certs/privkey.pem
 
-input_boolean:
-  vacation:
-    name: Vacation
-    icon: mdi:airplane
+#input_boolean:
+#  vacation:
+#    name: Vacation
+#    icon: mdi:airplane
 
-logbook:
+#logbook:
 
-logger:
-  default: info
+#logger:
+#  default: info
 
-map:
+#map:
 
-media_player:
+#media_player:
 
 # enable the mobile app support
-mobile_app:
+#mobile_app:
 
-panel_iframe:
-  nodered:
-    title: "Node-Red"
-    icon: mdi:shuffle-variant
-    url: !secret nodered_url
+#panel_iframe:
+#  nodered:
+#    title: "Node-Red"
+#    icon: mdi:shuffle-variant
+#    url: !secret nodered_url
 
-person:
+#person:
 
-script: !include scripts.yaml
+recorder:
+  db_url: !secret mariadb_url
+  purge_keep_days: 30
 
-sensor:
+#script: !include scripts.yaml
 
-scene: !include scenes.yaml
+#sensor:
 
-sonos:
-  media_player:
-    hosts:
-      - 10.10.10.58
-    advertise_addr: 10.10.10.2
 
-stream:
+#sonos:
+#  media_player:
+#    hosts:
+#      - 10.10.10.58
+#    advertise_addr: 10.10.10.2
 
-sun:
+#stream:
 
-system_health:
+#sun:
 
-tts:
-  - platform: google_translate
-    service_name: google_say
+#system_health:
 
-updater:
+#tts:
+#  - platform: google_translate
+#    service_name: google_say
 
-zeroconf:
+#updater:
 
-zone:
+#zeroconf:
 
-zoneminder:
-  host: !secret zoneminder_url
-  username: admin
-  password: !secret zoneminder_pass
-  ssl: true
+#zone:
 
-zwave:
-  usb_path: /dev/zwave
-  network_key: !secret zwave_key
+#zoneminder:
+#  host: !secret zoneminder_url
+#  username: admin
+#  password: !secret zoneminder_pass
+#  ssl: true
+
+#zwave:
+#  usb_path: /dev/zwave
+#  network_key: !secret zwave_key
