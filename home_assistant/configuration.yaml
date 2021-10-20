@@ -41,11 +41,11 @@ alexa:
 #        stream_source: rtsp
 #        binary_sensors: [motion_detected]
 
-#camera:
+camera:
+  - platform: ffmpeg
+    name: Doorbell Camera
+    input: !secret doorbell_camera_url
 #  - platform: zoneminder
-#  - platform: ffmpeg
-#    name: Front Camera
-#    input: !secret front_walk_camera_url
 
 default_config:
 
