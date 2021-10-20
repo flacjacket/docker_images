@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2021.10.4
+FROM homeassistant/home-assistant:2021.10.6
 
 COPY docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-healthcheck.sh
@@ -16,7 +16,10 @@ RUN mkdir /static_config/custom_components/hacs && \
     wget "https://github.com/zachowj/hass-node-red/archive/v0.5.2.zip" -O hass-node-red.zip && \
     unzip hass-node-red.zip && \
     mv hass-node-red-*/custom_components/nodered /static_config/custom_components/ && \
-    rm -r *.zip hass-node-red-*/
+    wget "https://github.com/AlexxIT/WebRTC/archive/refs/tags/v2.1.1.zip" -O webrtc.zip && \
+    unzip webrtc.zip && \
+    mv WebRTC-*/custom_components/webrtc /static_config/custom_components/ && \
+    rm -r *.zip hass-node-red-*/ WebRTC-*/
 COPY *.yaml /static_config/
 COPY automations /static_config/automations
 COPY custom_components /static_config/custom_components
