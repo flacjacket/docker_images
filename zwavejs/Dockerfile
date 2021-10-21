@@ -1,4 +1,4 @@
-FROM node:16.6.2-alpine3.14 as builder
+FROM node:16.11.1-alpine3.14 as builder
 USER root
 RUN apk --no-cache add \
     alpine-sdk \
@@ -53,7 +53,7 @@ RUN mkdir dist && cp -Lr \
     zwavejs2mqtt/yarn.lock \
     dist
 
-FROM node:16.6.2-alpine3.14
+FROM node:16.11.1-alpine3.14
 ENV ZWAVEJS_EXTERNAL_CONFIG=/usr/src/app/store/.config-db
 COPY --from=builder /home/node/dist /usr/src/app
 WORKDIR /usr/src/app
