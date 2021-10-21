@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'zwave_js/**'
+      - 'zwavejs/**'
       - '.github/workflows/zwavejs_push.yml'
 jobs:
   push:
