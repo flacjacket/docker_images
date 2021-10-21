@@ -1,17 +1,5 @@
-diff --git a/packages/serial/package.json b/packages/serial/package.json
-index 48984136..0a1ab8e2 100644
---- a/packages/serial/package.json
-+++ b/packages/serial/package.json
-@@ -36,7 +36,6 @@
-     "watch": "yarn run build --watch --pretty"
-   },
-   "dependencies": {
--    "@sentry/node": "^6.10.0",
-     "@zwave-js/core": "8.0.6",
-     "@zwave-js/shared": "8.0.3",
-     "alcalzone-shared": "^4.0.0",
 diff --git a/packages/serial/src/Logger.ts b/packages/serial/src/Logger.ts
-index 6a864758..8d68c278 100644
+index 6a86475..8d68c27 100644
 --- a/packages/serial/src/Logger.ts
 +++ b/packages/serial/src/Logger.ts
 @@ -1,4 +1,3 @@
@@ -35,21 +23,8 @@ index 6a864758..8d68c278 100644
  	}
  
  	// /**
-diff --git a/packages/zwave-js/package.json b/packages/zwave-js/package.json
-index ecf2880a..a19de97d 100644
---- a/packages/zwave-js/package.json
-+++ b/packages/zwave-js/package.json
-@@ -56,8 +56,6 @@
-   "dependencies": {
-     "@alcalzone/jsonl-db": "^1.3.0",
-     "@alcalzone/pak": "^0.6.0",
--    "@sentry/integrations": "^6.10.0",
--    "@sentry/node": "^6.10.0",
-     "@zwave-js/config": "8.0.8",
-     "@zwave-js/core": "8.0.6",
-     "@zwave-js/serial": "8.0.7",
 diff --git a/packages/zwave-js/src/index.ts b/packages/zwave-js/src/index.ts
-index 525e4372..e4022bd9 100644
+index 525e437..e4022bd 100644
 --- a/packages/zwave-js/src/index.ts
 +++ b/packages/zwave-js/src/index.ts
 @@ -9,7 +9,6 @@ import { install as installSourceMapSupport } from "source-map-support";
@@ -79,16 +54,16 @@ index 525e4372..e4022bd9 100644
  export * from "./CommandClass";
  export * from "./Controller";
 diff --git a/packages/zwave-js/src/lib/driver/Driver.ts b/packages/zwave-js/src/lib/driver/Driver.ts
-index eaab5569..409f0176 100644
+index 3e156e4..517fd33 100644
 --- a/packages/zwave-js/src/lib/driver/Driver.ts
 +++ b/packages/zwave-js/src/lib/driver/Driver.ts
 @@ -1,5 +1,4 @@
  import { JsonlDB, JsonlDBOptions } from "@alcalzone/jsonl-db";
 -import * as Sentry from "@sentry/node";
- import { ConfigManager } from "@zwave-js/config";
+ import { ConfigManager, externalConfigDir } from "@zwave-js/config";
  import {
  	CommandClasses,
-@@ -119,12 +118,6 @@ import { getDefaultPriority, Message } from "../message/Message";
+@@ -130,12 +129,6 @@ import { getDefaultPriority, Message } from "../message/Message";
  import { isNodeQuery } from "../node/INodeQuery";
  import type { ZWaveNode } from "../node/Node";
  import { InterviewStage, NodeStatus } from "../node/Types";
@@ -101,7 +76,7 @@ index eaab5569..409f0176 100644
  import {
  	createSendThreadMachine,
  	SendThreadInterpreter,
-@@ -537,22 +530,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+@@ -585,22 +578,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
  					this.driverLog.logMessage(msg, {
  						direction: "outbound",
  					});
@@ -124,17 +99,27 @@ index eaab5569..409f0176 100644
  				},
  				log: this.driverLog.print.bind(this.driverLog),
  			},
-@@ -975,9 +952,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
- 			) {
- 				// The interview succeeded, but we don't have a device config for this node.
- 				// Report it, so we can add a config file
+@@ -1066,19 +1043,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+ 						maxAttempts: maxInterviewAttempts,
+ 					});
+ 				}
+-			} else if (
+-				node.manufacturerId != undefined &&
+-				node.productType != undefined &&
+-				node.productId != undefined &&
+-				node.firmwareVersion != undefined &&
+-				!node.deviceConfig &&
+-				process.env.NODE_ENV !== "test"
+-			) {
+-				// The interview succeeded, but we don't have a device config for this node.
+-				// Report it, so we can add a config file
 -
 -				// eslint-disable-next-line @typescript-eslint/no-empty-function
 -				void reportMissingDeviceConfig(node as any).catch(() => {});
  			}
- 		} catch (e: unknown) {
+ 		} catch (e) {
  			if (isZWaveError(e)) {
-@@ -1126,74 +1100,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+@@ -1227,74 +1191,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
  		this.controllerLog.print("All nodes are ready to be used");
  		this.emit("all nodes ready");
  		this._nodesReadyEventEmitted = true;
@@ -209,7 +194,7 @@ index eaab5569..409f0176 100644
  	}
  
  	/** @internal */
-@@ -1207,57 +1113,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+@@ -1308,57 +1204,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
  		return ret;
  	}
  
@@ -267,7 +252,7 @@ index eaab5569..409f0176 100644
  	/** Is called when a node interview is completed */
  	private onNodeInterviewCompleted(node: ZWaveNode): void {
  		this.debounceSendNodeToSleep(node);
-@@ -1515,8 +1370,7 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+@@ -1628,8 +1473,7 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
  		for (const timeout of [
  			this.saveToCacheTimer,
  			...this.sendNodeToSleepTimers.values(),
@@ -277,7 +262,7 @@ index eaab5569..409f0176 100644
  		]) {
  			if (timeout) clearTimeout(timeout);
  		}
-@@ -1651,23 +1505,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+@@ -1790,23 +1634,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
  				if (!wasMessageLogged) {
  					this.driverLog.logMessage(msg, { direction: "inbound" });
  				}
@@ -300,871 +285,121 @@ index eaab5569..409f0176 100644
 -				}
  			} catch (e) {
  				// We shouldn't throw just because logging a message fails
- 				this.driverLog.print(`Logging a message failed: ${e.message}`);
-diff --git a/packages/zwave-js/src/lib/log/Driver.ts b/packages/zwave-js/src/lib/log/Driver.ts
-index d1b1864e..ab74de57 100644
---- a/packages/zwave-js/src/lib/log/Driver.ts
-+++ b/packages/zwave-js/src/lib/log/Driver.ts
-@@ -1,4 +1,3 @@
--import * as Sentry from "@sentry/node";
- import {
- 	DataDirection,
- 	getDirectionPrefix,
-@@ -175,10 +174,6 @@ export class DriverLogger extends ZWaveLoggerBase {
- 				direction: getDirectionPrefix(direction),
- 			});
- 		} catch (e) {
--			// When logging fails, send the message to Sentry
--			try {
--				Sentry.captureException(e);
--			} catch {}
- 		}
- 	}
- 
-diff --git a/packages/zwave-js/src/lib/telemetry/deviceConfig.ts b/packages/zwave-js/src/lib/telemetry/deviceConfig.ts
-deleted file mode 100644
-index 62c9dc83..00000000
---- a/packages/zwave-js/src/lib/telemetry/deviceConfig.ts
-+++ /dev/null
-@@ -1,94 +0,0 @@
--import * as Sentry from "@sentry/node";
--import { CommandClasses } from "@zwave-js/core";
--import { formatId } from "@zwave-js/shared";
--import { isObject } from "alcalzone-shared/typeguards";
--import axios from "axios";
--import { AssociationGroupInfoCC, ConfigurationCC } from "../commandclass";
--import type { ZWaveNode } from "../node/Node";
--
--const missingDeviceConfigCache = new Set<string>();
--
--export async function reportMissingDeviceConfig(
--	node: ZWaveNode & {
--		manufacturerId: number;
--		productType: number;
--		productId: number;
--		firmwareVersion: string;
--	},
--): Promise<void> {
--	const configFingerprint = `${formatId(node.manufacturerId)}:${formatId(
--		node.productType,
--	)}:${formatId(node.productId)}:${node.firmwareVersion}`;
--
--	// We used to get a LOT of false positives, so we should check with our device
--	// database whether this config file is actually unknown
--
--	// If we tried to report this file earlier, we can skip the report
--	if (missingDeviceConfigCache.has(configFingerprint)) return;
--	// Otherwise ask our device DB if it exists
--	try {
--		const { data } = await axios.get(
--			`https://devices.zwave-js.io/public_api/getdeviceinfo/${configFingerprint.replace(
--				/:/g,
--				"/",
--			)}`,
--		);
--		if (
--			isObject(data) &&
--			typeof data.deviceFound === "boolean" &&
--			data.deviceFound
--		) {
--			// This is a false positive - remember it
--			missingDeviceConfigCache.add(configFingerprint);
--			return;
--		}
--	} catch (e) {
--		// didn't work, try again next time
--		return;
--	}
--
--	const message = `Missing device config: ${configFingerprint}`;
--
--	const deviceInfo: Record<string, any> = {
--		supportsConfigCCV3:
--			node.getCCVersion(CommandClasses.Configuration) >= 3,
--		supportsAGI: node.supportsCC(
--			CommandClasses["Association Group Information"],
--		),
--		supportsZWavePlus: node.supportsCC(CommandClasses["Z-Wave Plus Info"]),
--	};
--	try {
--		if (deviceInfo.supportsConfigCCV3) {
--			// Try to collect all info about config params we can get
--			const instance = node.createCCInstanceUnsafe(ConfigurationCC)!;
--			deviceInfo.parameters = instance.getQueriedParamInfos();
--		}
--		if (deviceInfo.supportsAGI) {
--			// Try to collect all info about association groups we can get
--			const instance = node.createCCInstanceUnsafe(
--				AssociationGroupInfoCC,
--			)!;
--			const associationGroupCount =
--				instance["getAssociationGroupCountCached"]();
--			const names: string[] = [];
--			for (let group = 1; group <= associationGroupCount; group++) {
--				names.push(instance.getGroupNameCached(group) ?? "");
--			}
--			deviceInfo.associationGroups = names;
--		}
--		if (deviceInfo.supportsZWavePlus) {
--			deviceInfo.zWavePlusVersion = node.zwavePlusVersion;
--		}
--	} catch {
--		// Don't fail on the last meters :)
--	}
--	Sentry.captureMessage(message, (scope) => {
--		scope.clearBreadcrumbs();
--		// Group by device config, otherwise Sentry groups by "Unknown device config", which is nonsense
--		scope.setFingerprint([configFingerprint]);
--		scope.setExtras(deviceInfo);
--		return scope;
--	});
--	// Remember that we reported the config
--	missingDeviceConfigCache.add(configFingerprint);
--}
-diff --git a/packages/zwave-js/src/lib/telemetry/sentry.test.ts b/packages/zwave-js/src/lib/telemetry/sentry.test.ts
-deleted file mode 100644
-index 2deb660f..00000000
---- a/packages/zwave-js/src/lib/telemetry/sentry.test.ts
-+++ /dev/null
-@@ -1,302 +0,0 @@
--import { ZWaveError, ZWaveErrorCodes } from "@zwave-js/core";
--import path from "path";
--import { createSentryContext, SentryContext } from "./sentry";
--
--describe("The Sentry telemetry", () => {
--	let context: SentryContext;
--	beforeAll(() => {
--		context = createSentryContext(path.join(__dirname, "../../.."));
--	});
--
--	it("should ignore errors that are caused outside zwave-js", () => {
--		const event = {
--			exception: {
--				values: [
--					{
--						type: "SyntaxError",
--						value: "Unexpected token o in JSON at position 1",
--						stacktrace: {
--							frames: [
--								{
--									function: "process._tickCallback",
--									module: "next_tick",
--									filename: "internal/process/next_tick.js",
--									abs_path: "internal/process/next_tick.js",
--								},
--								{
--									function: "null.<anonymous>",
--									module: "node-red-contrib-nextcloud:nextcloud",
--									filename:
--										"/home/pi/.node-red/node_modules/node-red-contrib-nextcloud/nextcloud.js",
--									abs_path:
--										"/home/pi/.node-red/node_modules/node-red-contrib-nextcloud/nextcloud.js",
--								},
--								{
--									function: "JSON.parse",
--									in_app: true,
--								},
--							],
--						},
--						mechanism: {
--							type: "onunhandledrejection",
--							handled: false,
--						},
--					},
--				],
--			},
--		} as any;
--		expect(context.shouldIgnore(event)).toBeTrue();
--	});
--
--	it("should NOT ignore errors that are explicitly whitelisted", () => {
--		const event = {
--			exception: {
--				values: [
--					{
--						type: "TypeError",
--						value: "Cannot read property 'nodeId' of undefined",
--						stacktrace: {
--							frames: [
--								{
--									function: "processImmediate",
--									module: "timers",
--									filename: "internal/timers.js",
--									abs_path: "internal/timers.js",
--								},
--								{
--									function: "Immediate.<anonymous>",
--									module: "iobroker.js-controller.lib:adapter",
--									filename:
--										"/opt/iobroker/node_modules/iobroker.js-controller/lib/adapter.js",
--									abs_path:
--										"/opt/iobroker/node_modules/iobroker.js-controller/lib/adapter.js",
--								},
--								{
--									function: "ZWave2.EventEmitter.emit",
--									module: "domain",
--									filename: "domain.js",
--									abs_path: "domain.js",
--								},
--								{
--									function: "ZWave2.emit",
--									module: "events",
--									filename: "events.js",
--									abs_path: "events.js",
--								},
--								{
--									function: "ZWave2.onStateChange",
--									module: "iobroker.zwave2.src:main.ts",
--									filename:
--										"/opt/iobroker/node_modules/iobroker.zwave2/src/main.ts",
--									abs_path:
--										"/opt/iobroker/node_modules/iobroker.zwave2/src/main.ts",
--								},
--							],
--						},
--						mechanism: {
--							type: "onunhandledrejection",
--							handled: false,
--						},
--					},
--				],
--			},
--		} as any;
--		expect(context.shouldIgnore(event)).toBeFalse();
--	});
--
--	it("should ignore errors that must be handled by the developer", () => {
--		const event = {
--			exception: {
--				values: [
--					{
--						type: "ZWaveError",
--						value: "Node 6 did not respond after 3 attempts, it is presumed dead",
--						stacktrace: {
--							frames: [
--								{
--									function: "__awaiter",
--									module: "devices:powerswitch",
--									filename:
--										"/home/michel/dashboard/servers/zwave/devices/powerswitch.js",
--									abs_path:
--										"/home/michel/dashboard/servers/zwave/devices/powerswitch.js",
--									in_app: true,
--								},
--								{
--									function: "new Promise",
--									in_app: true,
--								},
--								{
--									function: "null.<anonymous>",
--									module: "devices:powerswitch",
--									filename:
--										"/home/michel/dashboard/servers/zwave/devices/powerswitch.js",
--									abs_path:
--										"/home/michel/dashboard/servers/zwave/devices/powerswitch.js",
--									in_app: true,
--								},
--								{
--									function: "Generator.next",
--									in_app: true,
--								},
--								{
--									function: "PowerSwitch.<anonymous>",
--									module: "devices:powerswitch",
--									filename:
--										"/home/michel/dashboard/servers/zwave/devices/powerswitch.js",
--									abs_path:
--										"/home/michel/dashboard/servers/zwave/devices/powerswitch.js",
--									lineno: 134,
--									colno: 24,
--								},
--								{
--									function: "new Promise",
--									in_app: true,
--								},
--								{
--									function: "null.<anonymous>",
--									module: "devices:powerswitch",
--									filename:
--										"/home/michel/dashboard/servers/zwave/devices/powerswitch.js",
--									abs_path:
--										"/home/michel/dashboard/servers/zwave/devices/powerswitch.js",
--								},
--								{
--									function: "Proxy.set",
--									module: "zwave-js.src.lib.commandclass:BinarySwitchCC.ts",
--									filename:
--										"/home/michel/dashboard/servers/zwave/node_modules/zwave-js/src/lib/commandclass/BinarySwitchCC.ts",
--									abs_path:
--										"/home/michel/dashboard/servers/zwave/node_modules/zwave-js/src/lib/commandclass/BinarySwitchCC.ts",
--								},
--								{
--									function: "Driver.sendCommand",
--									module: "zwave-js.src.lib.driver:Driver.ts",
--									filename:
--										"/home/michel/dashboard/servers/zwave/node_modules/zwave-js/src/lib/driver/Driver.ts",
--									abs_path:
--										"/home/michel/dashboard/servers/zwave/node_modules/zwave-js/src/lib/driver/Driver.ts",
--								},
--								{
--									function: "Driver.sendMessage",
--									module: "zwave-js.src.lib.driver:Driver.ts",
--									filename:
--										"/home/michel/dashboard/servers/zwave/node_modules/zwave-js/src/lib/driver/Driver.ts",
--									abs_path:
--										"/home/michel/dashboard/servers/zwave/node_modules/zwave-js/src/lib/driver/Driver.ts",
--								},
--							],
--						},
--						mechanism: {
--							type: "onunhandledrejection",
--							handled: false,
--						},
--					},
--				],
--			},
--		} as any;
--		const hint = {
--			originalException: new ZWaveError(
--				"This should be handled by the dev",
--				ZWaveErrorCodes.Controller_MessageDropped,
--			),
--		} as any;
--		expect(context.shouldIgnore(event, hint)).toBeTrue();
--	});
--
--	it("should ignore errors that must be handled by the developer, unless whitelisted", () => {
--		const event = {
--			exception: {
--				values: [
--					{
--						type: "ZWaveError",
--						value: "Timeout while waiting for an ACK from the controller",
--						stacktrace: {
--							frames: [
--								{
--									function: "processImmediate",
--									module: "timers",
--									filename: "internal/timers.js",
--									abs_path: "internal/timers.js",
--								},
--								{
--									function: "Immediate._onImmediate",
--									module: "@iobroker.db-states-redis.lib.states:statesInRedisClient",
--									filename:
--										"/opt/iobroker/node_modules/@iobroker/db-states-redis/lib/states/statesInRedisClient.js",
--									abs_path:
--										"/opt/iobroker/node_modules/@iobroker/db-states-redis/lib/states/statesInRedisClient.js",
--								},
--								{
--									function: "change",
--									module: "iobroker.js-controller.lib:adapter",
--									filename:
--										"/opt/iobroker/node_modules/iobroker.js-controller/lib/adapter.js",
--									abs_path:
--										"/opt/iobroker/node_modules/iobroker.js-controller/lib/adapter.js",
--								},
--								{
--									function: "ZWave2.EventEmitter.emit",
--									module: "domain",
--									filename: "domain.js",
--									abs_path: "domain.js",
--								},
--								{
--									function: "ZWave2.emit",
--									module: "events",
--									filename: "events.js",
--									abs_path: "events.js",
--								},
--								{
--									function: "ZWave2.onMessage",
--									module: "iobroker.zwave2.src:main.ts",
--									filename:
--										"/opt/iobroker/node_modules/iobroker.zwave2/src/main.ts",
--									abs_path:
--										"/opt/iobroker/node_modules/iobroker.zwave2/src/main.ts",
--								},
--								{ function: "Array.map", in_app: true },
--								{
--									function: "null.<anonymous>",
--									module: "iobroker.zwave2.src:main.ts",
--									filename:
--										"/opt/iobroker/node_modules/iobroker.zwave2/src/main.ts",
--									abs_path:
--										"/opt/iobroker/node_modules/iobroker.zwave2/src/main.ts",
--								},
--								{
--									function:
--										"ZWaveController.getNodeNeighbors",
--									module: "zwave-js.src.lib.controller:Controller.ts",
--									filename:
--										"/opt/iobroker/node_modules/zwave-js/src/lib/controller/Controller.ts",
--									abs_path:
--										"/opt/iobroker/node_modules/zwave-js/src/lib/controller/Controller.ts",
--								},
--								{
--									function: "Driver.sendMessage",
--									module: "zwave-js.src.lib.driver:Driver.ts",
--									filename:
--										"/opt/iobroker/node_modules/zwave-js/src/lib/driver/Driver.ts",
--									abs_path:
--										"/opt/iobroker/node_modules/zwave-js/src/lib/driver/Driver.ts",
--								},
--							],
--						},
--						mechanism: {
--							type: "onunhandledrejection",
--							handled: false,
--						},
--					},
--				],
--			},
--		} as any;
--		const hint = {
--			originalException: new ZWaveError(
--				"This should be handled by the dev",
--				ZWaveErrorCodes.Controller_MessageDropped,
--			),
--		} as any;
--		expect(context.shouldIgnore(event, hint)).toBeFalse();
--	});
--});
-diff --git a/packages/zwave-js/src/lib/telemetry/sentry.ts b/packages/zwave-js/src/lib/telemetry/sentry.ts
-deleted file mode 100644
-index ff4b6c2a..00000000
---- a/packages/zwave-js/src/lib/telemetry/sentry.ts
-+++ /dev/null
-@@ -1,230 +0,0 @@
--// Load sentry.io so we get information about errors
--import * as Integrations from "@sentry/integrations";
--import * as Sentry from "@sentry/node";
--import { ZWaveError, ZWaveErrorCodes } from "@zwave-js/core";
--import { randomBytes } from "crypto";
--import * as fs from "fs-extra";
--import * as path from "path";
--
--// Errors in files matching any entry in this array will always be reported
--const pathWhitelists = ["node_modules/iobroker.zwave2"];
--// except if they are included in this array
--const pathBlacklists = ["node_modules/@serialport"];
--
--function isZWaveError(
--	err: Error | string | null | undefined,
--): err is ZWaveError {
--	if (!err || typeof err === "string") return false;
--	return "code" in err && typeof (err as any).code === "number";
--}
--
--/** @internal */
--export interface SentryContext {
--	isPartOfThisLib(filename: string): boolean;
--	shouldIgnore(event: Sentry.Event, hint?: Sentry.EventHint): boolean;
--	getFingerprint(): Promise<string>;
--}
--
--export function createSentryContext(libraryRootDir: string): SentryContext {
--	/** Checks if a filename is part of this library. Paths outside will be excluded from Sentry error reporting */
--	function isPartOfThisLib(filename: string): boolean {
--		const relative = path.relative(libraryRootDir, filename);
--		return (
--			!!relative &&
--			!relative.startsWith("..") &&
--			!path.isAbsolute(relative)
--		);
--	}
--
--	/** Creates a new fingerprint or retrieves a previously-generated one */
--	async function getFingerprint(): Promise<string> {
--		const fingerprintPath = path.join(libraryRootDir, "fingerprint.txt");
--		let fingerprint: string | undefined;
--		if (await fs.pathExists(fingerprintPath)) {
--			fingerprint = await fs.readFile(fingerprintPath, "utf8");
--		}
--		if (!fingerprint || fingerprint.length < 8) {
--			fingerprint = randomBytes(8).toString("hex");
--			try {
--				await fs.writeFile(fingerprintPath, fingerprint, "utf8");
--			} catch {
--				/* ignore */
--			}
--		}
--		return fingerprint;
--	}
--
--	/** Returns whether any line in the given stacktrace is whitelisted and none is blacklisted */
--	function anyWhitelisted(filenames: string[]): boolean {
--		const normalizedFilenames = filenames.map((f) => path.normalize(f));
--		const normalizedWhitelists = pathWhitelists.map((w) =>
--			path.normalize(w),
--		);
--		const normalizedBlacklists = pathBlacklists.map((b) =>
--			path.normalize(b),
--		);
--		return (
--			normalizedFilenames.some((f) =>
--				normalizedWhitelists.some((w) => f.includes(w)),
--			) &&
--			!normalizedFilenames.some((f) =>
--				normalizedBlacklists.some((b) => f.includes(b)),
--			)
--		);
--	}
--
--	/** Returns whether the given Sentry event should be ignored */
--	function shouldIgnore(
--		event: Sentry.Event,
--		hint?: Sentry.EventHint,
--	): boolean {
--		// Sentry orders stack traces from outside (index 0) to inside (index 0).
--		// In order to figure out if the error was caused inside zwave-js, we need to
--		// ignore all traces without a filename or from Node.js internals
--		const filenames =
--			event.exception?.values?.[0]?.stacktrace?.frames
--				?.map((f) => f.filename)
--				?.filter(
--					(f): f is string => !!f && !f.startsWith("internal/"),
--				) ?? [];
--		// Definitely ignore errors which have nothing to do with this library, unless whitelisted
--		if (!filenames.some((f) => isPartOfThisLib(f))) {
--			return !anyWhitelisted(filenames);
--		}
--
--		let ignore = false;
--
--		const culprit = filenames[filenames.length - 1];
--		const culpritIsPartOfThisLib = isPartOfThisLib(culprit);
--
--		// Maybe ignore errors that are raised outside zwave-js
--		if (!culpritIsPartOfThisLib) ignore = true;
--
--		// Filter out specific errors that are raised by zwave-js,
--		// but shouldn't create a report on Sentry because they should be
--		// handled by the library user
--		if (culpritIsPartOfThisLib && hint) {
--			if (isZWaveError(hint.originalException)) {
--				switch (hint.originalException.code) {
--					// we don't care about timeouts
--					case ZWaveErrorCodes.Controller_MessageDropped:
--					// We don't care about failed node removal
--					case ZWaveErrorCodes.RemoveFailedNode_Failed:
--					case ZWaveErrorCodes.RemoveFailedNode_NodeOK:
--					// Or failed inclusion processes:
--					case ZWaveErrorCodes.Controller_InclusionFailed:
--					case ZWaveErrorCodes.Controller_ExclusionFailed:
--					// Or users that don't read the changelog:
--					case ZWaveErrorCodes.Driver_NoErrorHandler:
--						ignore = true;
--						break;
--					// Or users that try to manage associations on nodes that don't support it
--					case ZWaveErrorCodes.CC_NotSupported:
--						if (
--							/does not support.+associations/.test(
--								hint.originalException.message,
--							)
--						) {
--							ignore = true;
--						}
--						break;
--				}
--
--				// Try to attach transaction context this way
--				if (!ignore && hint.originalException.transactionSource) {
--					event.contexts = {
--						transaction: {
--							stack: hint.originalException.transactionSource,
--						},
--					};
--				}
--			} else if (hint.originalException) {
--				try {
--					const msg = hint.originalException.toString();
--					if (
--						/(no such file|permission denied|cannot open|file not found)/i.test(
--							msg,
--						) &&
--						/(\/dev\/|\/mqtt\/|COM\d+|Select Port)/i.test(msg)
--					) {
--						// No such file or directory, cannot open /dev/ttyACM0
--						// no such file or directory, rename '/usr/src/app/store/mqtt/incoming~'
--						// Opening COM18: File not found
--						// No such file or directory, cannot open Select Port
--						ignore = true;
--					} else if (
--						/(EROFS|ENODEV|ENOSPC)/i.test(msg) &&
--						/(read-only file system|no such device|no space left)/i.test(
--							msg,
--						)
--					) {
--						// EROFS: read-only file system, write
--						// ENODEV: no such device, write
--						// ENOSPC: no space left on device, write
--						ignore = true;
--					} else if (/unknown system error/i.test(msg)) {
--						// Unknown system error -116: Unknown system error -116, write
--						ignore = true;
--					} else if (/custom baud rate/i.test(msg)) {
--						// Input/output error setting custom baud rate of 115200
--						ignore = true;
--					} else if (/bindings\.node/i.test(msg)) {
--						// Could not locate the bindings file
--						ignore = true;
--					}
--				} catch {
--					// This doesn't seem to be representable as a string
--				}
--			}
--		}
--
--		// Don't ignore explicitly whitelisted paths
--		if (ignore && anyWhitelisted(filenames)) {
--			ignore = false;
--		}
--
--		return ignore;
--	}
--
--	return {
--		isPartOfThisLib,
--		shouldIgnore,
--		getFingerprint,
--	};
--}
--
--export async function initSentry(
--	libraryRootDir: string,
--	libName: string,
--	libVersion: string,
--): Promise<void> {
--	const context: SentryContext = createSentryContext(libraryRootDir);
--
--	Sentry.init({
--		release: `${libName}@${libVersion}`,
--		dsn: "https://a66de07edd064106853cc639407ebe64@sentry.iobroker.net/119",
--		// "https://3ac1c1077df6496b89d797b331a8ec4a@o327859.ingest.sentry.io/1839595",
--		defaultIntegrations: false,
--		integrations: [
--			new Sentry.Integrations.OnUncaughtException(),
--			new Sentry.Integrations.OnUnhandledRejection({
--				mode: "strict",
--			}),
--			new Sentry.Integrations.FunctionToString(),
--			new Integrations.Dedupe() as any,
--		],
--		maxBreadcrumbs: 30,
--		beforeSend(event, hint) {
--			return context.shouldIgnore(event, hint) ? null : event;
--		},
--	});
--	// Try to group events by user (anonymously)
--	try {
--		const fingerprint = await context.getFingerprint();
--		Sentry.configureScope((scope) => {
--			scope.setUser({ id: fingerprint });
--		});
--	} catch {
--		/* ignore */
--	}
--}
-diff --git a/packages/zwave-js/src/lib/telemetry/statistics.ts b/packages/zwave-js/src/lib/telemetry/statistics.ts
-deleted file mode 100644
-index 24bb3d7f..00000000
---- a/packages/zwave-js/src/lib/telemetry/statistics.ts
-+++ /dev/null
-@@ -1,80 +0,0 @@
--import { formatId } from "@zwave-js/shared";
--import { isObject } from "alcalzone-shared/typeguards";
--import axios from "axios";
--import * as crypto from "crypto";
--import type { Driver } from "../driver/Driver";
--
--const apiToken = "ef58278d935ccb26307800279458484d";
--const statisticsUrl = `https://stats.zwave-js.io/statistics`;
--
--export interface AppInfo {
--	driverVersion: string;
--	applicationName: string;
--	applicationVersion: string;
--	nodeVersion: string;
--	os: NodeJS.Platform;
--	arch: string;
--}
--
--export async function compileStatistics(
--	driver: Driver,
--	appInfo: AppInfo,
--): Promise<Record<string, any>> {
--	const salt = await driver.getUUID();
--	return {
--		// Salt and hash the homeId, so it cannot easily be tracked
--		// It is no state secret, but since we're collecting it, make sure it is anonymous
--		id: crypto
--			.createHash("sha256")
--			.update(driver.controller.homeId!.toString(16))
--			.update(salt)
--			.digest("hex"),
--		...appInfo,
--		devices: [...driver.controller.nodes.values()].map((node) => ({
--			manufacturerId:
--				node.manufacturerId != undefined
--					? formatId(node.manufacturerId)
--					: "",
--			productType:
--				node.productType != undefined ? formatId(node.productType) : "",
--			productId:
--				node.productId != undefined ? formatId(node.productId) : "",
--			firmwareVersion: node.firmwareVersion ?? "",
--		})),
--	};
--}
--
--/**
-- * Sends the statistics to the statistics backend. Returns:
-- * - `true` when sending succeeded
-- * - The number of seconds to wait before trying again when hitting the rate limiter
-- * - `false` for any other errors
-- */
--export async function sendStatistics(
--	statistics: Record<string, any>,
--): Promise<boolean | number> {
--	try {
--		const { data } = await axios.post(
--			statisticsUrl,
--			{ data: [statistics] },
--			{ headers: { "x-api-token": apiToken } },
--		);
--		if (isObject(data) && typeof data.success === "boolean") {
--			return data.success;
--		}
--		return false;
--	} catch (e) {
--		if (isObject(e.response) && e.response.status === 429) {
--			// We've hit the rate limiter. Figure out when we may try again.
--			if (
--				isObject(e.response.headers) &&
--				"retry-after" in e.response.headers
--			) {
--				const retryAfter = parseInt(e.response.headers["retry-after"]);
--				if (Number.isInteger(retryAfter)) return retryAfter;
--			}
--		}
--		// didn't work, try again later
--		return false;
--	}
--}
+ 				this.driverLog.print(
 diff --git a/yarn.lock b/yarn.lock
-index ecc01fde..0c4a4e2b 100644
+index f24cbf6..d239b3f 100644
 --- a/yarn.lock
 +++ b/yarn.lock
-@@ -3073,100 +3073,6 @@ __metadata:
+@@ -3509,100 +3509,6 @@ __metadata:
    languageName: node
    linkType: hard
  
--"@sentry/core@npm:6.10.0":
--  version: 6.10.0
--  resolution: "@sentry/core@npm:6.10.0"
+-"@sentry/core@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/core@npm:6.13.3"
 -  dependencies:
--    "@sentry/hub": 6.10.0
--    "@sentry/minimal": 6.10.0
--    "@sentry/types": 6.10.0
--    "@sentry/utils": 6.10.0
+-    "@sentry/hub": 6.13.3
+-    "@sentry/minimal": 6.13.3
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
 -    tslib: ^1.9.3
--  checksum: 62a2801dbc9f4c46e79e3f0cfd09a1a0335549f16c43672211387fbd330ce9674207c1e36d34d4164bb6e549e696acc685547b34150fe64fa6aeacef0e3b3fe7
+-  checksum: a1bcf995136568407a6104f29fdb9c6aa3ebdb15bea41be3008f018cffcd5782c8766959bfe3605b00fc10a174f4db61856c139cebc94a1976761caeb8843d0a
 -  languageName: node
 -  linkType: hard
 -
--"@sentry/hub@npm:6.10.0":
--  version: 6.10.0
--  resolution: "@sentry/hub@npm:6.10.0"
+-"@sentry/hub@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/hub@npm:6.13.3"
 -  dependencies:
--    "@sentry/types": 6.10.0
--    "@sentry/utils": 6.10.0
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
 -    tslib: ^1.9.3
--  checksum: c4b66ee17bfbbd10afa1c5fedf165437fb4f575c9385f820a457773917ec943ccaebb49569c449183eacbb06d74aebda14b68a54d0a65b1bb3ab481749a89ed7
+-  checksum: 6e017cf863dd813a13f719d0d7bfef5c2943cb49b7632f7110645a20845fc3da8f6512cd268aa6504c84097cfdb5e6f3a60c0205ffd29610ae5cf8648f2c41e5
 -  languageName: node
 -  linkType: hard
 -
--"@sentry/integrations@npm:^6.10.0":
--  version: 6.10.0
--  resolution: "@sentry/integrations@npm:6.10.0"
+-"@sentry/integrations@npm:^6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/integrations@npm:6.13.3"
 -  dependencies:
--    "@sentry/types": 6.10.0
--    "@sentry/utils": 6.10.0
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
 -    localforage: ^1.8.1
 -    tslib: ^1.9.3
--  checksum: dae446f41489615daa6795b9a1f6a87db9338f995cdb49353173ae332572cce0884806819951ecc70ce29d18ef43ff5846be03793810102fb2f04a54de1d639e
+-  checksum: 484cefd0cb176b72f963e2dd9be81434a8f0d74e5235d9479ab5100331e1f52b8df8474d1505a72c45566b7cec4019bdf6d95c985ab3d01111ff4dace8de0f23
 -  languageName: node
 -  linkType: hard
 -
--"@sentry/minimal@npm:6.10.0":
--  version: 6.10.0
--  resolution: "@sentry/minimal@npm:6.10.0"
+-"@sentry/minimal@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/minimal@npm:6.13.3"
 -  dependencies:
--    "@sentry/hub": 6.10.0
--    "@sentry/types": 6.10.0
+-    "@sentry/hub": 6.13.3
+-    "@sentry/types": 6.13.3
 -    tslib: ^1.9.3
--  checksum: 5d2cc025295dbb2ccf5d79c3f630d9cfbd2305396f064ece906bb7abcc260937895d342aea4aa068c6eba8b9489b264f54ad1630241147cf41dd2cff68d658a4
+-  checksum: 0fad0470d6dcd4b9a4e0873d108898ac68511e4b12585976990f34df2cff05f46b696496419695aded726372b1c344a8b83d533baf16c2c4b40298835467a46f
 -  languageName: node
 -  linkType: hard
 -
--"@sentry/node@npm:^6.10.0":
--  version: 6.10.0
--  resolution: "@sentry/node@npm:6.10.0"
+-"@sentry/node@npm:^6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/node@npm:6.13.3"
 -  dependencies:
--    "@sentry/core": 6.10.0
--    "@sentry/hub": 6.10.0
--    "@sentry/tracing": 6.10.0
--    "@sentry/types": 6.10.0
--    "@sentry/utils": 6.10.0
+-    "@sentry/core": 6.13.3
+-    "@sentry/hub": 6.13.3
+-    "@sentry/tracing": 6.13.3
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
 -    cookie: ^0.4.1
 -    https-proxy-agent: ^5.0.0
 -    lru_map: ^0.3.3
 -    tslib: ^1.9.3
--  checksum: 2b4b99682c4c37552c1ad5ac4f350c57c11b46a88f4912796610ca2f4e7dc4f156add60ad8258dfa383f61c8cde830b2d9b40870fe9e048ce1c5de34132dc7dc
+-  checksum: 1d02c92447bab983fc194ab72ce7a131f260c67eed877adb8cc42a422336dc50da5d40a5a46839eff8f67901f7ffe3606539ee1375a1b90f0827254800b2fbf1
 -  languageName: node
 -  linkType: hard
 -
--"@sentry/tracing@npm:6.10.0":
--  version: 6.10.0
--  resolution: "@sentry/tracing@npm:6.10.0"
+-"@sentry/tracing@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/tracing@npm:6.13.3"
 -  dependencies:
--    "@sentry/hub": 6.10.0
--    "@sentry/minimal": 6.10.0
--    "@sentry/types": 6.10.0
--    "@sentry/utils": 6.10.0
+-    "@sentry/hub": 6.13.3
+-    "@sentry/minimal": 6.13.3
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
 -    tslib: ^1.9.3
--  checksum: f65e6a46f7ebfa6c819409aa369427fd41410750079757e5ed6291fdf7d615b497ac447b117db3c2ea3d9b8508488a8eba71d930e734f3784b9c4a7c73898929
+-  checksum: 14906613c0002a101d397d5527f232328eea5852cae10333a875c411190339552040f54d65818dd6190e3cff4d7d8eab79bf346af6176c06910e7fa5314cfad8
 -  languageName: node
 -  linkType: hard
 -
--"@sentry/types@npm:6.10.0":
--  version: 6.10.0
--  resolution: "@sentry/types@npm:6.10.0"
--  checksum: 17d5b91436503577c3b0852734f142f4872589ee0e2bc86ef886776efade19f8bc4e1d8fb67b3342e01220b4f7e8a7973cc81367f7ccf130964f227a0a100401
+-"@sentry/types@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/types@npm:6.13.3"
+-  checksum: e5641cb0c0e4917ebc510ea74f1be501a3e34230d823b25ead36a9edb8a52dc1f08161cad43e9a18ac591b507abe78aae1ccd6a08000d0105c66c0b44125781c
 -  languageName: node
 -  linkType: hard
 -
--"@sentry/utils@npm:6.10.0":
--  version: 6.10.0
--  resolution: "@sentry/utils@npm:6.10.0"
+-"@sentry/utils@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/utils@npm:6.13.3"
 -  dependencies:
--    "@sentry/types": 6.10.0
+-    "@sentry/types": 6.13.3
 -    tslib: ^1.9.3
--  checksum: 1b6c68085d2e2e4ec16d039fd534e4e117194061b8f6720b71604143ed34212d54096f14302b9fc4e5d16b44605c86451d4fe6d924f22ff14f1d8406056a811c
+-  checksum: 22feb050ef38bdff9651223d045b0a7b8611f256288c0c8f8953e3d1789fdccb864b381c044345604698e1b2b2bcbf4967e044b68295fe509a26e74a02bb8284
 -  languageName: node
 -  linkType: hard
 -
- "@serialport/binding-abstract@npm:^9.0.7":
-   version: 9.0.7
-   resolution: "@serialport/binding-abstract@npm:9.0.7"
-@@ -3903,7 +3809,6 @@ __metadata:
+ "@serialport/binding-abstract@npm:9.2.3":
+   version: 9.2.3
+   resolution: "@serialport/binding-abstract@npm:9.2.3"
+@@ -4347,7 +4253,6 @@ __metadata:
    version: 0.0.0-use.local
    resolution: "@zwave-js/serial@workspace:packages/serial"
    dependencies:
--    "@sentry/node": ^6.10.0
-     "@serialport/binding-mock": ^9.0.7
+-    "@sentry/node": ^6.13.3
+     "@serialport/binding-mock": ^9.2.4
      "@types/jest": ^26.0.24
      "@types/node": ^15.12.5
-@@ -5348,13 +5253,6 @@ __metadata:
+@@ -5855,13 +5760,6 @@ __metadata:
    languageName: node
    linkType: hard
  
@@ -1178,7 +413,7 @@ index ecc01fde..0c4a4e2b 100644
  "copy-descriptor@npm:^0.1.0":
    version: 0.1.1
    resolution: "copy-descriptor@npm:0.1.1"
-@@ -7413,13 +7311,6 @@ fsevents@^2.1.2:
+@@ -8144,13 +8042,6 @@ fsevents@^2.1.2:
    languageName: node
    linkType: hard
  
@@ -1192,7 +427,7 @@ index ecc01fde..0c4a4e2b 100644
  "import-fresh@npm:^3.0.0, import-fresh@npm:^3.2.1":
    version: 3.3.0
    resolution: "import-fresh@npm:3.3.0"
-@@ -8903,15 +8794,6 @@ fsevents@^2.1.2:
+@@ -9634,15 +9525,6 @@ fsevents@^2.1.2:
    languageName: node
    linkType: hard
  
@@ -1208,7 +443,7 @@ index ecc01fde..0c4a4e2b 100644
  "lines-and-columns@npm:^1.1.6":
    version: 1.1.6
    resolution: "lines-and-columns@npm:1.1.6"
-@@ -8943,15 +8825,6 @@ fsevents@^2.1.2:
+@@ -9674,15 +9556,6 @@ fsevents@^2.1.2:
    languageName: node
    linkType: hard
  
@@ -1224,7 +459,7 @@ index ecc01fde..0c4a4e2b 100644
  "locate-path@npm:^2.0.0":
    version: 2.0.0
    resolution: "locate-path@npm:2.0.0"
-@@ -9091,13 +8964,6 @@ fsevents@^2.1.2:
+@@ -9822,13 +9695,6 @@ fsevents@^2.1.2:
    languageName: node
    linkType: hard
  
@@ -1238,7 +473,7 @@ index ecc01fde..0c4a4e2b 100644
  "make-dir@npm:^2.1.0":
    version: 2.1.0
    resolution: "make-dir@npm:2.1.0"
-@@ -12477,7 +12343,7 @@ fsevents@^2.1.2:
+@@ -13260,7 +13126,7 @@ fsevents@^2.1.2:
    languageName: node
    linkType: hard
  
@@ -1247,12 +482,12 @@ index ecc01fde..0c4a4e2b 100644
    version: 1.14.1
    resolution: "tslib@npm:1.14.1"
    checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
-@@ -13311,8 +13177,6 @@ typescript@^4.3.5:
+@@ -14109,8 +13975,6 @@ typescript@4.4.3:
    dependencies:
      "@alcalzone/jsonl-db": ^1.3.0
-     "@alcalzone/pak": ^0.6.0
--    "@sentry/integrations": ^6.10.0
--    "@sentry/node": ^6.10.0
-     "@types/fs-extra": ^9.0.12
+     "@alcalzone/pak": ^0.7.0
+-    "@sentry/integrations": ^6.13.3
+-    "@sentry/node": ^6.13.3
+     "@types/fs-extra": ^9.0.13
      "@types/jest": ^26.0.24
      "@types/node": ^15.12.5

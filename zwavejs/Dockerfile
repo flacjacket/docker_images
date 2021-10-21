@@ -8,11 +8,14 @@ RUN apk --no-cache add \
 
 USER node
 WORKDIR /home/node
-RUN git clone -b v8.0.8 --depth 1 https://github.com/zwave-js/node-zwave-js
-RUN git clone -b v5.4.5 --depth 1 https://github.com/zwave-js/zwavejs2mqtt
+RUN git clone -b v8.5.0 --depth 1 https://github.com/zwave-js/node-zwave-js
+RUN git clone -b v5.9.0 --depth 1 https://github.com/zwave-js/zwavejs2mqtt
 
 WORKDIR /home/node/node-zwave-js
 COPY node-zwave-js.patch .
+RUN sed -i '/sentry\//d' packages/serial/package.json
+RUN sed -i '/sentry\//d' packages/zwave-js/package.json
+RUN rm -r packages/zwave-js/src/lib/telemetry
 RUN git apply node-zwave-js.patch
 RUN yarn install --immutable
 RUN yarn lerna run build
