@@ -33,7 +33,7 @@ jobs:
           sed -i '/sentry\//d' packages/zwave-js/package.json
           rm -r packages/zwave-js/src/lib/telemetry
           git apply ../node-zwave-js.patch
-      - name: Prep zwavejs2mqtt.patch
+      - name: Prep zwavejs2mqtt
         working-directory: zwavejs/zwavejs2mqtt
         run: |
           git checkout -b local

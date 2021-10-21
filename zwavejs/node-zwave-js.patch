@@ -286,6 +286,26 @@ index 3e156e4..517fd33 100644
  			} catch (e) {
  				// We shouldn't throw just because logging a message fails
  				this.driverLog.print(
+diff --git a/packages/zwave-js/src/lib/log/Driver.ts b/packages/zwave-js/src/lib/log/Driver.ts
+index d1b1864..ab74de5 100644
+--- a/packages/zwave-js/src/lib/log/Driver.ts
++++ b/packages/zwave-js/src/lib/log/Driver.ts
+@@ -1,4 +1,3 @@
+-import * as Sentry from "@sentry/node";
+ import {
+ 	DataDirection,
+ 	getDirectionPrefix,
+@@ -175,10 +174,6 @@ export class DriverLogger extends ZWaveLoggerBase {
+ 				direction: getDirectionPrefix(direction),
+ 			});
+ 		} catch (e) {
+-			// When logging fails, send the message to Sentry
+-			try {
+-				Sentry.captureException(e);
+-			} catch {}
+ 		}
+ 	}
+ 
 diff --git a/yarn.lock b/yarn.lock
 index f24cbf6..d239b3f 100644
 --- a/yarn.lock
