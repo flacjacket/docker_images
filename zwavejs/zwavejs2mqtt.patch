@@ -1,176 +1,513 @@
-diff --git a/app.ts b/app.ts
-index d55c89a..4d8255f 100644
---- a/app.ts
-+++ b/app.ts
-@@ -919,14 +919,6 @@ app.post(
+diff --git a/packages/serial/src/Logger.ts b/packages/serial/src/Logger.ts
+index 6a86475..8d68c27 100644
+--- a/packages/serial/src/Logger.ts
++++ b/packages/serial/src/Logger.ts
+@@ -1,4 +1,3 @@
+-import * as Sentry from "@sentry/node";
+ import {
+ 	DataDirection,
+ 	getDirectionPrefix,
+@@ -74,15 +73,6 @@ export class SerialLogger extends ZWaveLoggerBase {
+ 				direction: getDirectionPrefix(direction),
+ 			});
+ 		}
+-		if (process.env.NODE_ENV !== "test") {
+-			// Enrich error data in case something goes wrong
+-			Sentry.addBreadcrumb({
+-				category: "serial",
+-				timestamp: Date.now() / 1000,
+-				type: "debug",
+-				message: `${getDirectionPrefix(direction)}${buffer2hex(data)}`,
+-			});
+-		}
+ 	}
  
- 			await jsonStore.put(store.settings, settings)
+ 	// /**
+diff --git a/packages/zwave-js/src/index.ts b/packages/zwave-js/src/index.ts
+index 525e437..e4022bd 100644
+--- a/packages/zwave-js/src/index.ts
++++ b/packages/zwave-js/src/index.ts
+@@ -9,7 +9,6 @@ import { install as installSourceMapSupport } from "source-map-support";
+ installSourceMapSupport();
  
--			if (gw && gw.zwave) {
--				if (enableStatistics) {
--					gw.zwave.enableStatistics()
--				} else {
--					gw.zwave.disableStatistics()
--				}
--			}
+ import * as path from "path";
+-import { initSentry } from "./lib/telemetry/sentry.js";
+ 
+ /** The version of zwave-js, exported for your convenience */
+ const packageJsonPath = require.resolve("zwave-js/package.json");
+@@ -19,17 +18,6 @@ const libraryRootDir = path.dirname(packageJsonPath);
+ const libName: string = packageJson.name;
+ const libVersion: string = packageJson.version;
+ 
+-// Init sentry, unless we're running a a test or some custom-built userland or PR test versions
+-if (
+-	process.env.NODE_ENV !== "test" &&
+-	!/\-[a-f0-9]{7,}$/.test(libVersion) &&
+-	!/\-pr\-\d+\-$/.test(libVersion)
+-) {
+-	void initSentry(libraryRootDir, libName, libVersion).catch(() => {
+-		/* ignore */
+-	});
+-}
 -
- 			res.json({
- 				success: true,
- 				enabled: enableStatistics,
-diff --git a/lib/ZwaveClient.ts b/lib/ZwaveClient.ts
-index ea15e08..706f384 100644
---- a/lib/ZwaveClient.ts
-+++ b/lib/ZwaveClient.ts
-@@ -1116,10 +1116,6 @@ class ZwaveClient extends TypedEventEmitter<ZwaveClientEventCallbacks> {
- 					})
+ // Export some frequently-used things and types - this also loads all CC files including metadata
+ export * from "./CommandClass";
+ export * from "./Controller";
+diff --git a/packages/zwave-js/src/lib/driver/Driver.ts b/packages/zwave-js/src/lib/driver/Driver.ts
+index 3e156e4..517fd33 100644
+--- a/packages/zwave-js/src/lib/driver/Driver.ts
++++ b/packages/zwave-js/src/lib/driver/Driver.ts
+@@ -1,5 +1,4 @@
+ import { JsonlDB, JsonlDBOptions } from "@alcalzone/jsonl-db";
+-import * as Sentry from "@sentry/node";
+ import { ConfigManager, externalConfigDir } from "@zwave-js/config";
+ import {
+ 	CommandClasses,
+@@ -130,12 +129,6 @@ import { getDefaultPriority, Message } from "../message/Message";
+ import { isNodeQuery } from "../node/INodeQuery";
+ import type { ZWaveNode } from "../node/Node";
+ import { InterviewStage, NodeStatus } from "../node/Types";
+-import { reportMissingDeviceConfig } from "../telemetry/deviceConfig";
+-import {
+-	AppInfo,
+-	compileStatistics,
+-	sendStatistics,
+-} from "../telemetry/statistics";
+ import {
+ 	createSendThreadMachine,
+ 	SendThreadInterpreter,
+@@ -585,22 +578,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+ 					this.driverLog.logMessage(msg, {
+ 						direction: "outbound",
+ 					});
+-					if (process.env.NODE_ENV !== "test") {
+-						// Enrich error data in case something goes wrong
+-						Sentry.addBreadcrumb({
+-							category: "message",
+-							timestamp: Date.now() / 1000,
+-							type: "debug",
+-							data: {
+-								direction: "outbound",
+-								msgType: msg.type,
+-								functionType: msg.functionType,
+-								name: msg.constructor.name,
+-								nodeId: msg.getNodeId(),
+-								...msg.toLogEntry(),
+-							},
+-						});
+-					}
+ 				},
+ 				log: this.driverLog.print.bind(this.driverLog),
+ 			},
+@@ -1066,19 +1043,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+ 						maxAttempts: maxInterviewAttempts,
+ 					});
  				}
+-			} else if (
+-				node.manufacturerId != undefined &&
+-				node.productType != undefined &&
+-				node.productId != undefined &&
+-				node.firmwareVersion != undefined &&
+-				!node.deviceConfig &&
+-				process.env.NODE_ENV !== "test"
+-			) {
+-				// The interview succeeded, but we don't have a device config for this node.
+-				// Report it, so we can add a config file
+-
+-				// eslint-disable-next-line @typescript-eslint/no-empty-function
+-				void reportMissingDeviceConfig(node as any).catch(() => {});
+ 			}
+ 		} catch (e) {
+ 			if (isZWaveError(e)) {
+@@ -1227,74 +1191,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+ 		this.controllerLog.print("All nodes are ready to be used");
+ 		this.emit("all nodes ready");
+ 		this._nodesReadyEventEmitted = true;
+-
+-		// We know we have all data, this is the time to send statistics (when enabled)
+-		void this.compileAndSendStatistics().catch(() => {
+-			/* ignore */
+-		});
+-	}
+-
+-	private _statisticsEnabled: boolean = false;
+-	/** Whether reporting usage statistics is currently enabled */
+-	public get statisticsEnabled(): boolean {
+-		return this._statisticsEnabled;
+-	}
+-
+-	private statisticsAppInfo:
+-		| Pick<AppInfo, "applicationName" | "applicationVersion">
+-		| undefined;
+-
+-	/**
+-	 * Enable sending usage statistics. Although this does not include any sensitive information, we expect that you
+-	 * inform your users before enabling statistics.
+-	 */
+-	public enableStatistics(
+-		appInfo: Pick<AppInfo, "applicationName" | "applicationVersion">,
+-	): void {
+-		if (this._statisticsEnabled) return;
+-		this._statisticsEnabled = true;
+-
+-		if (
+-			!isObject(appInfo) ||
+-			typeof appInfo.applicationName !== "string" ||
+-			typeof appInfo.applicationVersion !== "string"
+-		) {
+-			throw new ZWaveError(
+-				`The application statistics must be an object with two string properties "applicationName" and "applicationVersion"!`,
+-				ZWaveErrorCodes.Driver_InvalidOptions,
+-			);
+-		} else if (appInfo.applicationName.length > 100) {
+-			throw new ZWaveError(
+-				`The applicationName for statistics must be maximum 100 characters long!`,
+-				ZWaveErrorCodes.Driver_InvalidOptions,
+-			);
+-		} else if (appInfo.applicationVersion.length > 100) {
+-			throw new ZWaveError(
+-				`The applicationVersion for statistics must be maximum 100 characters long!`,
+-				ZWaveErrorCodes.Driver_InvalidOptions,
+-			);
+-		}
+-
+-		this.statisticsAppInfo = appInfo;
+-
+-		// If we're already ready, send statistics
+-		if (this._nodesReadyEventEmitted) {
+-			void this.compileAndSendStatistics().catch(() => {
+-				/* ignore */
+-			});
+-		}
+-	}
+-
+-	/**
+-	 * Disable sending usage statistics
+-	 */
+-	public disableStatistics(): void {
+-		this._statisticsEnabled = false;
+-		this.statisticsAppInfo = undefined;
+-		if (this.statisticsTimeout) {
+-			clearTimeout(this.statisticsTimeout);
+-			this.statisticsTimeout = undefined;
+-		}
+ 	}
  
--				if (this.cfg.enableStatistics) {
--					this.enableStatistics()
+ 	/** @internal */
+@@ -1308,57 +1204,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+ 		return ret;
+ 	}
+ 
+-	private statisticsTimeout: NodeJS.Timeout | undefined;
+-	private async compileAndSendStatistics(): Promise<void> {
+-		// Don't send anything if statistics are not enabled
+-		if (!this.statisticsEnabled || !this.statisticsAppInfo) return;
+-
+-		if (this.statisticsTimeout) {
+-			clearTimeout(this.statisticsTimeout);
+-			this.statisticsTimeout = undefined;
+-		}
+-
+-		let success: number | boolean = false;
+-		try {
+-			const statistics = await compileStatistics(this, {
+-				driverVersion: libVersion,
+-				...this.statisticsAppInfo,
+-				nodeVersion: process.versions.node,
+-				os: process.platform,
+-				arch: process.arch,
+-			});
+-			success = await sendStatistics(statistics);
+-		} catch {
+-			// Didn't work - try again in a few hours
+-			success = false;
+-		} finally {
+-			if (typeof success === "number") {
+-				this.driverLog.print(
+-					`Sending usage statistics was rate limited - next attempt scheduled in ${success} seconds.`,
+-					"verbose",
+-				);
+-				// Wait at most 6 hours to try again
+-				const retryMs = Math.max(
+-					timespan.minutes(1),
+-					Math.min(success * 1000, timespan.hours(6)),
+-				);
+-				this.statisticsTimeout = setTimeout(() => {
+-					void this.compileAndSendStatistics();
+-				}, retryMs).unref();
+-			} else {
+-				this.driverLog.print(
+-					success
+-						? `Usage statistics sent - next transmission scheduled in 23 hours.`
+-						: `Failed to send usage statistics - next transmission scheduled in 6 hours.`,
+-					"verbose",
+-				);
+-				this.statisticsTimeout = setTimeout(() => {
+-					void this.compileAndSendStatistics();
+-				}, timespan.hours(success ? 23 : 6)).unref();
+-			}
+-		}
+-	}
+-
+ 	/** Is called when a node interview is completed */
+ 	private onNodeInterviewCompleted(node: ZWaveNode): void {
+ 		this.debounceSendNodeToSleep(node);
+@@ -1628,8 +1473,7 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+ 		for (const timeout of [
+ 			this.saveToCacheTimer,
+ 			...this.sendNodeToSleepTimers.values(),
+-			...this.retryNodeInterviewTimeouts.values(),
+-			this.statisticsTimeout,
++			...this.retryNodeInterviewTimeouts.values()
+ 		]) {
+ 			if (timeout) clearTimeout(timeout);
+ 		}
+@@ -1790,23 +1634,6 @@ export class Driver extends TypedEventEmitter<DriverEventCallbacks> {
+ 				if (!wasMessageLogged) {
+ 					this.driverLog.logMessage(msg, { direction: "inbound" });
+ 				}
+-
+-				if (process.env.NODE_ENV !== "test") {
+-					// Enrich error data in case something goes wrong
+-					Sentry.addBreadcrumb({
+-						category: "message",
+-						timestamp: Date.now() / 1000,
+-						type: "debug",
+-						data: {
+-							direction: "inbound",
+-							msgType: msg.type,
+-							functionType: msg.functionType,
+-							name: msg.constructor.name,
+-							nodeId: msg.getNodeId(),
+-							...msg.toLogEntry(),
+-						},
+-					});
 -				}
--
- 				this.status = ZwaveClientStatus.CONNECTED
- 				this._connected = true
- 			} catch (error) {
-@@ -1375,13 +1371,6 @@ class ZwaveClient extends TypedEventEmitter<ZwaveClientEventCallbacks> {
- 	 *
- 	 */
- 	enableStatistics() {
--		this._driver.enableStatistics({
--			applicationName:
--				pkgjson.name +
--				(this.cfg.serverEnabled ? ' / zwave-js-server' : ''),
--			applicationVersion: pkgjson.version,
--		})
--
- 		logger.info('Zwavejs usage statistics ENABLED')
+ 			} catch (e) {
+ 				// We shouldn't throw just because logging a message fails
+ 				this.driverLog.print(
+diff --git a/packages/zwave-js/src/lib/log/Driver.ts b/packages/zwave-js/src/lib/log/Driver.ts
+index d1b1864..ab74de5 100644
+--- a/packages/zwave-js/src/lib/log/Driver.ts
++++ b/packages/zwave-js/src/lib/log/Driver.ts
+@@ -1,4 +1,3 @@
+-import * as Sentry from "@sentry/node";
+ import {
+ 	DataDirection,
+ 	getDirectionPrefix,
+@@ -175,10 +174,6 @@ export class DriverLogger extends ZWaveLoggerBase {
+ 				direction: getDirectionPrefix(direction),
+ 			});
+ 		} catch (e) {
+-			// When logging fails, send the message to Sentry
+-			try {
+-				Sentry.captureException(e);
+-			} catch {}
+ 		}
  	}
  
-@@ -1390,8 +1379,6 @@ class ZwaveClient extends TypedEventEmitter<ZwaveClientEventCallbacks> {
- 	 *
- 	 */
- 	disableStatistics() {
--		this._driver.disableStatistics()
--
- 		logger.info('Zwavejs usage statistics DISABLED')
- 	}
- 
-diff --git a/src/store/mutations.js b/src/store/mutations.js
-index 33e650f..120a46f 100644
---- a/src/store/mutations.js
-+++ b/src/store/mutations.js
-@@ -12,7 +12,7 @@ export const state = {
-     logLevel: 'info',
-     logToFile: false,
-     serverEnabled: false,
--    enableStatistics: undefined, // keep it undefined so the user dialog will show up
-+    enableStatistics: false,
-     serverPort: 3000
-   },
-   mqtt: {
 diff --git a/yarn.lock b/yarn.lock
-index 0e271ed..42fe16f 100644
+index f24cbf6..d239b3f 100644
 --- a/yarn.lock
 +++ b/yarn.lock
-@@ -1246,84 +1246,6 @@
-     conventional-recommended-bump "^6.1.0"
-     prepend-file "^2.0.0"
+@@ -3509,100 +3509,6 @@ __metadata:
+   languageName: node
+   linkType: hard
  
--"@sentry/core@6.10.0":
--  version "6.10.0"
--  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-6.10.0.tgz#70af9dc72bb6a5b59062a31b7de023f7f1878357"
--  integrity sha512-5KlxHJlbD7AMo+b9pMGkjxUOfMILtsqCtGgI7DMvZNfEkdohO8QgUY+hPqr540kmwArFS91ipQYWhqzGaOhM3Q==
+-"@sentry/core@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/core@npm:6.13.3"
 -  dependencies:
--    "@sentry/hub" "6.10.0"
--    "@sentry/minimal" "6.10.0"
--    "@sentry/types" "6.10.0"
--    "@sentry/utils" "6.10.0"
--    tslib "^1.9.3"
+-    "@sentry/hub": 6.13.3
+-    "@sentry/minimal": 6.13.3
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
+-    tslib: ^1.9.3
+-  checksum: a1bcf995136568407a6104f29fdb9c6aa3ebdb15bea41be3008f018cffcd5782c8766959bfe3605b00fc10a174f4db61856c139cebc94a1976761caeb8843d0a
+-  languageName: node
+-  linkType: hard
 -
--"@sentry/hub@6.10.0":
--  version "6.10.0"
--  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-6.10.0.tgz#d59be18016426fd3a5e8d38712c2080466aafe3c"
--  integrity sha512-MV8wjhWiFAXZAhmj7Ef5QdBr2IF93u8xXiIo2J+dRZ7eVa4/ZszoUiDbhUcl/TPxczaw4oW2a6tINBNFLzXiig==
+-"@sentry/hub@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/hub@npm:6.13.3"
 -  dependencies:
--    "@sentry/types" "6.10.0"
--    "@sentry/utils" "6.10.0"
--    tslib "^1.9.3"
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
+-    tslib: ^1.9.3
+-  checksum: 6e017cf863dd813a13f719d0d7bfef5c2943cb49b7632f7110645a20845fc3da8f6512cd268aa6504c84097cfdb5e6f3a60c0205ffd29610ae5cf8648f2c41e5
+-  languageName: node
+-  linkType: hard
 -
--"@sentry/integrations@^6.10.0":
--  version "6.10.0"
--  resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-6.10.0.tgz#f8f9e7efd55ec44d0408bd4493df1c9ceabaaa63"
--  integrity sha512-NMtB0jjFYFZRxyjYu2dWLThk9YPIwqhi4hYywmWkbv4/ILzi5Rwnh+aqNW6yrj8qG4b9itNMh3YvEzmf0aqauw==
+-"@sentry/integrations@npm:^6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/integrations@npm:6.13.3"
 -  dependencies:
--    "@sentry/types" "6.10.0"
--    "@sentry/utils" "6.10.0"
--    localforage "^1.8.1"
--    tslib "^1.9.3"
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
+-    localforage: ^1.8.1
+-    tslib: ^1.9.3
+-  checksum: 484cefd0cb176b72f963e2dd9be81434a8f0d74e5235d9479ab5100331e1f52b8df8474d1505a72c45566b7cec4019bdf6d95c985ab3d01111ff4dace8de0f23
+-  languageName: node
+-  linkType: hard
 -
--"@sentry/minimal@6.10.0":
--  version "6.10.0"
--  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-6.10.0.tgz#9404b93fae649b6c48e1da8f0991b87cf9999561"
--  integrity sha512-yarm046UgUFIBoxqnBan2+BEgaO9KZCrLzsIsmALiQvpfW92K1lHurSawl5W6SR7wCYBnNn7CPvPE/BHFdy4YA==
+-"@sentry/minimal@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/minimal@npm:6.13.3"
 -  dependencies:
--    "@sentry/hub" "6.10.0"
--    "@sentry/types" "6.10.0"
--    tslib "^1.9.3"
+-    "@sentry/hub": 6.13.3
+-    "@sentry/types": 6.13.3
+-    tslib: ^1.9.3
+-  checksum: 0fad0470d6dcd4b9a4e0873d108898ac68511e4b12585976990f34df2cff05f46b696496419695aded726372b1c344a8b83d533baf16c2c4b40298835467a46f
+-  languageName: node
+-  linkType: hard
 -
--"@sentry/node@^6.10.0":
--  version "6.10.0"
--  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-6.10.0.tgz#d91a6877f3447d7349a7f343a1fcadc319002c09"
--  integrity sha512-buGmOjsTnxebHSfa3r/rhpjDk8xmrILG4xslTgV1C2JpbUtf96QnYNNydfsfAGcZrLWO0gid/wigxsx1fdXT8A==
+-"@sentry/node@npm:^6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/node@npm:6.13.3"
 -  dependencies:
--    "@sentry/core" "6.10.0"
--    "@sentry/hub" "6.10.0"
--    "@sentry/tracing" "6.10.0"
--    "@sentry/types" "6.10.0"
--    "@sentry/utils" "6.10.0"
--    cookie "^0.4.1"
--    https-proxy-agent "^5.0.0"
--    lru_map "^0.3.3"
--    tslib "^1.9.3"
+-    "@sentry/core": 6.13.3
+-    "@sentry/hub": 6.13.3
+-    "@sentry/tracing": 6.13.3
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
+-    cookie: ^0.4.1
+-    https-proxy-agent: ^5.0.0
+-    lru_map: ^0.3.3
+-    tslib: ^1.9.3
+-  checksum: 1d02c92447bab983fc194ab72ce7a131f260c67eed877adb8cc42a422336dc50da5d40a5a46839eff8f67901f7ffe3606539ee1375a1b90f0827254800b2fbf1
+-  languageName: node
+-  linkType: hard
 -
--"@sentry/tracing@6.10.0":
--  version "6.10.0"
--  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-6.10.0.tgz#8dcdc28cccfad976540a3c801acb6914b9c0802e"
--  integrity sha512-jZj6Aaf8kU5wgyNXbAJHosHn8OOFdK14lgwYPb/AIDsY35g9a9ncTOqIOBp8X3KkmSR8lcBzAEyiUzCxAis2jA==
+-"@sentry/tracing@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/tracing@npm:6.13.3"
 -  dependencies:
--    "@sentry/hub" "6.10.0"
--    "@sentry/minimal" "6.10.0"
--    "@sentry/types" "6.10.0"
--    "@sentry/utils" "6.10.0"
--    tslib "^1.9.3"
+-    "@sentry/hub": 6.13.3
+-    "@sentry/minimal": 6.13.3
+-    "@sentry/types": 6.13.3
+-    "@sentry/utils": 6.13.3
+-    tslib: ^1.9.3
+-  checksum: 14906613c0002a101d397d5527f232328eea5852cae10333a875c411190339552040f54d65818dd6190e3cff4d7d8eab79bf346af6176c06910e7fa5314cfad8
+-  languageName: node
+-  linkType: hard
 -
--"@sentry/types@6.10.0":
--  version "6.10.0"
--  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-6.10.0.tgz#6b1f44e5ed4dbc2710bead24d1b32fb08daf04e1"
--  integrity sha512-M7s0JFgG7/6/yNVYoPUbxzaXDhnzyIQYRRJJKRaTD77YO4MHvi4Ke8alBWqD5fer0cPIfcSkBqa9BLdqRqcMWw==
+-"@sentry/types@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/types@npm:6.13.3"
+-  checksum: e5641cb0c0e4917ebc510ea74f1be501a3e34230d823b25ead36a9edb8a52dc1f08161cad43e9a18ac591b507abe78aae1ccd6a08000d0105c66c0b44125781c
+-  languageName: node
+-  linkType: hard
 -
--"@sentry/utils@6.10.0":
--  version "6.10.0"
--  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-6.10.0.tgz#839a099fa0a1f0ca0893c7ce8c55ba0608c1d80f"
--  integrity sha512-F9OczOcZMFtazYVZ6LfRIe65/eOfQbiAedIKS0li4npuMz0jKYRbxrjd/U7oLiNQkPAp4/BujU4m1ZIwq6a+tg==
+-"@sentry/utils@npm:6.13.3":
+-  version: 6.13.3
+-  resolution: "@sentry/utils@npm:6.13.3"
 -  dependencies:
--    "@sentry/types" "6.10.0"
--    tslib "^1.9.3"
+-    "@sentry/types": 6.13.3
+-    tslib: ^1.9.3
+-  checksum: 22feb050ef38bdff9651223d045b0a7b8611f256288c0c8f8953e3d1789fdccb864b381c044345604698e1b2b2bcbf4967e044b68295fe509a26e74a02bb8284
+-  languageName: node
+-  linkType: hard
 -
- "@serialport/binding-abstract@^9.0.7":
-   version "9.0.7"
-   resolved "https://registry.yarnpkg.com/@serialport/binding-abstract/-/binding-abstract-9.0.7.tgz#d2c7ecea0f100bdf20187bfc0d34ba90f5504e1e"
-@@ -2062,7 +1984,6 @@
-   resolved "https://registry.yarnpkg.com/@zwave-js/serial/-/serial-8.0.7.tgz#2e4d4e2b78a165e83edaf23457e0d152cc294454"
-   integrity sha512-QZUCapr/hYlEYrzYb8zt+ohtUb8UzGUHQ7Um60bZnXWOUqIJMbqma230Nt8DDMmHYAi+vwpoB58kcAwGrE2Ffw==
+ "@serialport/binding-abstract@npm:9.2.3":
+   version: 9.2.3
+   resolution: "@serialport/binding-abstract@npm:9.2.3"
+@@ -4347,7 +4253,6 @@ __metadata:
+   version: 0.0.0-use.local
+   resolution: "@zwave-js/serial@workspace:packages/serial"
    dependencies:
--    "@sentry/node" "^6.10.0"
-     "@zwave-js/core" "8.0.6"
-     "@zwave-js/shared" "8.0.3"
-     alcalzone-shared "^4.0.0"
-@@ -12048,8 +11969,6 @@ zwave-js@^8.0.8:
+-    "@sentry/node": ^6.13.3
+     "@serialport/binding-mock": ^9.2.4
+     "@types/jest": ^26.0.24
+     "@types/node": ^15.12.5
+@@ -5855,13 +5760,6 @@ __metadata:
+   languageName: node
+   linkType: hard
+ 
+-"cookie@npm:^0.4.1":
+-  version: 0.4.1
+-  resolution: "cookie@npm:0.4.1"
+-  checksum: bd7c47f5d94ab70ccdfe8210cde7d725880d2fcda06d8e375afbdd82de0c8d3b73541996e9ce57d35f67f672c4ee6d60208adec06b3c5fc94cebb85196084cf8
+-  languageName: node
+-  linkType: hard
+-
+ "copy-descriptor@npm:^0.1.0":
+   version: 0.1.1
+   resolution: "copy-descriptor@npm:0.1.1"
+@@ -8144,13 +8042,6 @@ fsevents@^2.1.2:
+   languageName: node
+   linkType: hard
+ 
+-"immediate@npm:~3.0.5":
+-  version: 3.0.6
+-  resolution: "immediate@npm:3.0.6"
+-  checksum: f9b3486477555997657f70318cc8d3416159f208bec4cca3ff3442fd266bc23f50f0c9bd8547e1371a6b5e82b821ec9a7044a4f7b944798b25aa3cc6d5e63e62
+-  languageName: node
+-  linkType: hard
+-
+ "import-fresh@npm:^3.0.0, import-fresh@npm:^3.2.1":
+   version: 3.3.0
+   resolution: "import-fresh@npm:3.3.0"
+@@ -9634,15 +9525,6 @@ fsevents@^2.1.2:
+   languageName: node
+   linkType: hard
+ 
+-"lie@npm:3.1.1":
+-  version: 3.1.1
+-  resolution: "lie@npm:3.1.1"
+-  dependencies:
+-    immediate: ~3.0.5
+-  checksum: 6da9f2121d2dbd15f1eca44c0c7e211e66a99c7b326ec8312645f3648935bc3a658cf0e9fa7b5f10144d9e2641500b4f55bd32754607c3de945b5f443e50ddd1
+-  languageName: node
+-  linkType: hard
+-
+ "lines-and-columns@npm:^1.1.6":
+   version: 1.1.6
+   resolution: "lines-and-columns@npm:1.1.6"
+@@ -9674,15 +9556,6 @@ fsevents@^2.1.2:
+   languageName: node
+   linkType: hard
+ 
+-"localforage@npm:^1.8.1":
+-  version: 1.9.0
+-  resolution: "localforage@npm:1.9.0"
+-  dependencies:
+-    lie: 3.1.1
+-  checksum: dc0256ce875a51f7d493b81cf54381323cd78018ff2bd5455c3f2f180b0932fb99f5b41641fd2ae9b08a455acae66273a0567ee77f7653bfd9373bfea3b0f7f9
+-  languageName: node
+-  linkType: hard
+-
+ "locate-path@npm:^2.0.0":
+   version: 2.0.0
+   resolution: "locate-path@npm:2.0.0"
+@@ -9822,13 +9695,6 @@ fsevents@^2.1.2:
+   languageName: node
+   linkType: hard
+ 
+-"lru_map@npm:^0.3.3":
+-  version: 0.3.3
+-  resolution: "lru_map@npm:0.3.3"
+-  checksum: ca9dd43c65ed7a4f117c548028101c5b6855e10923ea9d1f635af53ad20c5868ff428c364d454a7b57fe391b89c704982275410c3c5099cca5aeee00d76e169a
+-  languageName: node
+-  linkType: hard
+-
+ "make-dir@npm:^2.1.0":
+   version: 2.1.0
+   resolution: "make-dir@npm:2.1.0"
+@@ -13260,7 +13126,7 @@ fsevents@^2.1.2:
+   languageName: node
+   linkType: hard
+ 
+-"tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
++"tslib@npm:^1.8.1, tslib@npm:^1.9.0":
+   version: 1.14.1
+   resolution: "tslib@npm:1.14.1"
+   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
+@@ -14109,8 +13975,6 @@ typescript@4.4.3:
    dependencies:
-     "@alcalzone/jsonl-db" "^1.3.0"
-     "@alcalzone/pak" "^0.6.0"
--    "@sentry/integrations" "^6.10.0"
--    "@sentry/node" "^6.10.0"
-     "@zwave-js/config" "8.0.8"
-     "@zwave-js/core" "8.0.6"
-     "@zwave-js/serial" "8.0.7"
+     "@alcalzone/jsonl-db": ^1.3.0
+     "@alcalzone/pak": ^0.7.0
+-    "@sentry/integrations": ^6.13.3
+-    "@sentry/node": ^6.13.3
+     "@types/fs-extra": ^9.0.13
+     "@types/jest": ^26.0.24
+     "@types/node": ^15.12.5
