@@ -9,8 +9,8 @@ jobs:
   push:
     runs-on: ubuntu-latest
     env:
-      node-zwave-js_version: "v8.5.0"
-      zwavejs2mqtt_version: "v5.9.0"
+      node-zwave-js_version: "v8.6.1"
+      zwavejs2mqtt_version: "v5.10.1"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
