@@ -234,10 +234,12 @@ def build_discovery_topic(car: CarInfo, sensor: str, component: str) -> str:
 
 
 class TeslaBuddy:
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, *, remove_on_shutdown: bool) -> None:
         self.cars: dict[int, CarInfo] = {}
         self.partial_cars: dict[int, dict[str, str]] = defaultdict(dict)
         self.car_locations: dict[int, LocationState] = defaultdict(LocationState)
+
+        self.remove_on_shutdown = remove_on_shutdown
 
         self.client = paho.mqtt.client.Client()
         if config.mqtt_username and config.mqtt_password:
@@ -256,23 +258,24 @@ class TeslaBuddy:
     def stop(self, sig, frame) -> None:
         logger.info("Shutting down loop")
 
-        shutdown_messages: list[str] = []
-        shutdown_messages.extend(
-            build_discovery_topic(car, sensor, "binary_sensor")
-            for car in self.cars.values()
-            for sensor in BINARY_SENSORS
-        )
-        shutdown_messages.extend(
-            build_discovery_topic(car, sensor, "sensor")
-            for car in self.cars.values()
-            for sensor in SENSORS
-        )
-        shutdown_messages.extend(
-            build_discovery_topic(car, "tracker", "device_tracker")
-            for car in self.cars.values()
-        )
-        for topic in shutdown_messages:
-            self.client.publish(topic, "")
+        if self.remove_on_shutdown:
+            shutdown_messages: list[str] = []
+            shutdown_messages.extend(
+                build_discovery_topic(car, sensor, "binary_sensor")
+                for car in self.cars.values()
+                for sensor in BINARY_SENSORS
+            )
+            shutdown_messages.extend(
+                build_discovery_topic(car, sensor, "sensor")
+                for car in self.cars.values()
+                for sensor in SENSORS
+            )
+            shutdown_messages.extend(
+                build_discovery_topic(car, "tracker", "device_tracker")
+                for car in self.cars.values()
+            )
+            for topic in shutdown_messages:
+                self.client.publish(topic, "")
 
         self.client.disconnect()
 
@@ -381,6 +384,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("config_file")
     parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--remove-on-shutdown", action="store_true")
     args = parser.parse_args()
 
     if args.debug:
@@ -391,6 +395,6 @@ if __name__ == "__main__":
     with open(args.config_file) as f:
         config = Config(**json.load(f))
 
-    buddy = TeslaBuddy(config)
+    buddy = TeslaBuddy(config, remove_on_shutdown=args.remove_on_shutdown)
     signal.signal(signal.SIGINT, buddy.stop)
     buddy.loop()
