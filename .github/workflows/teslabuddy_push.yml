@@ -1,10 +1,10 @@
-name: Push updated Weechat image
+name: Push updated Teslabuddy image
 on:
   workflow_dispatch:
   push:
     paths:
-      - 'weechat/**'
-      - '.github/workflows/weechat_push.yml'
+      - 'teslabuddy/**'
+      - '.github/workflows/teslabuddy_push.yml'
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -21,8 +21,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          context: ./weechat
-          file: ./weechat/Dockerfile
+          context: ./teslabuddy
+          file: ./teslabuddy/Dockerfile
           tags: |
-            ghcr.io/${{ github.repository_owner }}/weechat:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/weechat:latest
+            ghcr.io/${{ github.repository_owner }}/teslabuddy:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/teslabuddy:latest
