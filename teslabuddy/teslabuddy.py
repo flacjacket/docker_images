@@ -369,6 +369,7 @@ class TeslaBuddy:
         messages[build_discovery_topic(car, "tracker", "device_tracker")] = {
             "availability": build_availability(car),
             "device": device_info,
+            "icon": "mdi:car",
             "json_attributes_topic": location.topic(car),
             "name": "Vehicle",
             "source_type": "gps",
