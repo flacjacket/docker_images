@@ -103,7 +103,9 @@ BINARY_SENSORS = {
     "plugged_in": SensorInfo(
         "Vehicle Plugged In", device_class="plug", icon="mdi:ev-station"
     ),
-    "sentry_mode": SensorInfo("Vehicle Sentry Mode", icon="mdi:shield-car"),
+    "sentry_mode": SensorInfo(
+        "Vehicle Sentry Mode", device_class="running", icon="mdi:shield-car"
+    ),
     "trunk_open": SensorInfo(
         "Vehicle Trunk", device_class="opening", icon="mdi:car-side"
     ),
