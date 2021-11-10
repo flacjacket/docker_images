@@ -109,7 +109,7 @@ BINARY_SENSORS = {
     "trunk_open": SensorInfo(
         "Vehicle Trunk", device_class="opening", icon="mdi:car-side"
     ),
-    "update_available": SensorInfo("Vehicle Update Available", icon="mdi:package-down"),
+    "update_available": SensorInfo("Vehicle Update Available", device_class="update"),
     "windows_open": SensorInfo(
         "Vehicle Windows", device_class="window", icon="mdi:car-door"
     ),
