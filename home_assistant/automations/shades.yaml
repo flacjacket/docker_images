@@ -62,7 +62,7 @@
           - fri
       - condition: state
         entity_id: input_boolean.vacation
-        state: "on"
+        state: "off"
   action:
     - service: script.move_office_shades
       data:
