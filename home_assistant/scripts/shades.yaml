@@ -1,6 +1,7 @@
 move_shades:
   alias: Move All Shades
   icon: mdi:window-shade
+  mode: parallel
   fields:
     shade_entities:
       name: Shades
