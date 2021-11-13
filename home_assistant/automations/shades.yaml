@@ -1,0 +1,98 @@
+- alias: Living Room Shades Up
+  id: living_room_shades_up
+  trigger:
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      above: -4
+  action:
+    - service: script.move_living_room_shades
+      data:
+        direction: Up
+- alias: Living Room Shades Down
+  id: living_room_shades_down
+  trigger:
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: -4
+  action:
+    - service: script.move_living_room_shades
+      data:
+        direction: Down
+- alias: Dining Room Shades Up
+  id: dining_room_shades_up
+  trigger:
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      above: 2
+  action:
+    - service: script.move_dining_room_shades
+      data:
+        direction: Up
+- alias: Dining Room Shades Down
+  id: dining_room_shades_down
+  trigger:
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: 2
+  action:
+    - service: script.move_dining_room_shades
+      data:
+        direction: Down
+- alias: Office Shades Up
+  id: office_shades_up
+  trigger:
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      above: 4
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        alias: Is Weekday?
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+      - condition: state
+        entity_id: input_boolean.vacation
+        state: on
+  action:
+    - service: script.move_office_shades
+      data:
+        direction: Up
+- alias: Office Shades Down
+  id: office_shades_down
+  trigger:
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: 4
+  action:
+    - service: script.move_office_shades
+      data:
+        direction: Down
+- alias: Bedroom Shades Up
+  id: bedroom_shades_up
+  trigger:
+    - platform: time
+      at: "12:00:00"
+  action:
+    - service: script.move_master_bedroom_shades
+      data:
+        direction: Up
+- alias: Bedroom Shades Down
+  id: bedroom_shades_down
+  trigger:
+    - platform: time
+      at: "17:00:00"
+  action:
+    - service: script.move_master_bedroom_shades
+      data:
+        direction: Down
