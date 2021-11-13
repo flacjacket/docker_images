@@ -2,4 +2,4 @@
 
 PORT=8123
 
-curl -kLs --fail --max-time 10 https://localhost:${PORT}
+curl -kLs --fail --max-time 10 https://homeassistant:${PORT}

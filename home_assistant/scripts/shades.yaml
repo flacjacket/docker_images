@@ -1,0 +1,104 @@
+move_shades:
+  alias: Move All Shades
+  icon: mdi:window-shade
+  fields:
+    shade_entities:
+      name: Shades
+      description: Shades to move
+      required: true
+      selector:
+        target:
+          entity:
+            integration: zwave_js
+            domain: cover
+    direction:
+      name: Direction
+      description: Direction to move shades
+      required: true
+      selector:
+        select:
+          options: [Up, Down]
+  sequence:
+    - service: zwave_js.multicast_set_value
+      data:
+        command_class: '38'
+        value: true
+        property: "{{ direction }}"
+      target:
+        entity_id: "{{ shade_entities.entity_id | join(',') }}"
+move_living_room_shades:
+  alias: Move Living Room Shades
+  icon: mdi:window-shade
+  fields:
+    direction:
+      description: Direction to move shades
+      required: true
+      selector:
+        select:
+          options: [Up, Down]
+  sequence:
+    - service: script.move_shades
+      data:
+        shade_entities:
+          entity_id:
+            - cover.living_room_side_shade
+            - cover.living_room_left_shade
+            - cover.living_room_center_shade
+            - cover.living_room_right_shade
+        direction: "{{ direction }}"
+move_office_shades:
+  alias: Move Office Shades
+  icon: mdi:window-shade
+  fields:
+    direction:
+      description: Direction to move shades
+      required: true
+      selector:
+        select:
+          options: [Up, Down]
+  sequence:
+    - service: script.move_shades
+      data:
+        shade_entities:
+          entity_id:
+            - cover.office_side_shade
+            - cover.office_left_shade
+            - cover.office_right_shade
+        direction: "{{ direction }}"
+move_dining_room_shades:
+  alias: Move Dining Room Shades
+  icon: mdi:window-shade
+  fields:
+    direction:
+      description: Direction to move shades
+      required: true
+      selector:
+        select:
+          options: [Up, Down]
+  sequence:
+    - service: script.move_shades
+      data:
+        shade_entities:
+          entity_id:
+            - cover.dining_room_left_shade
+            - cover.dining_room_right_shade
+        direction: "{{ direction }}"
+move_master_bedroom_shades:
+  alias: Move Master Bedroom Shades
+  icon: mdi:window-shade
+  fields:
+    direction:
+      description: Direction to move shades
+      required: true
+      selector:
+        select:
+          options: [Up, Down]
+  sequence:
+    - service: script.move_shades
+      data:
+        shade_entities:
+          entity_id:
+            - cover.master_bedroom_side_shade
+            - cover.master_bedroom_left_shade
+            - cover.master_bedroom_right_shade
+        direction: "{{ direction }}"
