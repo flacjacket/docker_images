@@ -23,6 +23,7 @@ RUN mkdir /static_config/custom_components/hacs && \
 COPY *.yaml /static_config/
 COPY automations /static_config/automations
 COPY custom_components /static_config/custom_components
+COPY scripts /static_config/scripts
 RUN chmod 444 /static_config/*.yaml
 RUN python -m pip install --force-reinstall --no-deps \
     https://github.com/flacjacket/python-amcrest/archive/py3.tar.gz
