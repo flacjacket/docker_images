@@ -1,0 +1,42 @@
+- alias: Washer Idle
+  id: washer_idle
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.washer_plug_electric_consumption_w
+    below: '10'
+    for:
+      minutes: 1
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.washing_machine_state
+- alias: Washer Running
+  id: washer_running
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.washer_plug_electric_consumption_w
+    above: '10'
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.washing_machine_state
+- alias: Dryer Idle
+  id: dryer_idle
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.dryer_plug_electric_consumption_w
+    below: '10'
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.dryer_state
+- alias: Dryer Running
+  id: dryer_running
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.dryer_plug_electric_consumption_w
+    above: '10'
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.dryer_state
