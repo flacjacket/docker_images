@@ -1,6 +1,6 @@
 move_shades:
   alias: Move All Shades
-  icon: mdi:window-shade
+  icon: mdi:window-shutter
   mode: parallel
   fields:
     shade_entities:
@@ -29,7 +29,7 @@ move_shades:
         entity_id: "{{ shade_entities.entity_id | join(',') }}"
 move_living_room_shades:
   alias: Move Living Room Shades
-  icon: mdi:window-shade
+  icon: mdi:window-shutter
   fields:
     direction:
       description: Direction to move shades
@@ -49,7 +49,7 @@ move_living_room_shades:
         direction: "{{ direction }}"
 move_office_shades:
   alias: Move Office Shades
-  icon: mdi:window-shade
+  icon: mdi:window-shutter
   fields:
     direction:
       description: Direction to move shades
@@ -68,7 +68,7 @@ move_office_shades:
         direction: "{{ direction }}"
 move_dining_room_shades:
   alias: Move Dining Room Shades
-  icon: mdi:window-shade
+  icon: mdi:window-shutter
   fields:
     direction:
       description: Direction to move shades
@@ -86,7 +86,7 @@ move_dining_room_shades:
         direction: "{{ direction }}"
 move_master_bedroom_shades:
   alias: Move Master Bedroom Shades
-  icon: mdi:window-shade
+  icon: mdi:window-shutter
   fields:
     direction:
       description: Direction to move shades

@@ -1,4 +1,6 @@
 vacuum_run_segments:
+  alias: Run Vacuum Segments
+  icon: mdi:robot-vacuum-variant
   fields:
     room_names:
       required: true
