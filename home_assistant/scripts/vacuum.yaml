@@ -20,7 +20,7 @@ vacuum_run_segments:
         topic: valetudo/{{ vacuum_name }}/MapSegmentationCapability/clean/set
         payload: >-
           {% set data = namespace(room_ids=[]) %}
-          {% for room_name in {{ room_names }} %}
+          {% for room_name in room_names %}
             {% for seg in (states.sensor.map_segments.attributes | list) %}
               {% if state_attr("sensor.map_segments", seg) == room_name %}
                 {% set data.room_ids = data.room_ids + [seg] %}
