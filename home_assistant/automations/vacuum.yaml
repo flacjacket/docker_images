@@ -1,15 +1,27 @@
-- alias: Vacuum Schedule
-  id: vacuum_schedule_automation
+- alias: Run Vacuum Upstairs
+  id: vacuum_schedule_upstairs
   trigger:
     - platform: time
       at: '14:30'
-  condition:
-    - condition: time
-      weekday:
-        - mon
-        - wed
-        - fri
   action:
-    - service: vacuum.start
-      target:
-        entity_id: vacuum.tom_servo
+    - choose:
+        - conditions:
+            - condition: time
+              weekday: [mon, wed, fri]
+          sequence:
+            - service: script.run_vacuum_segments
+              data:
+                sequence_id:
+                  entity_id: sensor.map_segments
+                room_names: ["Laundry", "Hallway", "Master Bedroom", "Master Bathroom"]
+                vacuum_name: tom_servo
+        - conditions:
+            - condition: time
+              weekday: [tue, thu]
+          sequence:
+            - service: script.run_vacuum_segments
+              data:
+                sequence_id:
+                  entity_id: sensor.map_segments
+                room_names: ["Laundry", "Hallway", "Front Bedroom", "Back Bedroom", "Center Bedroom"]
+                vacuum_name: tom_servo

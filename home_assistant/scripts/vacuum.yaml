@@ -1,0 +1,34 @@
+vacuum_run_segments:
+  fields:
+    room_names:
+      required: true
+      selector:
+        text:
+    vacuum_name:
+      required: true
+      selector:
+        text:
+    sequence_id:
+      required: true
+      selector:
+        target:
+          entity:
+            domain: sensor
+  sequence:
+    - service: mqtt.publish
+      data:
+        topic: valetudo/{{ vacuum_name }}/MapSegmentationCapability/clean/set
+        payload: >-
+          {% set data = namespace(room_ids=[]) %}
+          {% for room_name in {{ room_names }} %}
+            {% for seg in (states.sensor.map_segments.attributes | list) %}
+              {% if state_attr("sensor.map_segments", seg) == room_name %}
+                {% set data.room_ids = data.room_ids + [seg] %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+          {
+            "segment_ids": {{ data.room_ids }},
+            "iterations": 1,
+            "customOrder": "true"
+          }
