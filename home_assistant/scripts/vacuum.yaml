@@ -25,7 +25,7 @@ vacuum_run_segments:
           {% for room_name in room_names %}
             {% for seg in (states.sensor.map_segments.attributes | list) %}
               {% if state_attr("sensor.map_segments", seg) == room_name %}
-                {% set data.room_ids = data.room_ids + [seg] %}
+                {% set data.room_ids = data.room_ids + [int(seg)] %}
               {% endif %}
             {% endfor %}
           {% endfor %}
