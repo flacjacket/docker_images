@@ -9,7 +9,7 @@
             - condition: time
               weekday: [mon, wed, fri]
           sequence:
-            - service: script.run_vacuum_segments
+            - service: script.vacuum_run_segments
               data:
                 sequence_id:
                   entity_id: sensor.map_segments
@@ -19,7 +19,7 @@
             - condition: time
               weekday: [tue, thu]
           sequence:
-            - service: script.run_vacuum_segments
+            - service: script.vacuum_run_segments
               data:
                 sequence_id:
                   entity_id: sensor.map_segments
