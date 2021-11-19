@@ -16,6 +16,8 @@
     platform: numeric_state
     entity_id: sensor.washer_plug_electric_consumption_w
     above: '10'
+    for:
+      seconds: 30
   action:
     - service: input_boolean.turn_on
       target:
