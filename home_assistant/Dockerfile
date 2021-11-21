@@ -21,7 +21,7 @@ RUN mkdir /static_config/custom_components/hacs && \
     unzip alexa_media_player.zip && \
     mv hass-node-red-*/custom_components/nodered /static_config/custom_components/ && \
     mv WebRTC-*/custom_components/webrtc /static_config/custom_components/ && \
-    mv alexa_media_player-*/custom-components/alexa_media_player /static_config/custom_components/ && \
+    mv alexa_media_player-*/custom_components/alexa_media /static_config/custom_components/ && \
     rm -r *.zip hass-node-red-*/ WebRTC-*/
 COPY *.yaml /static_config/
 COPY automations /static_config/automations
