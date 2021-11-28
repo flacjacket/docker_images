@@ -6,10 +6,12 @@ vacuum_run_segments:
       required: true
       selector:
         text:
-    vacuum_name:
+    vacuum_id:
       required: true
       selector:
-        text:
+        target:
+          entity:
+            domain: vacuum
     sequence_id:
       required: true
       selector:
@@ -19,13 +21,15 @@ vacuum_run_segments:
   sequence:
     - service: mqtt.publish
       data:
-        topic: valetudo/{{ vacuum_name }}/MapSegmentationCapability/clean/set
+        topic: valetudo/{{ vacuum_id.entity_id.split('.')[1] }}/MapSegmentationCapability/clean/set
         payload: >-
           {% set data = namespace(room_ids=[]) %}
+          {% set seg_domain, seg_device = sequence_id.entity_id.split('.') %}
+          {% set segment_keys = states[seg_domain][seg_device].attributes | list %}
           {% for room_name in room_names %}
-            {% for seg in (states.sensor.map_segments.attributes | list) %}
-              {% if state_attr("sensor.map_segments", seg) == room_name %}
-                {% set data.room_ids = data.room_ids + [int(seg)] %}
+            {% for segment_id in segment_keys %}
+              {% if state_attr(sequence_id.entity_id, segment_id) == room_name %}
+                {% set data.room_ids = data.room_ids + [int(segment_id)] %}
               {% endif %}
             {% endfor %}
           {% endfor %}
@@ -34,3 +38,4 @@ vacuum_run_segments:
             "iterations": 1,
             "customOrder": "true"
           }
+      # TODO: check that vacuum actually starts, otherwise may be some error
