@@ -47,11 +47,37 @@ camera:
     input: !secret doorbell_camera_url
 #  - platform: zoneminder
 
-default_config:
-
 #config:
 
+cover:
+  - platform: group
+    name: Living Room
+    entities:
+      - cover.living_room_left_shade
+      - cover.living_room_conter_shade
+      - cover.living_room_right_shade
+      - cover.living_room_side_shade
+  - platform: group
+    name: Dining Room
+    entities:
+      - cover.dining_room_left_shade
+      - cover.dining_room_right_shade
+  - platform: group
+    name: Office
+    entities:
+      - cover.office_left_shade
+      - cover.office_right_shade
+      - cover.office_side_shade
+  - platform: group
+    name: Master Bedroom
+    entities:
+      - cover.master_bedroom_left_shade
+      - cover.master_bedroom_right_shade
+      - cover.master_bedroom_side_shade
+
 #conversation:
+
+default_config:
 
 #device_tracker:
 
