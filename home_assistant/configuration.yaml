@@ -52,6 +52,7 @@ camera:
 cover:
   - platform: group
     name: Living Room
+    unique_id: living_room_shade_group
     entities:
       - cover.living_room_left_shade
       - cover.living_room_conter_shade
@@ -59,17 +60,20 @@ cover:
       - cover.living_room_side_shade
   - platform: group
     name: Dining Room
+    unique_id: dining_room_shade_group
     entities:
       - cover.dining_room_left_shade
       - cover.dining_room_right_shade
   - platform: group
     name: Office
+    unique_id: office_shade_group
     entities:
       - cover.office_left_shade
       - cover.office_right_shade
       - cover.office_side_shade
   - platform: group
     name: Master Bedroom
+    unique_id: master_bedroom_shade_group
     entities:
       - cover.master_bedroom_left_shade
       - cover.master_bedroom_right_shade
