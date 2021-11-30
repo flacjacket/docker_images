@@ -1,0 +1,12 @@
+diff --git a/homeassistant/components/default_config/manifest.json b/homeassistant/components/default_config/manifest.json
+index 274e53c2f3..f93b0646c0 100644
+--- a/homeassistant/components/default_config/manifest.json
++++ b/homeassistant/components/default_config/manifest.json
+@@ -4,7 +4,6 @@
+   "documentation": "https://www.home-assistant.io/integrations/default_config",
+   "dependencies": [
+     "automation",
+-    "cloud",
+     "counter",
+     "dhcp",
+     "energy",

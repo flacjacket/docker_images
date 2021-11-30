@@ -3,6 +3,11 @@ FROM homeassistant/home-assistant:2021.11.5
 COPY docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-healthcheck.sh
 
+COPY no_cloud.patch /
+RUN  cd /usr/src/homeassistant/ \
+  && git apply /no_cloud.patch \
+  && rm /no_cloud.patch
+
 RUN addgroup -g 1000 home_assistant \
  && adduser -D -u 1000 -h /config -G home_assistant home_assistant \
  && adduser home_assistant audio \
