@@ -1,0 +1,321 @@
+diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
+index 27d3e77754..cfff95ecdd 100644
+--- a/homeassistant/components/venstar/__init__.py
++++ b/homeassistant/components/venstar/__init__.py
+@@ -1,9 +1,11 @@
+ """The venstar component."""
+ import asyncio
++from datetime import timedelta
+ 
+ from requests import RequestException
+ from venstarcolortouch import VenstarColorTouch
+ 
++from homeassistant.config_entries import ConfigEntry
+ from homeassistant.const import (
+     CONF_HOST,
+     CONF_PASSWORD,
+@@ -11,8 +13,9 @@ from homeassistant.const import (
+     CONF_SSL,
+     CONF_USERNAME,
+ )
+-from homeassistant.exceptions import ConfigEntryNotReady
+-from homeassistant.helpers.entity import Entity
++from homeassistant.core import HomeAssistant, callback
++from homeassistant.helpers import update_coordinator
++from homeassistant.helpers.update_coordinator import CoordinatorEntity
+ 
+ from .const import _LOGGER, DOMAIN, VENSTAR_TIMEOUT
+ 
+@@ -37,11 +40,13 @@ async def async_setup_entry(hass, config):
+         proto=protocol,
+     )
+ 
+-    try:
+-        await hass.async_add_executor_job(client.update_info)
+-    except (OSError, RequestException) as ex:
+-        raise ConfigEntryNotReady(f"Unable to connect to the thermostat: {ex}") from ex
+-    hass.data.setdefault(DOMAIN, {})[config.entry_id] = client
++    venstar_data_coordinator = VenstarDataUpdateCoordinator(
++        hass,
++        venstar_connection=client,
++    )
++    await venstar_data_coordinator.async_config_entry_first_refresh()
++
++    hass.data.setdefault(DOMAIN, {})[config.entry_id] = venstar_data_coordinator
+     hass.config_entries.async_setup_platforms(config, PLATFORMS)
+ 
+     return True
+@@ -55,35 +60,63 @@ async def async_unload_entry(hass, config):
+     return unload_ok
+ 
+ 
+-class VenstarEntity(Entity):
+-    """Get the latest data and update."""
++class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
++    """Class to manage fetching Venstar data."""
+ 
+-    def __init__(self, config, client):
+-        """Initialize the data object."""
+-        self._config = config
+-        self._client = client
++    def __init__(
++        self,
++        hass: HomeAssistant,
++        *,
++        venstar_connection: VenstarColorTouch,
++    ) -> None:
++        """Initialize global Venstar data updater."""
++        self.client = venstar_connection
+ 
+-    async def async_update(self):
++        super().__init__(
++            hass,
++            _LOGGER,
++            name=DOMAIN,
++            update_interval=timedelta(seconds=10),
++        )
++
++    async def _async_update_data(self) -> None:
+         """Update the state."""
+         try:
+-            info_success = await self.hass.async_add_executor_job(
+-                self._client.update_info
+-            )
++            await self.hass.async_add_executor_job(self.client.update)
+         except (OSError, RequestException) as ex:
+-            _LOGGER.error("Exception during info update: %s", ex)
++            raise update_coordinator.UpdateFailed(
++                f"Exception during Venstar update: {ex}"
++            ) from ex
+ 
+-        # older venstars sometimes cannot handle rapid sequential connections
+-        await asyncio.sleep(3)
+ 
+-        try:
+-            sensor_success = await self.hass.async_add_executor_job(
+-                self._client.update_sensors
+-            )
+-        except (OSError, RequestException) as ex:
+-            _LOGGER.error("Exception during sensor update: %s", ex)
++class VenstarEntity(CoordinatorEntity):
++    """Representation of a Venstar entity."""
++
++    def __init__(
++        self,
++        venstar_data_coordinator: VenstarDataUpdateCoordinator,
++        config: ConfigEntry,
++    ) -> None:
++        """Initialize the data object."""
++        super().__init__(venstar_data_coordinator)
++        self._config = config
++        self._update_attr()
++        self.coordinator = venstar_data_coordinator
++
++    @property
++    def _client(self):
++        """Return the venstar client."""
++        return self.coordinator.client
++
++    @callback
++    def _update_attr(self) -> None:
++        """Update the state and attributes."""
+ 
+-        if not info_success or not sensor_success:
+-            _LOGGER.error("Failed to update data")
++    @callback
++    def _handle_coordinator_update(self) -> None:
++        """Handle updated data from the coordinator."""
++        self._update_attr()
++        self.async_write_ha_state()
+ 
+     @property
+     def name(self):
+@@ -102,8 +135,6 @@ class VenstarEntity(Entity):
+             "identifiers": {(DOMAIN, self._config.entry_id)},
+             "name": self._client.name,
+             "manufacturer": "Venstar",
+-            # pylint: disable=protected-access
+-            "model": f"{self._client.model}-{self._client._type}",
+-            # pylint: disable=protected-access
+-            "sw_version": self._client._api_ver,
++            "model": f"{self._client.model}-{self._client.get_type()}",
++            "sw_version": self._client.get_api_ver(),
+         }
+diff --git a/homeassistant/components/venstar/climate.py b/homeassistant/components/venstar/climate.py
+index d86a595316..c53cc9685e 100644
+--- a/homeassistant/components/venstar/climate.py
++++ b/homeassistant/components/venstar/climate.py
+@@ -1,4 +1,6 @@
+ """Support for Venstar WiFi Thermostats."""
++from functools import partial
++
+ import voluptuous as vol
+ 
+ from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateEntity
+@@ -24,7 +26,7 @@ from homeassistant.components.climate.const import (
+     SUPPORT_TARGET_TEMPERATURE,
+     SUPPORT_TARGET_TEMPERATURE_RANGE,
+ )
+-from homeassistant.config_entries import SOURCE_IMPORT
++from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
+ from homeassistant.const import (
+     ATTR_TEMPERATURE,
+     CONF_HOST,
+@@ -38,9 +40,11 @@ from homeassistant.const import (
+     TEMP_CELSIUS,
+     TEMP_FAHRENHEIT,
+ )
++from homeassistant.core import HomeAssistant
+ import homeassistant.helpers.config_validation as cv
++from homeassistant.helpers.entity_platform import AddEntitiesCallback
+ 
+-from . import VenstarEntity
++from . import VenstarDataUpdateCoordinator, VenstarEntity
+ from .const import (
+     _LOGGER,
+     ATTR_FAN_STATE,
+@@ -68,10 +72,21 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
+ )
+ 
+ 
+-async def async_setup_entry(hass, config_entry, async_add_entities):
++async def async_setup_entry(
++    hass: HomeAssistant,
++    config_entry: ConfigEntry,
++    async_add_entities: AddEntitiesCallback,
++) -> None:
+     """Set up the Venstar thermostat."""
+-    client = hass.data[DOMAIN][config_entry.entry_id]
+-    async_add_entities([VenstarThermostat(config_entry, client)], True)
++    venstar_data_coordinator = hass.data[DOMAIN][config_entry.entry_id]
++    async_add_entities(
++        [
++            VenstarThermostat(
++                venstar_data_coordinator,
++                config_entry,
++            )
++        ],
++    )
+ 
+ 
+ async def async_setup_platform(hass, config, add_entities, discovery_info=None):
+@@ -95,9 +110,13 @@ async def async_setup_platform(hass, config, add_entities, discovery_info=None):
+ class VenstarThermostat(VenstarEntity, ClimateEntity):
+     """Representation of a Venstar thermostat."""
+ 
+-    def __init__(self, config, client):
++    def __init__(
++        self,
++        venstar_data_coordinator: VenstarDataUpdateCoordinator,
++        config: ConfigEntry,
++    ) -> None:
+         """Initialize the thermostat."""
+-        super().__init__(config, client)
++        super().__init__(venstar_data_coordinator, config)
+         self._mode_map = {
+             HVAC_MODE_HEAT: self._client.MODE_HEAT,
+             HVAC_MODE_COOL: self._client.MODE_COOL,
+@@ -257,7 +276,12 @@ class VenstarThermostat(VenstarEntity, ClimateEntity):
+             _LOGGER.error("Failed to change the operation mode")
+         return success
+ 
+-    def set_temperature(self, **kwargs):
++    async def async_set_temperature(self, **kwargs):
++        """Set a new target temperature."""
++        await self.hass.async_add_executor_job(partial(self._set_temperature, **kwargs))
++        self.async_write_ha_state()
++
++    def _set_temperature(self, **kwargs):
+         """Set a new target temperature."""
+         set_temp = True
+         operation_mode = kwargs.get(ATTR_HVAC_MODE)
+@@ -295,7 +319,12 @@ class VenstarThermostat(VenstarEntity, ClimateEntity):
+             if not success:
+                 _LOGGER.error("Failed to change the temperature")
+ 
+-    def set_fan_mode(self, fan_mode):
++    async def async_set_fan_mode(self, fan_mode: str) -> None:
++        """Set a new target fan mode."""
++        await self.hass.async_add_executor_job(self._set_fan_mode, fan_mode)
++        self.async_write_ha_state()
++
++    def _set_fan_mode(self, fan_mode):
+         """Set new target fan mode."""
+         if fan_mode == STATE_ON:
+             success = self._client.set_fan(self._client.FAN_ON)
+@@ -305,18 +334,33 @@ class VenstarThermostat(VenstarEntity, ClimateEntity):
+         if not success:
+             _LOGGER.error("Failed to change the fan mode")
+ 
+-    def set_hvac_mode(self, hvac_mode):
++    async def async_set_hvac_mode(self, hvac_mode: str) -> None:
++        """Set a new target operation mode."""
++        await self.hass.async_add_executor_job(self._set_hvac_mode, hvac_mode)
++        self.async_write_ha_state()
++
++    def _set_hvac_mode(self, hvac_mode):
+         """Set new target operation mode."""
+         self._set_operation_mode(hvac_mode)
+ 
+-    def set_humidity(self, humidity):
++    async def async_set_humidity(self, humidity: int) -> None:
++        """Set a new target humidity."""
++        await self.hass.async_add_executor_job(self._set_humidity, humidity)
++        self.async_write_ha_state()
++
++    def _set_humidity(self, humidity):
+         """Set new target humidity."""
+         success = self._client.set_hum_setpoint(humidity)
+ 
+         if not success:
+             _LOGGER.error("Failed to change the target humidity level")
+ 
+-    def set_preset_mode(self, preset_mode):
++    async def async_set_preset_mode(self, preset_mode: str) -> None:
++        """Set the hold mode."""
++        await self.hass.async_add_executor_job(self._set_preset_mode, preset_mode)
++        self.async_write_ha_state()
++
++    def _set_preset_mode(self, preset_mode):
+         """Set the hold mode."""
+         if preset_mode == PRESET_AWAY:
+             success = self._client.set_away(self._client.AWAY_AWAY)
+diff --git a/homeassistant/components/venstar/manifest.json b/homeassistant/components/venstar/manifest.json
+index 943790b532..6fef7bf5d5 100644
+--- a/homeassistant/components/venstar/manifest.json
++++ b/homeassistant/components/venstar/manifest.json
+@@ -4,7 +4,7 @@
+   "config_flow": true,
+   "documentation": "https://www.home-assistant.io/integrations/venstar",
+   "requirements": [
+-    "venstarcolortouch==0.14"
++    "venstarcolortouch==0.15"
+   ],
+   "codeowners": ["@garbled1"],
+   "iot_class": "local_polling"
+diff --git a/requirements_all.txt b/requirements_all.txt
+index 89496ea700..4f25e578ad 100644
+--- a/requirements_all.txt
++++ b/requirements_all.txt
+@@ -2363,7 +2363,7 @@ vallox-websocket-api==2.8.1
+ velbus-aio==2021.11.7
+ 
+ # homeassistant.components.venstar
+-venstarcolortouch==0.14
++venstarcolortouch==0.15
+ 
+ # homeassistant.components.vilfo
+ vilfo-api-client==0.3.2
+diff --git a/requirements_test_all.txt b/requirements_test_all.txt
+index af0f2452ea..7161e068da 100644
+--- a/requirements_test_all.txt
++++ b/requirements_test_all.txt
+@@ -1367,7 +1367,7 @@ uvcclient==0.11.0
+ velbus-aio==2021.11.7
+ 
+ # homeassistant.components.venstar
+-venstarcolortouch==0.14
++venstarcolortouch==0.15
+ 
+ # homeassistant.components.vilfo
+ vilfo-api-client==0.3.2
