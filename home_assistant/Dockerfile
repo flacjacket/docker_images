@@ -17,20 +17,19 @@ RUN addgroup -g 1000 home_assistant \
 RUN mkdir -p /static_config/custom_components
 RUN mkdir /static_config/custom_components/hacs && \
     wget "https://github.com/hacs/integration/releases/latest/download/hacs.zip" && \
+    wget "https://github.com/custom-components/alexa_media_player/releases/download/v3.10.15/alexa_media.zip" && \
     wget "https://github.com/zachowj/hass-node-red/archive/v0.5.4.zip" -O hass-node-red.zip && \
     wget "https://github.com/AlexxIT/WebRTC/archive/refs/heads/master.zip" -O webrtc.zip && \
-    wget "https://github.com/custom-components/alexa_media_player/archive/refs/tags/v3.10.12.zip" -O alexa_media_player.zip && \
     wget "https://github.com/blakeblackshear/frigate-hass-integration/archive/refs/tags/v2.2.0.zip" -O frigate.zip && \
     unzip hacs.zip -d /static_config/custom_components/hacs && \
+    unzip alexa_media.zip -d /static_config/custom_components/alexa_media && \
     unzip hass-node-red.zip && \
     unzip webrtc.zip && \
-    unzip alexa_media_player.zip && \
     unzip frigate.zip && \
     mv hass-node-red-*/custom_components/nodered /static_config/custom_components/ && \
     mv WebRTC-*/custom_components/webrtc /static_config/custom_components/ && \
-    mv alexa_media_player-*/custom_components/alexa_media /static_config/custom_components/ && \
     mv frigate-hass-integration-*/custom_components/frigate /static_config/custom_components/ && \
-    rm -r *.zip hass-node-red-*/ WebRTC-*/
+    rm -r *.zip hass-node-red-*/ WebRTC-*/ frigate-hass-integration-*/
 COPY *.yaml /static_config/
 COPY automations /static_config/automations
 COPY custom_components /static_config/custom_components
