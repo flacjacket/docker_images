@@ -61,7 +61,7 @@
       wait_template: "{{ is_state('input_boolean.washing_machine_state', 'off') and is_state('input_boolean.dryer_state', 'off') }}"
     - service: notify.alexa_media_sean_s_echo_show
       data:
-        message: ->
+        message: >-
           {% if washer_run and dryer_run %}
           The washing machine and dryer are done
           {% elif washer_run %}
