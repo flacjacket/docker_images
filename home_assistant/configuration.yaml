@@ -46,11 +46,11 @@ amcrest:
     username: !secret amcrest_user
     password: !secret amcrest_password
     binary_sensors: [audio_detected, online, motion_detected]
-#camera:
-#  - platform: ffmpeg
-#    name: Doorbell Camera
-#    input: !secret doorbell_camera_url
-#  - platform: zoneminder
+
+camera:
+  - platform: ffmpeg
+    name: Doorbell Camera
+    input: !secret doorbell_camera_url
 
 #config:
 
@@ -152,16 +152,11 @@ recorder:
 
 #sensor:
 
-
 #sonos:
 #  media_player:
 #    hosts:
 #      - 10.10.10.58
 #    advertise_addr: 10.10.10.2
-
-#stream:
-
-#sun:
 
 #system_health:
 
