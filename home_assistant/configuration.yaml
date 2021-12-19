@@ -41,10 +41,15 @@ alexa:
 #        stream_source: rtsp
 #        binary_sensors: [motion_detected]
 
-camera:
-  - platform: ffmpeg
-    name: Doorbell Camera
-    input: !secret doorbell_camera_url
+amcrest:
+  - host: !secret amcrest_host
+    username: !secret amcrest_user
+    password: !secret amcrest_password
+    binary_sensors: [audio_detected, online, motion_detected]
+#camera:
+#  - platform: ffmpeg
+#    name: Doorbell Camera
+#    input: !secret doorbell_camera_url
 #  - platform: zoneminder
 
 #config:
