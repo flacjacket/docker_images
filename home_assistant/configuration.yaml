@@ -49,8 +49,11 @@ amcrest:
 
 camera:
   - platform: ffmpeg
-    name: Doorbell Camera
+    name: Doorbell RTSP Camera
     input: !secret doorbell_camera_url
+  - platform: ffmpeg
+    name: Front RTSP Camera
+    input: !secret front_camera_url
 
 #config:
 
