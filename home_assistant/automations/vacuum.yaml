@@ -12,10 +12,10 @@
             - service: script.vacuum_run_segments
               data:
                 sequence_id:
-                  entity_id: sensor.tom_servo_map_segments
+                  entity_id: sensor.map_segments_tom_servo
                 room_names: ["Laundry", "Hallway", "Master Bedroom", "Master Bathroom"]
                 vacuum_id:
-                  entity_id: vacuum.tomservo
+                  entity_id: vacuum.tom_servo
         - conditions:
             - condition: time
               weekday: [tue, thu]
@@ -23,7 +23,7 @@
             - service: script.vacuum_run_segments
               data:
                 sequence_id:
-                  entity_id: sensor.tom_servo_map_segments
+                  entity_id: sensor.map_segments_tom_servo
                 room_names: ["Laundry", "Hallway", "Front Bedroom", "Back Bedroom", "Center Bedroom"]
                 vacuum_id:
-                  entity_id: vacuum.tomservo
+                  entity_id: vacuum.tom_servo
