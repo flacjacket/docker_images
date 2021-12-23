@@ -1,0 +1,48 @@
+diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
+index 2ed6080f84..bed9331303 100644
+--- a/homeassistant/components/venstar/__init__.py
++++ b/homeassistant/components/venstar/__init__.py
+@@ -74,40 +74,19 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
+             hass,
+             _LOGGER,
+             name=DOMAIN,
+-            update_interval=timedelta(seconds=60),
++            update_interval=timedelta(seconds=10),
+         )
+         self.client = venstar_connection
+ 
+     async def _async_update_data(self) -> None:
+         """Update the state."""
+         try:
+-            await self.hass.async_add_executor_job(self.client.update_info)
++            await self.hass.async_add_executor_job(self.client.update)
+         except (OSError, RequestException) as ex:
+             raise update_coordinator.UpdateFailed(
+-                f"Exception during Venstar info update: {ex}"
++                f"Exception during Venstar update: {ex}"
+             ) from ex
+ 
+-        # older venstars sometimes cannot handle rapid sequential connections
+-        await asyncio.sleep(1)
+-
+-        try:
+-            await self.hass.async_add_executor_job(self.client.update_sensors)
+-        except (OSError, RequestException) as ex:
+-            raise update_coordinator.UpdateFailed(
+-                f"Exception during Venstar sensor update: {ex}"
+-            ) from ex
+-
+-        # older venstars sometimes cannot handle rapid sequential connections
+-        await asyncio.sleep(1)
+-
+-        try:
+-            await self.hass.async_add_executor_job(self.client.update_alerts)
+-        except (OSError, RequestException) as ex:
+-            raise update_coordinator.UpdateFailed(
+-                f"Exception during Venstar alert update: {ex}"
+-            ) from ex
+-        return None
+-
+ 
+ class VenstarEntity(CoordinatorEntity):
+     """Representation of a Venstar entity."""
