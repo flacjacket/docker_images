@@ -120,12 +120,7 @@ default_config:
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 10.10.110.1
-
-#input_boolean:
-#  vacation:
-#    name: Vacation
-#    icon: mdi:airplane
+    - !secret proxy_url
 
 #logbook:
 
@@ -134,7 +129,10 @@ http:
 
 #map:
 
-#media_player:
+media_player:
+  - platform: yamaha
+    name: WXC-50
+    host: !secret yamaha_url
 
 # enable the mobile app support
 #mobile_app:
@@ -154,12 +152,6 @@ recorder:
 #script: !include scripts.yaml
 
 #sensor:
-
-#sonos:
-#  media_player:
-#    hosts:
-#      - 10.10.10.58
-#    advertise_addr: 10.10.10.2
 
 #system_health:
 

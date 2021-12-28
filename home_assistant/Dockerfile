@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2021.12.4
+FROM homeassistant/home-assistant:2021.12.6
 
 COPY docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-healthcheck.sh
@@ -18,7 +18,7 @@ RUN mkdir -p /static_config/custom_components
 RUN mkdir /static_config/custom_components/hacs && \
     wget "https://github.com/hacs/integration/releases/latest/download/hacs.zip" && \
     wget "https://github.com/custom-components/alexa_media_player/releases/download/v3.10.15/alexa_media.zip" && \
-    wget "https://github.com/zachowj/hass-node-red/archive/v0.5.4.zip" -O hass-node-red.zip && \
+    wget "https://github.com/zachowj/hass-node-red/archive/v1.0.1.zip" -O hass-node-red.zip && \
     wget "https://github.com/AlexxIT/WebRTC/archive/refs/heads/master.zip" -O webrtc.zip && \
     wget "https://github.com/blakeblackshear/frigate-hass-integration/archive/refs/tags/v2.2.0.zip" -O frigate.zip && \
     unzip hacs.zip -d /static_config/custom_components/hacs && \
