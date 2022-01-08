@@ -9,9 +9,7 @@ vacuum_run_segments:
     vacuum_id:
       required: true
       selector:
-        target:
-          entity:
-            domain: vacuum
+        text:
     sequence_id:
       required: true
       selector:
@@ -21,7 +19,7 @@ vacuum_run_segments:
   sequence:
     - service: mqtt.publish
       data:
-        topic: valetudo/{{ vacuum_id.entity_id.split('.')[1] }}/MapSegmentationCapability/clean/set
+        topic: valetudo/{{ vacuum_id }}/MapSegmentationCapability/clean/set
         payload: >-
           {% set data = namespace(room_ids=[]) %}
           {% set seg_domain, seg_device = sequence_id.entity_id.split('.') %}

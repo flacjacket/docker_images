@@ -14,8 +14,7 @@
                 sequence_id:
                   entity_id: sensor.valetudo_tom_servo_map_segments
                 room_names: ["Laundry", "Hallway", "Master Bedroom", "Master Bathroom"]
-                vacuum_id:
-                  entity_id: vacuum.valetudo_tom_servo
+                vacuum_id: tom_servo
         - conditions:
             - condition: time
               weekday: [tue, thu]
@@ -25,5 +24,4 @@
                 sequence_id:
                   entity_id: sensor.valetudo_tom_servo_map_segments
                 room_names: ["Laundry", "Hallway", "Front Bedroom", "Back Bedroom", "Center Bedroom"]
-                vacuum_id:
-                  entity_id: vacuum.valetudo_tom_servo
+                vacuum_id: tom_servo
