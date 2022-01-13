@@ -138,13 +138,15 @@ notify:
     services:
       - service: alexa_media_sean_s_echo_show
         data:
-          type: tts
+          data:
+            type: tts
   - name: laundry_notify
     platform: group
     services:
       - service: alexa_media_sean_s_echo_show
         data:
-          type: tts
+          data:
+            type: tts
 
 #panel_iframe:
 #  nodered:
