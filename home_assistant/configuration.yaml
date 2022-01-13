@@ -136,13 +136,13 @@ notify:
   - name: doorbell_notify
     platform: group
     services:
-      - service: notify.alexa_media_sean_s_echo_show
+      - service: alexa_media_sean_s_echo_show
         data:
           type: tts
   - name: laundry_notify
     platform: group
     services:
-      - service: notify.alexa_media_sean_s_echo_show
+      - service: alexa_media_sean_s_echo_show
         data:
           type: tts
 
