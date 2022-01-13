@@ -129,11 +129,6 @@ http:
 
 #map:
 
-media_player:
-  - platform: yamaha
-    name: WXC-50
-    host: !secret yamaha_url
-
 # enable the mobile app support
 #mobile_app:
 
