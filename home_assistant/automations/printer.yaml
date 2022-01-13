@@ -1,0 +1,12 @@
+- alias: "Turn off printer if left on"
+  id: printer_idle
+  trigger:
+    platform: state
+    entity_id: sensor.cnmf240_series
+    to: "idle"
+    for:
+      hours: 2
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.0x00124b002456dd49

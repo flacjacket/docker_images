@@ -132,6 +132,20 @@ http:
 # enable the mobile app support
 #mobile_app:
 
+notify:
+  - name: doorbell_notify
+    platform: group
+    services:
+      - service: notify.alexa_media_sean_s_echo_show
+        data:
+          type: tts
+  - name: laundry_notify
+    platform: group
+    services:
+      - service: notify.alexa_media_sean_s_echo_show
+        data:
+          type: tts
+
 #panel_iframe:
 #  nodered:
 #    title: "Node-Red"

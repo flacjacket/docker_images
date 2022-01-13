@@ -1,0 +1,14 @@
+- alias: "[Doorbell] Announce doorbell if chime off"
+  id: doorbell_announce
+  trigger:
+    platform: state
+    entity_id: binary_sensor.doorbell_button
+    to: "on"
+  condition:
+    condition: state
+    entity_id: switch.doorbell_chime_active
+    state: "off"
+  action:
+    - service: notify.doorbell_notify
+      data:
+        message: "Someone is at the door"
