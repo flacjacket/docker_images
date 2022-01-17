@@ -1,4 +1,19 @@
-- alias: Run Vacuum Upstairs
+- alias: "[Vacuum] Check error state"
+  id: vacuum_error_monitor
+  trigger:
+    platform: state
+    entity_id:
+      - vacuum.valetudo_crow
+      - vacuum.valetudo_gypsy
+      - vacuum.valetudo_tom_servo
+    to: "error"
+    for: "00:00:10"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "Vacuum Error"
+        message: "Vacuum {{ trigger.entity_id }} has failed during cleaning"
+- alias: "[Vacuum] Run Upstairs"
   id: vacuum_schedule_upstairs
   trigger:
     - platform: time
