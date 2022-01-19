@@ -19,6 +19,7 @@ alexa:
     filter:
       include_entity_globs:
         - "cover.*_shade"
+        - "input_boolean.alexa_*_occupancy"
 
     #filter:
     #  include_domains:
@@ -170,6 +171,13 @@ recorder:
 
 #system_health:
 
+template:
+  - binary_sensor:
+      - name: Alexa Living Room Occupancy
+        unique_id: alexa_living_room_occupancy_motion
+        device_class: motion
+        state: "{{ states('input_boolean.alexa_living_room_occupancy') }}"
+
 #tts:
 #  - platform: google_translate
 #    service_name: google_say
@@ -185,7 +193,3 @@ recorder:
 #  username: admin
 #  password: !secret zoneminder_pass
 #  ssl: true
-
-#zwave:
-#  usb_path: /dev/zwave
-#  network_key: !secret zwave_key
