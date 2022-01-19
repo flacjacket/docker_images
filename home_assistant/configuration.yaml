@@ -16,6 +16,10 @@ alexa:
     endpoint: https://api.amazonalexa.com/v3/events
     client_id: !secret alexa_client_id
     client_secret: !secret alexa_client_secret
+    filter:
+      include_entity_globs:
+        - "cover.*_shade"
+
     #filter:
     #  include_domains:
     #    - camera
