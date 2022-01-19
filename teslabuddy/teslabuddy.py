@@ -120,10 +120,10 @@ SENSORS = {
         "Vehicle Battery", device_class="battery", unit_of_measurement="%"
     ),
     "charge_energy_added": SensorInfo(
-        "Vehice Charge Energy Added",
+        "Vehile Charge Energy Added",
         device_class="energy",
         unit_of_measurement="kWh",
-        state_class="total_increasing",
+        state_class="total",
     ),
     "charge_limit_soc": SensorInfo(
         "Vehicle Charge Limit SOC",
@@ -147,14 +147,14 @@ SENSORS = {
         "Vehicle Voltage", device_class="voltage", unit_of_measurement="V"
     ),
     "elevation": SensorInfo(
-        "Vehice Elevation", unit_of_measurement="m", icon="mdi:image-filter-hdr"
+        "Vehile Elevation", unit_of_measurement="m", icon="mdi:image-filter-hdr"
     ),
     "est_battery_range_km": SensorInfo(
         "Vehicle Range - Estimated", unit_of_measurement="km", icon="mdi:gauge"
     ),
     "exterior_color": SensorInfo("Vehicle Exterior Color", icon="mdi:palette"),
     "heading": SensorInfo(
-        "Vehice Heading", unit_of_measurement="°", icon="mdi:compass"
+        "Vehile Heading", unit_of_measurement="°", icon="mdi:compass"
     ),
     "ideal_battery_range_km": SensorInfo(
         "Vehicle Range - Ideal", unit_of_measurement="km", icon="mdi:gauge"
