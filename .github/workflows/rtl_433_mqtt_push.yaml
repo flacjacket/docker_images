@@ -1,0 +1,29 @@
+name: Push updated RTL433 Autodiscovery image
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/rtl_433_mqtt_push.yaml'
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          repository: 'pbkhrv/rtl_433-hass-addons'
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: ./rtl_433_mqtt_autodiscovery
+          file: ./rtl_433_mqtt_autodiscovery/Dockerfile
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/rtl_433_mqtt_autodiscovery:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/rtl_433_mqtt_autodiscovery:latest
