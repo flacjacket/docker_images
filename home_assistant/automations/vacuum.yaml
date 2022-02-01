@@ -40,3 +40,15 @@
                   entity_id: sensor.valetudo_tom_servo_map_segments
                 room_names: ["Laundry", "Hallway", "Front Bedroom", "Back Bedroom", "Center Bedroom"]
                 vacuum_id: tom_servo
+- alias: "[Vacuum] Run Basement"
+  id: vacuum_schedule_basement
+  trigger:
+    - platform: time
+      at: '4:00'
+  action:
+    - service: script.vacuum_run_segments
+      data:
+        sequence_id:
+          entity_id: sensor.valetudo_gypsy_map_segments
+        room_names: ["Game Room", "Bathroom"]
+        vacuum_id: gypsy
