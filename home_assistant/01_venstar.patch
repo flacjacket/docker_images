@@ -1,8 +1,25 @@
 diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
-index 2ed6080f84..bed9331303 100644
+index 66a458f210..b008b4d093 100644
 --- a/homeassistant/components/venstar/__init__.py
 +++ b/homeassistant/components/venstar/__init__.py
-@@ -74,40 +74,19 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
+@@ -1,7 +1,6 @@
+ """The venstar component."""
+ from __future__ import annotations
+ 
+-import asyncio
+ from datetime import timedelta
+ 
+ from requests import RequestException
+@@ -20,7 +19,7 @@ from homeassistant.core import HomeAssistant, callback
+ from homeassistant.helpers import update_coordinator
+ from homeassistant.helpers.update_coordinator import CoordinatorEntity
+ 
+-from .const import _LOGGER, DOMAIN, VENSTAR_SLEEP, VENSTAR_TIMEOUT
++from .const import _LOGGER, DOMAIN, VENSTAR_TIMEOUT
+ 
+ PLATFORMS = [Platform.BINARY_SENSOR, Platform.CLIMATE, Platform.SENSOR]
+ 
+@@ -77,7 +76,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
              hass,
              _LOGGER,
              name=DOMAIN,
@@ -10,7 +27,8 @@ index 2ed6080f84..bed9331303 100644
 +            update_interval=timedelta(seconds=10),
          )
          self.client = venstar_connection
- 
+         self.runtimes: list[dict[str, int]] = []
+@@ -85,46 +84,12 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
      async def _async_update_data(self) -> None:
          """Update the state."""
          try:
@@ -23,7 +41,7 @@ index 2ed6080f84..bed9331303 100644
              ) from ex
  
 -        # older venstars sometimes cannot handle rapid sequential connections
--        await asyncio.sleep(1)
+-        await asyncio.sleep(VENSTAR_SLEEP)
 -
 -        try:
 -            await self.hass.async_add_executor_job(self.client.update_sensors)
@@ -33,7 +51,7 @@ index 2ed6080f84..bed9331303 100644
 -            ) from ex
 -
 -        # older venstars sometimes cannot handle rapid sequential connections
--        await asyncio.sleep(1)
+-        await asyncio.sleep(VENSTAR_SLEEP)
 -
 -        try:
 -            await self.hass.async_add_executor_job(self.client.update_alerts)
@@ -41,8 +59,32 @@ index 2ed6080f84..bed9331303 100644
 -            raise update_coordinator.UpdateFailed(
 -                f"Exception during Venstar alert update: {ex}"
 -            ) from ex
+-
+-        # older venstars sometimes cannot handle rapid sequential connections
+-        await asyncio.sleep(VENSTAR_SLEEP)
+-
+-        try:
+-            self.runtimes = await self.hass.async_add_executor_job(
+-                self.client.get_runtimes
+-            )
+-        except (OSError, RequestException) as ex:
+-            raise update_coordinator.UpdateFailed(
+-                f"Exception during Venstar runtime update: {ex}"
+-            ) from ex
+-
 -        return None
 -
  
  class VenstarEntity(CoordinatorEntity):
      """Representation of a Venstar entity."""
+diff --git a/homeassistant/components/venstar/const.py b/homeassistant/components/venstar/const.py
+index ec672afd71..999e08384d 100644
+--- a/homeassistant/components/venstar/const.py
++++ b/homeassistant/components/venstar/const.py
+@@ -25,6 +25,5 @@ HOLD_MODE_OFF = "off"
+ HOLD_MODE_TEMPERATURE = "temperature"
+ 
+ VENSTAR_TIMEOUT = 5
+-VENSTAR_SLEEP = 1.0
+ 
+ _LOGGER = logging.getLogger(__name__)
