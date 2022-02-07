@@ -115,7 +115,7 @@ action:
               - "{{ light_brightness_night > 0 }}"
               - condition: time
                 after: !input time_night
-                before: !input time_night
+                before: !input time_day
             sequence:
               - service: light.turn_on
                 target: !input light_target
