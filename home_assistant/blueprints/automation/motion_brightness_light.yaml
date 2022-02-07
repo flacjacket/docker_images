@@ -90,6 +90,10 @@ condition:
         entity_id: !input brightness_entity
         below: !input brightness_trigger
 
+variables:
+  light_brightness_day: !input light_brightness_day
+  light_brightness_night: !input light_brightness_night
+
 action:
   - choose:
       - alias: "Turn light off"
