@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2022.2.2
+FROM homeassistant/home-assistant:2022.2.3
 
 COPY docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-healthcheck.sh
@@ -32,6 +32,7 @@ RUN mkdir /static_config/custom_components/hacs && \
     rm -r *.zip hass-node-red-*/ WebRTC-*/ frigate-hass-integration-*/
 COPY *.yaml /static_config/
 COPY automations /static_config/automations
+COPY blueprints /static_config/blueprints
 COPY custom_components /static_config/custom_components
 COPY scripts /static_config/scripts
 RUN chmod 444 /static_config/*.yaml

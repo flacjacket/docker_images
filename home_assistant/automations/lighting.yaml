@@ -1,0 +1,30 @@
+- alias: "[Lighting] Motion activated entry"
+  id: lighting_motion_entry
+  use_blueprint:
+    path: motion_brightness_light.yaml
+    input:
+      motion_entity: binary_sensor.entry_motion_occupancy
+      brightness_entity: sensor.entry_motion_illuminance_lux
+      brightness_trigger: 10
+      no_motion_wait: 30
+      light_target:
+        entity_id: light.foyer_light
+      light_brightness_night: 20
+      light_brightness_day: 70
+      time_night: 00:00:00
+      time_day: 07:00:00
+- alias: "[Lighting] Motion activated upstairs hall"
+  id: lighting_motion_upstairs_hall
+  use_blueprint:
+    path: motion_brightness_light.yaml
+    input:
+      motion_entity: binary_sensor.upstairs_hall_motion_occupancy
+      brightness_entity: sensor.upstairs_hall_motion_illuminance_lux
+      brightness_trigger: 10
+      no_motion_wait: 30
+      light_target:
+        entity_id: light.upstairs_hall_light
+      light_brightness_night: 20
+      light_brightness_day: 70
+      time_night: 00:00:00
+      time_day: 07:00:00

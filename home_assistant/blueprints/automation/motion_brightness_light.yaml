@@ -1,0 +1,126 @@
+blueprint:
+  name: Motion and brightness activated Light
+  description: Turn on a light when motion is detected and it is dark enough (or night).
+  domain: automation
+  input:
+    motion_entity:
+      name: Motion Sensor
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+    brightness_entity:
+      name: Lux/Brightness Sensor
+      selector:
+        entity:
+          device_class: illuminance
+    brightness_trigger:
+      name: Maximum brightness
+      description: Brightness trigger level. If it gets any brighter the lights will not be turned on.
+      default: 20
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: lx
+    no_motion_wait:
+      name: Wait time
+      description: Time to leave the light on after last motion is detected.
+      default: 120
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+    light_target:
+      name: Light(s) to control
+      selector:
+        target:
+          entity:
+            domain: light
+    light_brightness_day:
+      name: Daytime light brightness
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    light_brightness_night:
+      name: Nighttime light brightness
+      description: Brightness trigger level. If it gets any brighter the lights will not be turned on.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    time_day:
+      name: Time to start the day
+      default: "00:00:00"
+      selector:
+        time:
+    time_night:
+      name: Time to start the night
+      default: "00:00:00"
+      selector:
+        time:
+
+# If motion is detected within the delay,
+# we restart the script.
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input motion_entity
+    from: "off"
+    to: "on"
+  - platform: state
+    entity_id: !input motion_entity
+    from: "on"
+    to: "off"
+    for: !input no_motion_wait
+
+condition:
+  - condition: or
+    conditions:
+      - "{{ trigger.to_state.state == 'off' }}"
+      - condition: numeric_state
+        entity_id: !input brightness_entity
+        below: !input brightness_trigger
+
+action:
+  - choose:
+      - alias: "Turn light off"
+        conditions: "{{ trigger.to_state.state == 'off' }}"
+        sequence:
+          - service: light.turn_off
+            target: !input light_target
+    default:
+      - choose:
+          - alias: "Set daytime brightness"
+            conditions:
+              - "{{ light_brightness_day > 0 }}"
+              - condition: time
+                after: !input time_day
+                before: !input time_night
+            sequence:
+              - service: light.turn_on
+                target: !input light_target
+                data:
+                  brightness_pct: !input light_brightness_day
+          - alias: "Set nighttime brightness"
+            conditions:
+              - "{{ light_brightness_night > 0 }}"
+              - condition: time
+                after: !input time_night
+                before: !input time_night
+            sequence:
+              - service: light.turn_on
+                target: !input light_target
+                data:
+                  brightness_pct: !input light_brightness_night
+        default:
+          - service: light.turn_on
+            target: !input light_target
