@@ -40,6 +40,18 @@
                   entity_id: sensor.valetudo_tom_servo_map_segments
                 room_names: ["Laundry", "Hallway", "Front Bedroom", "Back Bedroom", "Center Bedroom"]
                 vacuum_id: tom_servo
+- alias: "[Vacuum] Run Main Floor"
+  id: vacuum_schedule_main
+  trigger:
+    - platform: time
+      at: '2:00'
+  action:
+    - service: script.vacuum_run_segments
+      data:
+        sequence_id:
+          entity_id: sensor.valetudo_crow_map_segments
+        room_names: ["Office", "Entry", "Bathroom", "Dining Room", "Kitchen"]
+        vacuum_id: crow
 - alias: "[Vacuum] Run Basement"
   id: vacuum_schedule_basement
   trigger:
