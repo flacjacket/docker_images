@@ -11,8 +11,8 @@
         entity_id: light.foyer_light
       light_brightness_night: 10
       light_brightness_day: 70
-      time_night: 21:00:00
-      time_day: 07:00:00
+      time_night: "21:00:00"
+      time_day: "07:00:00"
 - alias: "[Lighting] Motion activated upstairs hall"
   id: lighting_motion_upstairs_hall
   use_blueprint:
@@ -26,5 +26,5 @@
         entity_id: light.upstairs_hall_light
       light_brightness_night: 10
       light_brightness_day: 70
-      time_night: 21:00:00
-      time_day: 07:00:00
+      time_night: "21:00:00"
+      time_day: "07:00:00"
