@@ -36,7 +36,5 @@ COPY blueprints /static_config/blueprints
 COPY custom_components /static_config/custom_components
 COPY scripts /static_config/scripts
 RUN chmod 444 /static_config/*.yaml
-RUN python -m pip install --force-reinstall --no-deps \
-    https://github.com/flacjacket/python-amcrest/archive/py3.tar.gz
 
 HEALTHCHECK CMD /usr/local/bin/docker-healthcheck.sh || exit 1
