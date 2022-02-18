@@ -1,0 +1,28 @@
+name: Push updated RTSPtoWeb image
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'rtsptoweb/**'
+      - '.github/workflows/rtsptoweb_push.yml'
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_REGISTRY_TOKEN }}
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: ./rtsptoweb
+          file: ./rtsptoweb/Dockerfile
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/rtsptoweb:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/rtsptoweb:latest
