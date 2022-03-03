@@ -9,4 +9,4 @@
   action:
     - service: switch.turn_off
       target:
-        entity_id: switch.0x00124b002456dd49
+        entity_id: switch.printer_plug
