@@ -5,6 +5,8 @@ on:
     paths:
       - 'rtsptoweb/**'
       - '.github/workflows/rtsptoweb_push.yml'
+  pull_request:
+    branches: []
 jobs:
   push:
     runs-on: ubuntu-latest

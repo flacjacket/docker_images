@@ -5,6 +5,8 @@ on:
     paths:
       - 'rtl_433_mqtt_hass/**'
       - '.github/workflows/rtl_433_mqtt_hass_push.yaml'
+  pull_request:
+    branches: []
 jobs:
   push:
     runs-on: ubuntu-latest
