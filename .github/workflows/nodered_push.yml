@@ -5,8 +5,8 @@ on:
     paths:
       - 'nodered/**'
       - '.github/workflows/nodered_push.yml'
-  pull_request:
-    branches: []
+    branches:
+      - master
 jobs:
   push:
     runs-on: ubuntu-latest

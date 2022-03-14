@@ -5,8 +5,8 @@ on:
     paths:
       - 'teslabuddy/**'
       - '.github/workflows/teslabuddy_push.yml'
-  pull_request:
-    branches: []
+    branch:
+      - master
 jobs:
   push:
     runs-on: ubuntu-latest

@@ -5,8 +5,8 @@ on:
     paths:
       - 'home_assistant/**'
       - '.github/workflows/home_assistant_push.yml'
-  pull_request:
-    branches: []
+    branches:
+      - master
 jobs:
   push:
     runs-on: ubuntu-latest

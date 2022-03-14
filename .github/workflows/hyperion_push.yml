@@ -5,8 +5,8 @@ on:
     paths:
       - 'hyperion/**'
       - '.github/workflows/hyperion_push.yml'
-  pull_request:
-    branches: []
+    branches:
+      - master
 jobs:
   push:
     runs-on: ubuntu-latest
