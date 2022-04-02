@@ -8,17 +8,16 @@ LABEL description="Build container for node red with home assistant nodes" \
 USER root
 RUN apk add --no-cache \
     git \
-    python \
-    python-dev \
-    py-pip \
+    python3-dev \
+    py3-pip \
+    py3-virtualenv \
     build-base \
-    libc6-compat \
-    && pip install virtualenv
+    libc6-compat
 
 WORKDIR /usr/src/node-red/
 
-RUN  npm install node-red-contrib-home-assistant-websocket@0.33.1 \
-  && npm install node-red-contrib-bigtimer@2.7.5
+RUN  npm install node-red-contrib-home-assistant-websocket@0.43.1 \
+  && npm install node-red-contrib-bigtimer@2.8.1
 
 FROM nodered/node-red:2.2.2-12
 
