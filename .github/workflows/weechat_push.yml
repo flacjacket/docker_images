@@ -5,6 +5,12 @@ on:
     paths:
       - 'weechat/**'
       - '.github/workflows/weechat_push.yml'
+    branches:
+      - master
+  pull_request:
+    paths:
+      - 'weechat/**'
+      - '.github/workflows/weechat_push.yml'
 jobs:
   push:
     runs-on: ubuntu-latest

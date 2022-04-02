@@ -7,6 +7,10 @@ on:
       - '.github/workflows/rtsptoweb_push.yml'
     branches:
       - master
+  pull_request:
+    paths:
+      - 'rtsptoweb/**'
+      - '.github/workflows/rtsptoweb_push.yml'
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -22,7 +26,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v2
         with:
-          push: true
+          push: ${{ github.ref == 'refs/heads/master' }}
           context: ./rtsptoweb
           file: ./rtsptoweb/Dockerfile
           tags: |
