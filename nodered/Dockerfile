@@ -1,4 +1,4 @@
-FROM nodered/node-red:1.3.7-12 as builder
+FROM nodered/node-red:2.2.2-12 as builder
 
 LABEL description="Build container for node red with home assistant nodes" \
       maintainer="sean.v.775@gmail.com"
@@ -20,7 +20,7 @@ WORKDIR /usr/src/node-red/
 RUN  npm install node-red-contrib-home-assistant-websocket@0.33.1 \
   && npm install node-red-contrib-bigtimer@2.7.5
 
-FROM nodered/node-red:1.3.7-12
+FROM nodered/node-red:2.2.2-12
 
 LABEL description="Node red container with home assistant nodes" \
       maintainer="sean.v.775@gmail.com"
