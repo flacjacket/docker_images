@@ -1,11 +1,12 @@
-FROM homeassistant/home-assistant:2022.3.8
+FROM homeassistant/home-assistant:2022.4.0
 
 COPY docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-healthcheck.sh
 
 COPY *.patch /
 RUN  cd /usr/src/homeassistant/ \
-  && for p in /*.patch; do git apply $p; done \
+  && git apply /00_no_cloud.patch \
+  && git apply /01_venstar.patch \
   && rm /*.patch
 
 RUN addgroup -g 1000 home_assistant \
@@ -17,8 +18,8 @@ RUN addgroup -g 1000 home_assistant \
 RUN mkdir -p /static_config/custom_components
 RUN mkdir /static_config/custom_components/hacs && \
     wget "https://github.com/hacs/integration/releases/latest/download/hacs.zip" && \
-    wget "https://github.com/custom-components/alexa_media_player/releases/download/v3.11.0/alexa_media.zip" && \
-    wget "https://github.com/zachowj/hass-node-red/archive/v1.0.6.zip" -O hass-node-red.zip && \
+    wget "https://github.com/custom-components/alexa_media_player/releases/download/v3.11.1/alexa_media.zip" && \
+    wget "https://github.com/zachowj/hass-node-red/archive/v1.0.7.zip" -O hass-node-red.zip && \
     wget "https://github.com/blakeblackshear/frigate-hass-integration/archive/refs/tags/v2.2.2.zip" -O frigate.zip && \
     unzip hacs.zip -d /static_config/custom_components/hacs && \
     unzip alexa_media.zip -d /static_config/custom_components/alexa_media && \

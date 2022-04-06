@@ -1,11 +1,5 @@
-commit 3f3ed6c9f9338d24770d58730f5ecef9032a38d4
-Author: Sean Vig <sean.v.775@gmail.com>
-Date:   Mon Nov 29 22:57:22 2021 -0500
-
-    Personal updates
-
 diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
-index 66a458f210..d83bb8187c 100644
+index 759908c87e..56167b0eef 100644
 --- a/homeassistant/components/venstar/__init__.py
 +++ b/homeassistant/components/venstar/__init__.py
 @@ -77,7 +77,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
@@ -60,5 +54,5 @@ index 66a458f210..d83bb8187c 100644
 -        return None
 -
  
- class VenstarEntity(CoordinatorEntity):
+ class VenstarEntity(CoordinatorEntity[VenstarDataUpdateCoordinator]):
      """Representation of a Venstar entity."""
