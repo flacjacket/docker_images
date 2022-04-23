@@ -50,7 +50,7 @@
       data:
         sequence_id:
           entity_id: sensor.valetudo_crow_map_segments
-        room_names: ["Office", "Entry", "Bathroom", "Dining Room", "Kitchen"]
+        room_names: ["Office", "Bathroom", "Dining Room", "Kitchen"]
         vacuum_id: crow
 - alias: "[Vacuum] Run Basement"
   id: vacuum_schedule_basement
