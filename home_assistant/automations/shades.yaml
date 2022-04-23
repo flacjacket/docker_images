@@ -4,7 +4,7 @@
     - platform: numeric_state
       entity_id: sun.sun
       attribute: elevation
-      above: -4
+      above: -2
   action:
     - service: script.move_living_room_shades
       data:
@@ -15,7 +15,7 @@
     - platform: numeric_state
       entity_id: sun.sun
       attribute: elevation
-      below: -4
+      below: -2
   action:
     - service: script.move_living_room_shades
       data:
@@ -37,7 +37,7 @@
     - platform: numeric_state
       entity_id: sun.sun
       attribute: elevation
-      below: 2
+      below: 4
   action:
     - service: script.move_dining_room_shades
       data:
