@@ -1,0 +1,22 @@
+- alias: "[TV] Turn on cable box"
+  id: cable_box_on
+  trigger:
+    - platform: time
+      at: '17:00'
+  condition:
+    - condition: state
+      entity_id: input_boolean.vacation
+      state: "off"
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.cable_box_plug
+- alias: "[TV] Turn off cable box"
+  id: cable_box_off
+  trigger:
+    - platform: time
+      at: '23:00'
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.cable_box_plug
