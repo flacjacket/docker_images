@@ -42,7 +42,7 @@ move_living_room_shades:
       data:
         shade_entities:
           entity_id:
-            # - cover.living_room_side_shade
+            - cover.living_room_side_shade
             - cover.living_room_left_shade
             - cover.living_room_center_shade
             - cover.living_room_right_shade
@@ -62,7 +62,7 @@ move_office_shades:
       data:
         shade_entities:
           entity_id:
-            # - cover.office_side_shade
+            - cover.office_side_shade
             - cover.office_left_shade
             - cover.office_right_shade
         direction: "{{ direction }}"

@@ -6,8 +6,14 @@
       attribute: elevation
       above: -2
   action:
-    - service: script.move_living_room_shades
+    - service: script.move_shades
       data:
+        shade_entities:
+          entity_id:
+             # - cover.living_room_side_shade
+            - cover.living_room_left_shade
+            - cover.living_room_center_shade
+            - cover.living_room_right_shade
         direction: Up
 - alias: Living Room Shades Down
   id: living_room_shades_down
@@ -17,8 +23,14 @@
       attribute: elevation
       below: -2
   action:
-    - service: script.move_living_room_shades
+    - service: script.move_shades
       data:
+        shade_entities:
+          entity_id:
+            - cover.living_room_side_shade
+            - cover.living_room_left_shade
+            - cover.living_room_center_shade
+            - cover.living_room_right_shade
         direction: Down
 - alias: Dining Room Shades Up
   id: dining_room_shades_up
@@ -28,8 +40,12 @@
       attribute: elevation
       above: 2
   action:
-    - service: script.move_dining_room_shades
+    - service: script.move_shades
       data:
+        shade_entities:
+          entity_id:
+            - cover.dining_room_left_shade
+            - cover.dining_room_right_shade
         direction: Up
 - alias: Dining Room Shades Down
   id: dining_room_shades_down
@@ -37,10 +53,14 @@
     - platform: numeric_state
       entity_id: sun.sun
       attribute: elevation
-      below: 4
+      below: 3
   action:
-    - service: script.move_dining_room_shades
+    - service: script.move_shades
       data:
+        shade_entities:
+          entity_id:
+            - cover.dining_room_left_shade
+            - cover.dining_room_right_shade
         direction: Down
 - alias: Office Shades Up
   id: office_shades_up
@@ -64,8 +84,13 @@
         entity_id: input_boolean.vacation
         state: "off"
   action:
-    - service: script.move_office_shades
+    - service: script.move_shades
       data:
+        shade_entities:
+          entity_id:
+            # - cover.office_side_shade
+            - cover.office_left_shade
+            - cover.office_right_shade
         direction: Up
 - alias: Office Shades Down
   id: office_shades_down
@@ -75,8 +100,13 @@
       attribute: elevation
       below: 4
   action:
-    - service: script.move_office_shades
+    - service: script.move_shades
       data:
+        shade_entities:
+          entity_id:
+            - cover.office_side_shade
+            - cover.office_left_shade
+            - cover.office_right_shade
         direction: Down
 - alias: Bedroom Shades Up
   id: bedroom_shades_up
@@ -84,8 +114,13 @@
     - platform: time
       at: "12:00:00"
   action:
-    - service: script.move_master_bedroom_shades
+    - service: script.move_shades
       data:
+        shade_entities:
+          entity_id:
+            # - cover.master_bedroom_side_shade
+            - cover.master_bedroom_left_shade
+            - cover.master_bedroom_right_shade
         direction: Up
 - alias: Bedroom Shades Down
   id: bedroom_shades_down
@@ -93,6 +128,11 @@
     - platform: time
       at: "17:00:00"
   action:
-    - service: script.move_master_bedroom_shades
+    - service: script.move_shades
       data:
+        shade_entities:
+          entity_id:
+            - cover.master_bedroom_side_shade
+            - cover.master_bedroom_left_shade
+            - cover.master_bedroom_right_shade
         direction: Down
