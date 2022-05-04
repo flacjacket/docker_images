@@ -1,4 +1,4 @@
-- alias: Living Room Shades Up
+- alias: "[Shades] Living Room Shades Up"
   id: living_room_shades_up
   trigger:
     - platform: numeric_state
@@ -10,12 +10,12 @@
       data:
         shade_entities:
           entity_id:
-             # - cover.living_room_side_shade
+            # - cover.living_room_side_shade
             - cover.living_room_left_shade
             - cover.living_room_center_shade
             - cover.living_room_right_shade
         direction: Up
-- alias: Living Room Shades Down
+- alias: "[Shades] Living Room Shades Down"
   id: living_room_shades_down
   trigger:
     - platform: numeric_state
@@ -32,7 +32,7 @@
             - cover.living_room_center_shade
             - cover.living_room_right_shade
         direction: Down
-- alias: Dining Room Shades Up
+- alias: "[Shades] Dining Room Shades Up"
   id: dining_room_shades_up
   trigger:
     - platform: numeric_state
@@ -47,7 +47,7 @@
             - cover.dining_room_left_shade
             - cover.dining_room_right_shade
         direction: Up
-- alias: Dining Room Shades Down
+- alias: "[Shades] Dining Room Shades Down"
   id: dining_room_shades_down
   trigger:
     - platform: numeric_state
@@ -62,7 +62,7 @@
             - cover.dining_room_left_shade
             - cover.dining_room_right_shade
         direction: Down
-- alias: Office Shades Up
+- alias: "[Shades] Office Shades Up"
   id: office_shades_up
   trigger:
     - platform: numeric_state
@@ -92,7 +92,7 @@
             - cover.office_left_shade
             - cover.office_right_shade
         direction: Up
-- alias: Office Shades Down
+- alias: "[Shades] Office Shades Down"
   id: office_shades_down
   trigger:
     - platform: numeric_state
@@ -108,7 +108,7 @@
             - cover.office_left_shade
             - cover.office_right_shade
         direction: Down
-- alias: Bedroom Shades Up
+- alias: "[Shades] Bedroom Shades Up"
   id: bedroom_shades_up
   trigger:
     - platform: time
@@ -122,7 +122,7 @@
             - cover.master_bedroom_left_shade
             - cover.master_bedroom_right_shade
         direction: Up
-- alias: Bedroom Shades Down
+- alias: "[Shades] Bedroom Shades Down"
   id: bedroom_shades_down
   trigger:
     - platform: time
