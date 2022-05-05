@@ -77,13 +77,6 @@ camera:
   - platform: ffmpeg
     name: Front RTSP Camera
     input: !secret front_camera_url
-  - platform: generic
-    name: Garage RTSP Camera
-    stream_source: !secret garage_camera_url
-    still_image_url: !secret garage_camera_image
-    username: !secret garage_camera_username
-    password: !secret garage_camera_password
-    authentication: digest
 
 #config:
 
