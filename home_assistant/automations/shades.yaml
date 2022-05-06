@@ -39,6 +39,18 @@
       entity_id: sun.sun
       attribute: elevation
       above: 2
+      id: "sun"
+    - platform: time
+      at: "7:00:00"
+      id: "time"
+  condition:
+    and:
+      - condition: time
+        alias: Late enough?
+        after: "7:00:00"
+      - condition: template
+        alias: Sun up enough?
+        value_template: "{{ state_attr('sun.sun', 'elevation') >= 2 }}"
   action:
     - service: script.move_shades
       data:
@@ -69,9 +81,18 @@
       entity_id: sun.sun
       attribute: elevation
       above: 4
+      id: "sun"
+    - platform: time
+      at: "8:30:00"
+      id: "time"
   condition:
-    condition: and
-    conditions:
+    and:
+      - condition: time
+        alias: Late enough?
+        after: "8:30:00"
+      - condition: template
+        alias: Sun up enough?
+        value_template: "{{ state_attr('sun.sun', 'elevation') >= 4 }}"
       - condition: time
         alias: Is Weekday?
         weekday:
