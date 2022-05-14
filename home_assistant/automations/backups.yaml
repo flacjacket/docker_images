@@ -1,0 +1,7 @@
+- alias: "Backups"
+  id: backup
+  trigger:
+    - platform: time
+      at: '3:00'
+  action:
+    - service: backup.create
