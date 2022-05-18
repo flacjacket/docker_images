@@ -12,7 +12,7 @@ trigger:
     entity_id:
       - !input button_entity
     attribute: action
-    not_from: ""
+    not_to: ""
 action:
   - choose:
     - conditions: "{{ trigger.to_state.attributes.action == 'play_pause' }}"
