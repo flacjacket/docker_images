@@ -40,7 +40,7 @@ action:
     - conditions: "{{ trigger.to_state.attributes.action == 'rotate_right' }}"
       sequence:
         - repeat:
-            while: "True"
+            while: "{{ 0 == 0 }}"
             sequence:
               - service: media_player.volume_up
                 target:
@@ -50,7 +50,7 @@ action:
     - conditions: "{{ trigger.to_state.attributes.action == 'rotate_left' }}"
       sequence:
         - repeat:
-            while: "True"
+            while: "{{ 0 == 0 }}"
             sequence:
               - service: media_player.volume_down
                 target:
