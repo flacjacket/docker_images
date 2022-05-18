@@ -1,0 +1,46 @@
+blueprint:
+  name: Speaker power toggle
+  domain: automation
+  input:
+    speaker_entity:
+      name: Speaker Entity
+    button_entity:
+      name: Button Entity
+mode: queued
+trigger:
+  - platform: state
+    entity_id:
+      - !input button_entity
+    attribute: action
+action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: trigger.to_state.attributes.action == 'play_pause'
+      sequence:
+        - service: media_player.toggle
+          target:
+            entity_id: !input speaker_entity
+    - conditions:
+      - condition: template
+        value_template: trigger.to_state.attributes.action == 'skip_forward'
+      sequence:
+        - choose:
+          - conditions:
+            - condition: template
+              value_template: state_attr(!input speaker_entity, 'source') == 'WXC-50'
+            sequence:
+              - service: media_player.select_source
+                data:
+                  source: Echo Dot
+                target:
+                  entity_id: !input speaker_entity
+          - conditions:
+            - condition: template
+              value_template: state_attr(!input speaker_entity, 'source') == 'Echo Dot'
+            sequence:
+              - service: media_player.select_source
+                data:
+                  source: WCX-50
+                target:
+                  entity_id: !input speaker_entity
