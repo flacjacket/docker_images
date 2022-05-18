@@ -12,32 +12,25 @@ trigger:
     entity_id:
       - !input button_entity
     attribute: action
+condition: "{{ trigger.to_state.attributes.action != '' }}"
 action:
   - choose:
-    - conditions:
-      - condition: template
-        value_template: "{{ trigger.to_state.attributes.action == 'play_pause' }}"
+    - conditions: "{{ trigger.to_state.attributes.action == 'play_pause' }}"
       sequence:
         - service: media_player.toggle
           target:
             entity_id: !input speaker_entity
-    - conditions:
-      - condition: template
-        value_template: "{{ trigger.to_state.attributes.action == 'skip_forward' }}"
+    - conditions: "{{ trigger.to_state.attributes.action == 'skip_forward' }}"
       sequence:
         - choose:
-          - conditions:
-            - condition: template
-              value_template: "{{ state_attr(!input speaker_entity, 'source') == 'WCX-50' }}"
+          - conditions: "{{ state_attr('sensor.kitchen_volume_action', 'source') == 'WCX-50' }}"
             sequence:
               - service: media_player.select_source
                 data:
                   source: Echo Dot
                 target:
                   entity_id: !input speaker_entity
-          - conditions:
-            - condition: template
-              value_template: "{{ state_attr(!input speaker_entity, 'source') == 'Echo Dot' }}"
+          - conditions: "{{ state_attr('sensor.kitchen_volume_action', 'source') == 'Echo Dot' }}"
             sequence:
               - service: media_player.select_source
                 data:
