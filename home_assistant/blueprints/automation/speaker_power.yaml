@@ -15,20 +15,17 @@ trigger:
 action:
   - choose:
     - conditions:
-      - condition: template
-        value_template: trigger.to_state.attributes.action == 'play_pause'
+        - "{{ trigger.to_state.attributes.action == 'play_pause' }}"
       sequence:
         - service: media_player.toggle
           target:
             entity_id: !input speaker_entity
     - conditions:
-      - condition: template
-        value_template: trigger.to_state.attributes.action == 'skip_forward'
+        - "{{ trigger.to_state.attributes.action == 'skip_forward' }}"
       sequence:
         - choose:
           - conditions:
-            - condition: template
-              value_template: state_attr(!input speaker_entity, 'source') == 'WXC-50'
+              - "{{ state_attr(!input speaker_entity, 'source') == 'WCX-50' }}"
             sequence:
               - service: media_player.select_source
                 data:
@@ -36,8 +33,7 @@ action:
                 target:
                   entity_id: !input speaker_entity
           - conditions:
-            - condition: template
-              value_template: state_attr(!input speaker_entity, 'source') == 'Echo Dot'
+              - "{{ state_attr(!input speaker_entity, 'source') == 'Echo Dot' }}"
             sequence:
               - service: media_player.select_source
                 data:
