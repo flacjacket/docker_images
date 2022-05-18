@@ -23,14 +23,14 @@ action:
     - conditions: "{{ trigger.to_state.attributes.action == 'skip_forward' }}"
       sequence:
         - choose:
-          - conditions: "{{ state_attr('sensor.kitchen_volume_action', 'source') == 'WCX-50' }}"
+          - conditions: "{{ state_attr('!input speaker_entity', 'source') == 'WCX-50' }}"
             sequence:
               - service: media_player.select_source
                 data:
                   source: Echo Dot
                 target:
                   entity_id: !input speaker_entity
-          - conditions: "{{ state_attr('sensor.kitchen_volume_action', 'source') == 'Echo Dot' }}"
+          - conditions: "{{ state_attr('!input speaker_entity', 'source') == 'Echo Dot' }}"
             sequence:
               - service: media_player.select_source
                 data:
