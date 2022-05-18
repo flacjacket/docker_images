@@ -1,7 +1,7 @@
 - alias: "[Speakers] Kitchen speaker power control"
   id: speakers_kitchen_power
   use_blueprint:
-    path: speaker_power.yaml
+    path: speaker_control.yaml
     input:
       speaker_entity: media_player.kitchen_speakers
       button_entity: sensor.kitchen_volume_action

@@ -1,18 +1,18 @@
 blueprint:
-  name: Speaker power toggle
+  name: Speaker control
   domain: automation
   input:
     speaker_entity:
       name: Speaker Entity
     button_entity:
       name: Button Entity
-mode: queued
+mode: restart
 trigger:
   - platform: state
     entity_id:
       - !input button_entity
     attribute: action
-condition: "{{ trigger.to_state.attributes.action != '' }}"
+    not_from: ""
 action:
   - choose:
     - conditions: "{{ trigger.to_state.attributes.action == 'play_pause' }}"
@@ -37,3 +37,23 @@ action:
                   source: WCX-50
                 target:
                   entity_id: !input speaker_entity
+    - conditions: "{{ trigger.to_state.attributes.action == 'rotate_right' }}"
+      sequence:
+        - repeat:
+            while: "True"
+            sequence:
+              - service: media_player.volume_up
+                target:
+                  entity_id: !input speaker_entity
+              - delay:
+                  milliseconds: 200
+    - conditions: "{{ trigger.to_state.attributes.action == 'rotate_left' }}"
+      sequence:
+        - repeat:
+            while: "True"
+            sequence:
+              - service: media_player.volume_down
+                target:
+                  entity_id: !input speaker_entity
+              - delay:
+                  milliseconds: 200
