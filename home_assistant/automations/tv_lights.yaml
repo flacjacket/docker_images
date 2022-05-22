@@ -9,7 +9,8 @@
   mode: queued
   action:
     - if:
-        - "{{ states('switch.tv_backlight_plug') != trigger.to_state }}"
+        - not:
+            - "{{ is_state('switch.tv_backlight_plug', trigger.to_state) }}"
       then:
         - service: switch.toggle
           target:
