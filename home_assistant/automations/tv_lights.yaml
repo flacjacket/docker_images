@@ -7,11 +7,15 @@
       - "on"
       - "off"
   mode: queued
+  condition:
+    - or:
+      - and:
+        - "{{ is_state('switch.tv_backlight_plug', 'off') }}"
+        - "{{ trigger.to_state.state == 'on' }}"
+      - and:
+        - "{{ is_state('switch.tv_backlight_plug', 'on') }}"
+        - "{{ trigger.to_state.state == 'off' }}"
   action:
-    - if:
-        - not:
-            - "{{ is_state('switch.tv_backlight_plug', trigger.to_state) }}"
-      then:
-        - service: switch.toggle
-          target:
-            entity_id: switch.tv_backlight_plug
+    - service: switch.toggle
+      target:
+        entity_id: switch.tv_backlight_plug
