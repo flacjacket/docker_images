@@ -1,0 +1,15 @@
+- alias: "[TV] Set bias lights on TV power toggle"
+  id: tv_bias_lighting
+  trigger:
+    platform: state
+    entity_id: media_player.sony_bravia_tv
+    to:
+      - "on"
+      - "off"
+  action:
+    - if:
+        - "{{ states('switch.tv_backlight_plug') != trigger.to_state) }}"
+      then:
+        - service: switch.toggle
+          target:
+            entity_id: switch.tv_backlight_plug
