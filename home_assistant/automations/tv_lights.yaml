@@ -8,7 +8,7 @@
       - "off"
   action:
     - if:
-        - "{{ states('switch.tv_backlight_plug') != trigger.to_state) }}"
+        - "{{ states('switch.tv_backlight_plug') != trigger.to_state }}"
       then:
         - service: switch.toggle
           target:
