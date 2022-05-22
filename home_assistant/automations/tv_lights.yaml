@@ -2,10 +2,11 @@
   id: tv_bias_lighting
   trigger:
     platform: state
-    entity_id: media_player.sony_bravia_tv
+    entity_id: remote.sony_bravia_tv
     to:
       - "on"
       - "off"
+  mode: queued
   action:
     - if:
         - "{{ states('switch.tv_backlight_plug') != trigger.to_state }}"
