@@ -1,8 +1,8 @@
 diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
-index 759908c87e..b413a40bdf 100644
+index 759908c87e..e9f961c01d 100644
 --- a/homeassistant/components/venstar/__init__.py
 +++ b/homeassistant/components/venstar/__init__.py
-@@ -25,6 +25,12 @@ from .const import _LOGGER, DOMAIN, VENSTAR_SLEEP, VENSTAR_TIMEOUT
+@@ -25,6 +25,16 @@ from .const import _LOGGER, DOMAIN, VENSTAR_SLEEP, VENSTAR_TIMEOUT
  PLATFORMS = [Platform.BINARY_SENSOR, Platform.CLIMATE, Platform.SENSOR]
  
  
@@ -11,11 +11,15 @@ index 759908c87e..b413a40bdf 100644
 +    def name(self) -> str:
 +        return "Thermostat"
 +
++    @name.setter
++    def name(self, name) -> None:
++        pass
++
 +
  async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
      """Set up the Venstar thermostat."""
      username = config.data.get(CONF_USERNAME)
-@@ -34,7 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
+@@ -34,7 +44,7 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
      timeout = VENSTAR_TIMEOUT
      protocol = "https" if config.data[CONF_SSL] else "http"
  
@@ -24,7 +28,7 @@ index 759908c87e..b413a40bdf 100644
          addr=host,
          timeout=timeout,
          user=username,
-@@ -77,7 +83,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
+@@ -77,7 +87,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
              hass,
              _LOGGER,
              name=DOMAIN,
