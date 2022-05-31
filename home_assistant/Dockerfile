@@ -15,19 +15,10 @@ RUN addgroup -g 1000 home_assistant \
  && chmod +x /etc/services.d/home-assistant/run \
  && chmod +x /etc/services.d/home-assistant/finish
 
-RUN mkdir -p /static_config/custom_components
-RUN mkdir /static_config/custom_components/hacs && \
+RUN mkdir -p /static_config/custom_components/hacs && \
     wget "https://github.com/hacs/integration/releases/latest/download/hacs.zip" && \
-    wget "https://github.com/custom-components/alexa_media_player/releases/download/v3.11.1/alexa_media.zip" && \
-    wget "https://github.com/zachowj/hass-node-red/archive/v1.0.7.zip" -O hass-node-red.zip && \
-    wget "https://github.com/blakeblackshear/frigate-hass-integration/archive/refs/tags/v2.2.2.zip" -O frigate.zip && \
     unzip hacs.zip -d /static_config/custom_components/hacs && \
-    unzip alexa_media.zip -d /static_config/custom_components/alexa_media && \
-    unzip hass-node-red.zip && \
-    unzip frigate.zip && \
-    mv hass-node-red-*/custom_components/nodered /static_config/custom_components/ && \
-    mv frigate-hass-integration-*/custom_components/frigate /static_config/custom_components/ && \
-    rm -r *.zip hass-node-red-*/ frigate-hass-integration-*/
+    rm -r hacs.zip
 COPY *.yaml /static_config/
 COPY automations /static_config/automations
 COPY blueprints /static_config/blueprints
