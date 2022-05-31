@@ -1,8 +1,30 @@
 diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
-index 759908c87e..56167b0eef 100644
+index 759908c87e..b413a40bdf 100644
 --- a/homeassistant/components/venstar/__init__.py
 +++ b/homeassistant/components/venstar/__init__.py
-@@ -77,7 +77,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
+@@ -25,6 +25,12 @@ from .const import _LOGGER, DOMAIN, VENSTAR_SLEEP, VENSTAR_TIMEOUT
+ PLATFORMS = [Platform.BINARY_SENSOR, Platform.CLIMATE, Platform.SENSOR]
+ 
+ 
++class VenstarColorTouchWrapper(VenstarColorTouch):
++    @property
++    def name(self) -> str:
++        return "Thermostat"
++
++
+ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
+     """Set up the Venstar thermostat."""
+     username = config.data.get(CONF_USERNAME)
+@@ -34,7 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
+     timeout = VENSTAR_TIMEOUT
+     protocol = "https" if config.data[CONF_SSL] else "http"
+ 
+-    client = VenstarColorTouch(
++    client = VenstarColorTouchWrapper(
+         addr=host,
+         timeout=timeout,
+         user=username,
+@@ -77,7 +83,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
              hass,
              _LOGGER,
              name=DOMAIN,
@@ -11,48 +33,15 @@ index 759908c87e..56167b0eef 100644
          )
          self.client = venstar_connection
          self.runtimes: list[dict[str, int]] = []
-@@ -85,33 +85,12 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
-     async def _async_update_data(self) -> None:
-         """Update the state."""
-         try:
--            await self.hass.async_add_executor_job(self.client.update_info)
-+            await self.hass.async_add_executor_job(self.client.update)
-         except (OSError, RequestException) as ex:
-             raise update_coordinator.UpdateFailed(
--                f"Exception during Venstar info update: {ex}"
-+                f"Exception during Venstar update: {ex}"
-             ) from ex
+diff --git a/homeassistant/components/venstar/const.py b/homeassistant/components/venstar/const.py
+index 31eb572455..cef3a459cb 100644
+--- a/homeassistant/components/venstar/const.py
++++ b/homeassistant/components/venstar/const.py
+@@ -14,6 +14,6 @@ HOLD_MODE_OFF = "off"
+ HOLD_MODE_TEMPERATURE = "temperature"
  
--        # older venstars sometimes cannot handle rapid sequential connections
--        await asyncio.sleep(VENSTAR_SLEEP)
--
--        try:
--            await self.hass.async_add_executor_job(self.client.update_sensors)
--        except (OSError, RequestException) as ex:
--            raise update_coordinator.UpdateFailed(
--                f"Exception during Venstar sensor update: {ex}"
--            ) from ex
--
--        # older venstars sometimes cannot handle rapid sequential connections
--        await asyncio.sleep(VENSTAR_SLEEP)
--
--        try:
--            await self.hass.async_add_executor_job(self.client.update_alerts)
--        except (OSError, RequestException) as ex:
--            raise update_coordinator.UpdateFailed(
--                f"Exception during Venstar alert update: {ex}"
--            ) from ex
--
--        # older venstars sometimes cannot handle rapid sequential connections
-         await asyncio.sleep(VENSTAR_SLEEP)
+ VENSTAR_TIMEOUT = 5
+-VENSTAR_SLEEP = 1.0
++VENSTAR_SLEEP = 0.0
  
-         try:
-@@ -123,8 +102,6 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
-                 f"Exception during Venstar runtime update: {ex}"
-             ) from ex
- 
--        return None
--
- 
- class VenstarEntity(CoordinatorEntity[VenstarDataUpdateCoordinator]):
-     """Representation of a Venstar entity."""
+ _LOGGER = logging.getLogger(__name__)
