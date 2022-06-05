@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2022.6.1
+FROM homeassistant/home-assistant:2022.6.2
 
 COPY docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-healthcheck.sh
