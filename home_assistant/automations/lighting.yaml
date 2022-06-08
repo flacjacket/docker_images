@@ -28,3 +28,51 @@
       light_brightness_day: 70
       time_night: "21:00:00"
       time_day: "07:00:00"
+- alias: "[Lighting] Vacation schedule"
+  id: lighting vacation
+  trigger:
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: 3
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: 2
+    - platform: time
+      at: "22:30:00"
+    - platform: time
+      at: "23:30:00"
+  condition:
+    condition: state
+    entity_id: input_boolean.vacation
+    state: "on"
+  action:
+    - if:
+        - condition: trigger
+          id: 0
+      then:
+        - service: light.turn_on
+          target: light.foyer_light
+          data:
+            brightness_pct: 60
+    - if:
+        - condition: trigger
+          id: 1
+      then:
+        - service: light.turn_on
+          target: light.living_room_switch
+          data:
+            brightness_pct: 60
+    - if:
+        - condition: trigger
+          id: 2
+      then:
+        - service: light.turn_off
+          target: light.living_room_switch
+    - if:
+        - condition: trigger
+          id: 3
+      then:
+        - service: light.turn_off
+          target: light.foyer_light

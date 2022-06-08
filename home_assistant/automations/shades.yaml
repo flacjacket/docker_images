@@ -10,7 +10,7 @@
       data:
         shade_entities:
           entity_id:
-            # - cover.living_room_side_shade
+            - cover.living_room_side_shade
             - cover.living_room_left_shade
             - cover.living_room_center_shade
             - cover.living_room_right_shade
@@ -22,6 +22,26 @@
       entity_id: sun.sun
       attribute: elevation
       below: -2
+      id: standard
+    - platform: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: 2
+      id: vacation
+  condition:
+    or:
+      - and:
+          - condition: trigger
+            id: standard
+          - condition: state
+            entity_id: input_boolean.vacation
+            state: "off"
+      - and:
+          - condition: trigger
+            id: vacation
+          - condition: state
+            entity_id: input_boolean.vacation
+            state: "on"
   action:
     - service: script.move_shades
       data:
@@ -44,13 +64,19 @@
       at: "7:00:00"
       id: "time"
   condition:
-    and:
-      - condition: time
-        alias: Late enough?
-        after: "7:00:00"
-      - condition: template
-        alias: Sun up enough?
-        value_template: "{{ state_attr('sun.sun', 'elevation') >= 2 }}"
+    or:
+      - and:
+          - condition: trigger
+            id: sun
+          - condition: time
+            alias: Late enough?
+            after: "7:00:00"
+      - and:
+          - condition: trigger
+            id: time
+          - condition: template
+            alias: Sun up enough?
+            value_template: "{{ state_attr('sun.sun', 'elevation') >= 2 }}"
   action:
     - service: script.move_shades
       data:
@@ -83,36 +109,52 @@
       above: 4
       id: "sun"
     - platform: time
-      at: "8:30:00"
+      at: "8:00:00"
       id: "time"
   condition:
-    and:
-      - condition: time
-        alias: Late enough?
-        after: "8:30:00"
-      - condition: template
-        alias: Sun up enough?
-        value_template: "{{ state_attr('sun.sun', 'elevation') >= 4 }}"
-      - condition: time
-        alias: Is Weekday?
-        weekday:
-          - mon
-          - tue
-          - wed
-          - thu
-          - fri
-      - condition: state
-        entity_id: input_boolean.vacation
-        state: "off"
+    or:
+      - and:
+          - condition: trigger
+            id: sun
+          - condition: time
+            alias: Late enough?
+            after: "8:00:00"
+      - and:
+          - condition: trigger
+            id: time
+          - condition: template
+            alias: Sun up enough?
+            value_template: "{{ state_attr('sun.sun', 'elevation') >= 4 }}"
   action:
-    - service: script.move_shades
-      data:
-        shade_entities:
-          entity_id:
-            # - cover.office_side_shade
-            - cover.office_left_shade
-            - cover.office_right_shade
-        direction: Up
+    - if:
+        - or:
+          - condition: state
+            entity_id: input_boolean.vacation
+            state: "off"
+          - condition: time
+            alias: Is Weekday?
+            weekday:
+              - mon
+              - tue
+              - wed
+              - thu
+              - fri
+      then:
+        - service: script.move_shades
+          data:
+            shade_entities:
+              entity_id:
+                - cover.office_side_shade
+                - cover.office_left_shade
+                - cover.office_right_shade
+            direction: Up
+      else:
+        - service: script.move_shades
+          data:
+            shade_entities:
+              entity_id:
+                - cover.office_side_shade
+            direction: Up
 - alias: "[Shades] Office Shades Down"
   id: office_shades_down
   trigger:
@@ -133,7 +175,7 @@
   id: bedroom_shades_up
   trigger:
     - platform: time
-      at: "12:00:00"
+      at: "9:00:00"
   action:
     - service: script.move_shades
       data:
@@ -147,7 +189,7 @@
   id: bedroom_shades_down
   trigger:
     - platform: time
-      at: "17:00:00"
+      at: "13:00:00"
   action:
     - service: script.move_shades
       data:
