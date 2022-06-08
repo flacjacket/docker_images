@@ -127,18 +127,17 @@
             value_template: "{{ state_attr('sun.sun', 'elevation') >= 4 }}"
   action:
     - if:
-        - or:
-          - condition: state
-            entity_id: input_boolean.vacation
-            state: "off"
-          - condition: time
-            alias: Is Weekday?
-            weekday:
-              - mon
-              - tue
-              - wed
-              - thu
-              - fri
+        - condition: state
+          entity_id: input_boolean.vacation
+          state: "off"
+        - condition: time
+          alias: Is Weekday?
+          weekday:
+            - mon
+            - tue
+            - wed
+            - thu
+            - fri
       then:
         - service: script.move_shades
           data:
