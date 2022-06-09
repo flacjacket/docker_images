@@ -53,7 +53,8 @@
           id: 0
       then:
         - service: light.turn_on
-          target: light.foyer_light
+          target:
+            entity_id: light.foyer_light
           data:
             brightness_pct: 60
     - if:
@@ -61,7 +62,8 @@
           id: 1
       then:
         - service: light.turn_on
-          target: light.living_room_switch
+          target:
+            entity_id: light.living_room_switch
           data:
             brightness_pct: 60
     - if:
@@ -69,10 +71,12 @@
           id: 2
       then:
         - service: light.turn_off
-          target: light.living_room_switch
+          target:
+            entity_id: light.living_room_switch
     - if:
         - condition: trigger
           id: 3
       then:
         - service: light.turn_off
-          target: light.foyer_light
+          target:
+            entity_id: light.foyer_light
