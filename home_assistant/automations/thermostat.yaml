@@ -1,0 +1,47 @@
+- alias: "[Thermostat] Set summer cooling temp"
+  id: thermostate_summer_cool
+  trigger:
+    - platform: time
+      at: "6:00:00"
+    - platform: time
+      at: "23:00:00"
+    - platform: state
+      entity_id: input_boolean.vacation
+      to: "off"
+  condition:
+    condition: state
+    entity_id: input_boolean.vacation
+    state: "off"
+  action:
+    - if:
+        - condition: time
+          after: "6:00:00"
+          before: "22:59:59"
+      then:
+        - service: climate.set_temperature
+          target:
+            entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+          data:
+            target_temp_high: 74
+            target_temp_low: 65
+      else:
+        - service: climate.set_temperature
+          target:
+            entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+          data:
+            target_temp_high: 73
+            target_temp_low: 65
+
+- alias: "[Thermostat] Set vacation state"
+  id: thermostate_vacation
+  trigger:
+    - platform: state
+      entity_id: input_boolean.vacation
+      to: "on"
+  action:
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+      data:
+        target_temp_high: 77
+        target_temp_low: 60
