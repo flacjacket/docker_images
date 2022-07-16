@@ -4,6 +4,8 @@
     - platform: time
       at: "6:00:00"
     - platform: time
+      at: "20:00:00"
+    - platform: time
       at: "23:00:00"
     - platform: state
       entity_id: input_boolean.vacation
@@ -13,24 +15,40 @@
     entity_id: input_boolean.vacation
     state: "off"
   action:
-    - if:
-        - condition: time
-          after: "6:00:00"
-          before: "22:59:59"
-      then:
-        - service: climate.set_temperature
-          target:
-            entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
-          data:
-            target_temp_high: 74
-            target_temp_low: 65
-      else:
-        - service: climate.set_temperature
-          target:
-            entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
-          data:
-            target_temp_high: 73
-            target_temp_low: 65
+    - choose:
+      - conditions:
+          - condition: time
+            after: "6:00:00"
+            before: "19:59:59"
+        sequence:
+          - service: climate.set_temperature
+            target:
+              entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+            data:
+              target_temp_high: 77
+              target_temp_low: 65
+      - conditions:
+          - condition: time
+            after: "20:00:00"
+            before: "22:59:59"
+        sequence:
+          - service: climate.set_temperature
+            target:
+              entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+            data:
+              target_temp_high: 76
+              target_temp_low: 65
+      - conditions:
+          - condition: time
+            after: "23:00:00"
+            before: "5:59:59"
+        sequence:
+          - service: climate.set_temperature
+            target:
+              entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+            data:
+              target_temp_high: 75
+              target_temp_low: 65
 
 - alias: "[Thermostat] Set vacation state"
   id: thermostate_vacation
@@ -43,5 +61,5 @@
       target:
         entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
       data:
-        target_temp_high: 77
+        target_temp_high: 80
         target_temp_low: 60
