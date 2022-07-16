@@ -6,7 +6,7 @@ on:
       - 'rtl_433_mqtt_hass/**'
       - '.github/workflows/rtl_433_mqtt_hass_push.yaml'
     branches:
-      - master
+      - main
   pull_request:
     paths:
       - 'rtl_433_mqtt_hass/**'
@@ -26,7 +26,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v3
         with:
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           context: ./rtl_433_mqtt_hass
           file: ./rtl_433_mqtt_hass/Dockerfile
           tags: |

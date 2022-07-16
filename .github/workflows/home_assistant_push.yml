@@ -6,7 +6,7 @@ on:
       - 'home_assistant/**'
       - '.github/workflows/home_assistant_push.yml'
     branches:
-      - master
+      - main
   pull_request:
     paths:
       - 'home_assistant/**'
@@ -26,7 +26,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v3
         with:
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           context: ./home_assistant
           file: ./home_assistant/Dockerfile
           tags: |

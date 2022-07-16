@@ -6,7 +6,7 @@ on:
       - 'hyperion/**'
       - '.github/workflows/hyperion_push.yml'
     branches:
-      - master
+      - main
   pull_request:
     paths:
       - 'hyperion/**'
@@ -26,7 +26,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v3
         with:
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           context: ./hyperion
           file: ./hyperion/Dockerfile
           tags: |

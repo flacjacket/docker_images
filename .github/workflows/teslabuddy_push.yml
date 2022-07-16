@@ -6,7 +6,7 @@ on:
       - 'teslabuddy/**'
       - '.github/workflows/teslabuddy_push.yml'
     branch:
-      - master
+      - main
   pull_request:
     paths:
       - 'teslabuddy/**'
@@ -26,7 +26,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v3
         with:
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           context: ./teslabuddy
           file: ./teslabuddy/Dockerfile
           tags: |
