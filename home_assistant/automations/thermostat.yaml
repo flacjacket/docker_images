@@ -25,7 +25,7 @@
             target:
               entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
             data:
-              target_temp_high: 77
+              target_temp_high: 76
               target_temp_low: 65
       - conditions:
           - condition: time
@@ -36,7 +36,7 @@
             target:
               entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
             data:
-              target_temp_high: 76
+              target_temp_high: 75
               target_temp_low: 65
       - conditions:
           - condition: time
@@ -47,7 +47,7 @@
             target:
               entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
             data:
-              target_temp_high: 75
+              target_temp_high: 74
               target_temp_low: 65
 
 - alias: "[Thermostat] Set vacation state"
