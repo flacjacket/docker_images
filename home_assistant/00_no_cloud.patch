@@ -1,11 +1,11 @@
 diff --git a/homeassistant/components/default_config/manifest.json b/homeassistant/components/default_config/manifest.json
-index 1742092cc7..30b75470e1 100644
+index f790292c27..2ad1179f43 100644
 --- a/homeassistant/components/default_config/manifest.json
 +++ b/homeassistant/components/default_config/manifest.json
-@@ -5,7 +5,6 @@
-   "dependencies": [
+@@ -6,7 +6,6 @@
      "application_credentials",
      "automation",
+     "bluetooth",
 -    "cloud",
      "counter",
      "dhcp",

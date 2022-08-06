@@ -1,5 +1,5 @@
 diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
-index 759908c87e..e9f961c01d 100644
+index b543f6d947..c9ed007fda 100644
 --- a/homeassistant/components/venstar/__init__.py
 +++ b/homeassistant/components/venstar/__init__.py
 @@ -25,6 +25,16 @@ from .const import _LOGGER, DOMAIN, VENSTAR_SLEEP, VENSTAR_TIMEOUT
