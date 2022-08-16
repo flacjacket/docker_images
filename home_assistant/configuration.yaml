@@ -124,6 +124,19 @@ notify:
         data:
           data:
             type: tts
+  - name: security_notify
+    platform: group
+    services:
+      - service: notify.mobile_app_moto_x4
+        data:
+          data:
+            channel: security
+            importance: max
+      - service: notify.mobile_app_iphone
+        data:
+          data:
+            push:
+              interruption-level: critical
 
 #panel_iframe:
 #  nodered:
