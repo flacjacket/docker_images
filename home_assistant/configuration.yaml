@@ -127,12 +127,12 @@ notify:
   - name: security_notify
     platform: group
     services:
-      - service: notify.mobile_app_moto_x4
+      - service: mobile_app_moto_x4
         data:
           data:
             channel: security
             importance: max
-      - service: notify.mobile_app_iphone
+      - service: mobile_app_iphone
         data:
           data:
             push:
