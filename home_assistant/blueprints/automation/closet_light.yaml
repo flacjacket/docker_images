@@ -45,7 +45,7 @@ trigger:
     to: "on"
     for:
       minutes: !input timeout
-actions:
+action:
   - choose:
       - conditions:
           - condition: trigger

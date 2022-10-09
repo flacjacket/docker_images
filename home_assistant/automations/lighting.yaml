@@ -47,7 +47,7 @@
 - alias: "[Lighting] Basement Stair"
   id: lighting_basement_stair
   trigger:
-    - type: state
+    - platform: state
       id: turn_on
       entity_id:
         - binary_sensor.basement_stair_contact_contact
@@ -55,7 +55,7 @@
         - binary_sensor.basement_entry_motion_occupancy
       from: "off"
       to: "on"
-    - type: state
+    - platform: state
       id: maybe_turn_off_short
       entity_id:
         - binary_sensor.basement_stair_contact_contact
@@ -63,7 +63,7 @@
         - binary_sensor.basement_entry_motion_occupancy
       from: "on"
       to: "off"
-    - type: state
+    - platform: state
       id: maybe_turn_off_long
       entity_id:
         - binary_sensor.basement_stair_motion_occupancy
@@ -73,28 +73,28 @@
       for:
         minutes: 1
   condition:
-    or:
+    - or:
       - and:
-        - type: state
+        - condition: state
           state: "off"
           entity_id: switch.basement_stair_light
         - condition: trigger
           id: turn_on
       - and:
-        - type: state
+        - condition: state
           state: "on"
           entity_id: switch.basement_stair_light
-        - type: state
+        - condition: state
           state: "off"
           entity_id:
             - binary_sensor.basement_stair_contact_contact
             - binary_sensor.basement_entry_motion_occupancy
             - binary_sensor.basement_stair_motion_occupancy
       - and:
-        - type: state
+        - condition: state
           state: "on"
           entity_id: switch.basement_stair_light
-        - type: state
+        - condition: state
           state: "off"
           entity_id:
             - binary_sensor.basement_entry_motion_occupancy
@@ -106,11 +106,11 @@
         - condition: trigger
           id: turn_on
       then:
-        - serivce: switch.turn_on
+        - service: switch.turn_on
           target:
             entity_id: switch.basement_stair_light
       else:
-        - serivce: switch.turn_off
+        - service: switch.turn_off
           target:
             entity_id: switch.basement_stair_light
 - alias: "[Lighting] Vacation schedule"
