@@ -2,7 +2,7 @@
   id: tv_bias_lighting
   trigger:
     platform: state
-    entity_id: remote.sony_bravia_tv
+    entity_id: remote.sony_xbr_49x900e
     to:
       - "on"
       - "off"
