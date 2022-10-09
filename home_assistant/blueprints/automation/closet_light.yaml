@@ -1,0 +1,63 @@
+blueprint:
+  name: Motion and contact activated light
+  description: Control a light based on motion and a door contact sensor with a timeout
+  domain: automation
+  input:
+    contact_entity:
+      name: Contact Sensor
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: door
+    light_entity:
+      name: Light
+      selector:
+        target:
+          entity:
+            domain: light
+    timeout:
+      selector:
+        number:
+          min: 1
+          max: 60
+          unit_of_measurement: minutes
+
+mode: queued
+
+trigger:
+  - platform: state
+    id: turn_on
+    entity_id: !input contact_entity
+    from: "off"
+    to: "on"
+    for:
+      seconds: 1
+  - platform: state
+    id: turn_off
+    entity_id: !input contact_entity
+    from: "on"
+    to: "off"
+    for:
+      seconds: 1
+  - platform: state
+    id: turn_off
+    entity_id: !input light_entity
+    to: "on"
+    for:
+      minutes: !input timeout
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: turn_on
+        sequence:
+          - service: switch.turn_on
+            target:
+              entity_id: !input light_entity
+      - conditions:
+          - condition: trigger
+            id: turn_off
+        sequence:
+          - service: switch.turn_off
+            target:
+              entity_id: !input light_entity

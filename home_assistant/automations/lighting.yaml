@@ -28,6 +28,91 @@
       light_brightness_day: 70
       time_night: "21:00:00"
       time_day: "07:00:00"
+- alias: "[Lighting] Master Bedroom Closet Left"
+  id: master_closet_left
+  use_blueprint:
+    path: closet_light.yaml
+    input:
+      contact_entity: binary_sensor.master_bedroom_left_closet_contact_contact
+      light_entity: switch.left_closet_light
+      timeout: 10
+- alias: "[Lighting] Master Bedroom Closet Right"
+  id: master_closet_right
+  use_blueprint:
+    path: closet_light.yaml
+    input:
+      contact_entity: binary_sensor.master_bedroom_right_closet_contact_contact
+      light_entity: switch.right_closet_light
+      timeout: 10
+- alias: "[Lighting] Basement Stair"
+  id: lighting_basement_stair
+  trigger:
+    - type: state
+      id: turn_on
+      entity_id:
+        - binary_sensor.basement_stair_contact_contact
+        - binary_sensor.basement_stair_motion_occupancy
+        - binary_sensor.basement_entry_motion_occupancy
+      from: "off"
+      to: "on"
+    - type: state
+      id: maybe_turn_off_short
+      entity_id:
+        - binary_sensor.basement_stair_contact_contact
+        - binary_sensor.basement_stair_motion_occupancy
+        - binary_sensor.basement_entry_motion_occupancy
+      from: "on"
+      to: "off"
+    - type: state
+      id: maybe_turn_off_long
+      entity_id:
+        - binary_sensor.basement_stair_motion_occupancy
+        - binary_sensor.basement_entry_motion_occupancy
+      from: "on"
+      to: "off"
+      for:
+        minutes: 1
+  condition:
+    or:
+      - and:
+        - type: state
+          state: "off"
+          entity_id: switch.basement_stair_light
+        - condition: trigger
+          id: turn_on
+      - and:
+        - type: state
+          state: "on"
+          entity_id: switch.basement_stair_light
+        - type: state
+          state: "off"
+          entity_id:
+            - binary_sensor.basement_stair_contact_contact
+            - binary_sensor.basement_entry_motion_occupancy
+            - binary_sensor.basement_stair_motion_occupancy
+      - and:
+        - type: state
+          state: "on"
+          entity_id: switch.basement_stair_light
+        - type: state
+          state: "off"
+          entity_id:
+            - binary_sensor.basement_entry_motion_occupancy
+            - binary_sensor.basement_stair_motion_occupancy
+          for:
+            minutes: 1
+  action:
+    - if:
+        - condition: trigger
+          id: turn_on
+      then:
+        - serivce: switch.turn_on
+          target:
+            entity_id: switch.basement_stair_light
+      else:
+        - serivce: switch.turn_off
+          target:
+            entity_id: switch.basement_stair_light
 - alias: "[Lighting] Vacation schedule"
   id: lighting vacation
   trigger:
