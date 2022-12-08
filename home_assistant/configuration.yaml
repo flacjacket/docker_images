@@ -5,6 +5,8 @@ homeassistant:
   elevation: !secret elevation
   unit_system: imperial
   time_zone: America/New_York
+  currency: USD
+  country: US
 
 automation: !include_dir_merge_list automations/
 scene: !include scenes.yaml
