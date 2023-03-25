@@ -115,17 +115,21 @@ notify:
   - name: doorbell_notify
     platform: group
     services:
-      - service: alexa_media_sean_s_echo_show
+      - service: alexa_media
         data:
           data:
             type: tts
+          target:
+            - media_player.sean_s_2nd_echo_show
   - name: laundry_notify
     platform: group
     services:
-      - service: alexa_media_sean_s_echo_show
+      - service: alexa_media
         data:
           data:
             type: tts
+          target:
+            - media_player.sean_s_2nd_echo_show
   - name: security_notify
     platform: group
     services:
