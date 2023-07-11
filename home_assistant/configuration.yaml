@@ -22,11 +22,7 @@ alexa:
         - "light"
       include_entities:
         - "fan.living_room_fan"
-        - "switch.computer_room_switch"
-        - "switch.front_porch_lights"
         - "switch.front_porch_plugs"
-        - "switch.furnace_light_switch"
-        - "switch.post_lamp"
         - "switch.printer_plug"
       include_entity_globs:
         - "cover.*_shade"
