@@ -31,7 +31,7 @@ alexa:
         - "light.doorbell_led"
         - "light.dryer_plug_light"
         - "light.hatch_light"
-        - "light.washer_plug"
+        - "light.washer_plug_light"
       exclude_entity_globs:
         - "light.*_follower"
         - "light.*_follower_*"
@@ -61,19 +61,19 @@ alexa:
 #        stream_source: rtsp
 #        binary_sensors: [motion_detected]
 
-amcrest:
-  - host: !secret amcrest_host
-    username: !secret amcrest_user
-    password: !secret amcrest_password
-    binary_sensors: [audio_detected, online, motion_detected]
+#amcrest:
+#  - host: !secret amcrest_host
+#    username: !secret amcrest_user
+#    password: !secret amcrest_password
+#    binary_sensors: [audio_detected, online, motion_detected]
 
-camera:
-  - platform: ffmpeg
-    name: Doorbell RTSP Camera
-    input: !secret doorbell_camera_url
-  - platform: ffmpeg
-    name: Front RTSP Camera
-    input: !secret front_camera_url
+#camera:
+#  - platform: ffmpeg
+#    name: Doorbell RTSP Camera
+#    input: !secret doorbell_camera_url
+#  - platform: ffmpeg
+#    name: Front RTSP Camera
+#    input: !secret front_camera_url
 
 #config:
 
