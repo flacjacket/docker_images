@@ -85,39 +85,33 @@ LOCATION_FIELDS = {"latitude", "longitude", "elevation"}
 
 BINARY_SENSORS = {
     "charge_port_door_open": SensorInfo(
-        "Vehicle Charge Port Door",
+        "Charge Port Door Open",
         device_class="opening",
         icon="mdi:ev-plug-tesla",
     ),
-    "doors_open": SensorInfo("Vehicle Doors", device_class="door", icon="mdi:car-door"),
-    "frunk_open": SensorInfo(
-        "Vehicle Frunk", device_class="opening", icon="mdi:car-side"
-    ),
+    "doors_open": SensorInfo("Doors Open", device_class="door", icon="mdi:car-door"),
+    "frunk_open": SensorInfo("Frunk Open", device_class="opening", icon="mdi:car-side"),
     "healthy": SensorInfo(
-        "Vehicle Healthy", device_class="connectivity", icon="mdi:heart-pulse"
+        "Healthy", device_class="connectivity", icon="mdi:heart-pulse"
     ),
-    "is_climate_on": SensorInfo("Vehicle Climate On", icon="mdi:fan"),
-    "is_preconditioning": SensorInfo("Vehicle Preconditioning", icon="mdi:fan"),
-    "is_user_present": SensorInfo("Vehicle User Present", icon="mdi:human-greeting"),
-    "locked": SensorInfo("Vehicle Locked", device_class="lock", inverted=True),
-    "plugged_in": SensorInfo(
-        "Vehicle Plugged In", device_class="plug", icon="mdi:ev-station"
-    ),
+    "is_climate_on": SensorInfo("Climate On", icon="mdi:fan"),
+    "is_preconditioning": SensorInfo("Preconditioning", icon="mdi:fan"),
+    "is_user_present": SensorInfo("User Present", icon="mdi:human-greeting"),
+    "locked": SensorInfo("Locked", device_class="lock", inverted=True),
+    "plugged_in": SensorInfo("Plugged In", device_class="plug", icon="mdi:ev-station"),
     "sentry_mode": SensorInfo(
-        "Vehicle Sentry Mode", device_class="running", icon="mdi:shield-car"
+        "Sentry Mode", device_class="running", icon="mdi:shield-car"
     ),
-    "trunk_open": SensorInfo(
-        "Vehicle Trunk", device_class="opening", icon="mdi:car-side"
-    ),
-    "update_available": SensorInfo("Vehicle Update Available", device_class="update"),
+    "trunk_open": SensorInfo("Trunk Open", device_class="opening", icon="mdi:car-side"),
+    "update_available": SensorInfo("Update Available", device_class="update"),
     "windows_open": SensorInfo(
-        "Vehicle Windows", device_class="window", icon="mdi:car-door"
+        "Windows Open", device_class="window", icon="mdi:car-door"
     ),
 }
 
 SENSORS = {
     "battery_level": SensorInfo(
-        "Vehicle Battery", device_class="battery", unit_of_measurement="%"
+        "Battery", device_class="battery", unit_of_measurement="%"
     ),
     "charge_energy_added": SensorInfo(
         "Vehile Charge Energy Added",
@@ -126,12 +120,12 @@ SENSORS = {
         state_class="total",
     ),
     "charge_limit_soc": SensorInfo(
-        "Vehicle Charge Limit SOC",
+        "Charge Limit SOC",
         unit_of_measurement="%",
         icon="mdi:battery-charging-100",
     ),
     "charger_actual_current": SensorInfo(
-        "Vehicle Actual Current",
+        "Actual Current",
         device_class="current",
         unit_of_measurement="A",
         state_class="measurement",
@@ -146,66 +140,66 @@ SENSORS = {
         device_class="current",
         unit_of_measurement="A",
     ),
-    "charger_phases": SensorInfo("Vehicle Charger Phases", icon="mdi:sine-wave"),
+    "charger_phases": SensorInfo("Charger Phases", icon="mdi:sine-wave"),
     "charger_power": SensorInfo(
-        "Vehicle Charger Power",
+        "Charger Power",
         device_class="power",
         unit_of_measurement="kW",
         state_class="measurement",
     ),
     "charger_voltage": SensorInfo(
-        "Vehicle Voltage", device_class="voltage", unit_of_measurement="V"
+        "Voltage", device_class="voltage", unit_of_measurement="V"
     ),
     "elevation": SensorInfo(
         "Vehile Elevation", unit_of_measurement="m", icon="mdi:image-filter-hdr"
     ),
     "est_battery_range_km": SensorInfo(
-        "Vehicle Range - Estimated", unit_of_measurement="km", icon="mdi:gauge"
+        "Range - Estimated", unit_of_measurement="km", icon="mdi:gauge"
     ),
-    "exterior_color": SensorInfo("Vehicle Exterior Color", icon="mdi:palette"),
+    "exterior_color": SensorInfo("Exterior Color", icon="mdi:palette"),
     "heading": SensorInfo(
         "Vehile Heading", unit_of_measurement="°", icon="mdi:compass"
     ),
     "ideal_battery_range_km": SensorInfo(
-        "Vehicle Range - Ideal", unit_of_measurement="km", icon="mdi:gauge"
+        "Range - Ideal", unit_of_measurement="km", icon="mdi:gauge"
     ),
     "inside_temp": SensorInfo(
-        "Vehicle Temperature Inside",
+        "Temperature Inside",
         device_class="temperature",
         unit_of_measurement="°C",
         state_class="measurement",
     ),
     "odometer": SensorInfo(
-        "Vehicle Odometer",
+        "Odometer",
         unit_of_measurement="km",
         icon="mdi:counter",
         state_class="total",
     ),
     "outside_temp": SensorInfo(
-        "Vehicle Temperature Outside",
+        "Temperature Outside",
         device_class="temperature",
         unit_of_measurement="°C",
         state_class="measurement",
     ),
     "power": SensorInfo(
-        "Vehicle Power",
+        "Power",
         device_class="power",
         unit_of_measurement="W",
         state_class="measurement",
     ),
     "rated_battery_range_km": SensorInfo(
-        "Vehicle Range - Rated", unit_of_measurement="km", icon="mdi:gauge"
+        "Range - Rated", unit_of_measurement="km", icon="mdi:gauge"
     ),
-    "shift_state": SensorInfo("Vehicle Shift State", icon="mdi:car-shift-pattern"),
+    "shift_state": SensorInfo("Shift State", icon="mdi:car-shift-pattern"),
     "speed": SensorInfo(
-        "Vehicle Speed",
+        "Speed",
         unit_of_measurement="km/h",
         icon="mdi:speedometer",
         state_class="measurement",
     ),
-    "state": SensorInfo("Vehicle State", icon="mdi:car-connected"),
+    "state": SensorInfo("State", icon="mdi:car-connected"),
     "time_to_full_charge": SensorInfo(
-        "Vehicle Time To Full Charge", unit_of_measurement="h", icon="mdi:clock-outline"
+        "Time To Full Charge", unit_of_measurement="h", icon="mdi:clock-outline"
     ),
     "tpms_pressure_fl": SensorInfo(
         "Tire pressure front left",
@@ -231,13 +225,13 @@ SENSORS = {
         unit_of_measurement="bar",
         state_class="measurement",
     ),
-    "trim_badging": SensorInfo("Vehicle Trim Badging", icon="mdi:shield-star-outline"),
-    "update_version": SensorInfo("Vehicle Update Version", icon="mdi:alphabetical"),
+    "trim_badging": SensorInfo("Trim Badging", icon="mdi:shield-star-outline"),
+    "update_version": SensorInfo("Update Version", icon="mdi:alphabetical"),
     "usable_battery_level": SensorInfo(
-        "Vehicle Battery - Usable", unit_of_measurement="%", icon="mdi:battery-80"
+        "Battery - Usable", unit_of_measurement="%", icon="mdi:battery-80"
     ),
-    "version": SensorInfo("Vehicle Version", icon="mdi:alphabetical"),
-    "wheel_type": SensorInfo("Vehicle Wheel Type", icon="mdi:tire"),
+    "version": SensorInfo("Version", icon="mdi:alphabetical"),
+    "wheel_type": SensorInfo("Wheel Type", icon="mdi:tire"),
 }
 
 
