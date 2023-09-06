@@ -136,6 +136,16 @@ SENSORS = {
         unit_of_measurement="A",
         state_class="measurement",
     ),
+    "charge_current_request": SensorInfo(
+        "Requested Charge Current",
+        device_class="current",
+        unit_of_measurement="A",
+    ),
+    "charge_current_request_max": SensorInfo(
+        "Requested Charge Current (Max)",
+        device_class="current",
+        unit_of_measurement="A",
+    ),
     "charger_phases": SensorInfo("Vehicle Charger Phases", icon="mdi:sine-wave"),
     "charger_power": SensorInfo(
         "Vehicle Charger Power",
@@ -196,6 +206,30 @@ SENSORS = {
     "state": SensorInfo("Vehicle State", icon="mdi:car-connected"),
     "time_to_full_charge": SensorInfo(
         "Vehicle Time To Full Charge", unit_of_measurement="h", icon="mdi:clock-outline"
+    ),
+    "tpms_pressure_fl": SensorInfo(
+        "Tire pressure front left",
+        device_class="pressure",
+        unit_of_measurement="bar",
+        state_class="measurement",
+    ),
+    "tpms_pressure_fr": SensorInfo(
+        "Tire pressure front right",
+        device_class="pressure",
+        unit_of_measurement="bar",
+        state_class="measurement",
+    ),
+    "tpms_pressure_rl": SensorInfo(
+        "Tire pressure rear left",
+        device_class="pressure",
+        unit_of_measurement="bar",
+        state_class="measurement",
+    ),
+    "tpms_pressure_rr": SensorInfo(
+        "Tire pressure rear right",
+        device_class="pressure",
+        unit_of_measurement="bar",
+        state_class="measurement",
     ),
     "trim_badging": SensorInfo("Vehicle Trim Badging", icon="mdi:shield-star-outline"),
     "update_version": SensorInfo("Vehicle Update Version", icon="mdi:alphabetical"),
