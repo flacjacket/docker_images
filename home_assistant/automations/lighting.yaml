@@ -56,7 +56,7 @@
     path: closet_light.yaml
     input:
       contact_entity: binary_sensor.master_bedroom_left_closet_contact_contact
-      light_entity: switch.left_closet_light
+      light_entity: switch.master_bedroom_left_closet_light
       timeout: 10
 - alias: "[Lighting] Master Bedroom Closet Right"
   id: master_closet_right
@@ -64,7 +64,7 @@
     path: closet_light.yaml
     input:
       contact_entity: binary_sensor.master_bedroom_right_closet_contact_contact
-      light_entity: switch.right_closet_light
+      light_entity: switch.master_bedroom_right_closet_light
       timeout: 10
 - alias: "[Lighting] Basement Stair"
   id: lighting_basement_stair
