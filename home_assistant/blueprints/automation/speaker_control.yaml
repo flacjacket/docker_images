@@ -15,12 +15,12 @@ trigger:
     not_to: ""
 action:
   - choose:
-    - conditions: "{{ trigger.to_state.attributes.action == 'play_pause' }}"
+    - conditions: "{{ trigger.to_state.state == 'toggle' }}"
       sequence:
         - service: media_player.toggle
           target:
             entity_id: !input speaker_entity
-    - conditions: "{{ trigger.to_state.attributes.action == 'skip_forward' }}"
+    - conditions: "{{ trigger.to_state.state == 'brightness_step_up' }}"
       sequence:
         - choose:
           - conditions: "{{ state_attr('!input speaker_entity', 'source') == 'WCX-50' }}"
@@ -37,7 +37,7 @@ action:
                   source: WCX-50
                 target:
                   entity_id: !input speaker_entity
-    - conditions: "{{ trigger.to_state.attributes.action == 'rotate_right' }}"
+    - conditions: "{{ trigger.to_state.state == 'brightness_move_up' }}"
       sequence:
         - repeat:
             while: "{{ 0 == 0 }}"
@@ -47,7 +47,7 @@ action:
                   entity_id: !input speaker_entity
               - delay:
                   milliseconds: 200
-    - conditions: "{{ trigger.to_state.attributes.action == 'rotate_left' }}"
+    - conditions: "{{ trigger.to_state.state == 'brightness_move_down' }}"
       sequence:
         - repeat:
             while: "{{ 0 == 0 }}"
