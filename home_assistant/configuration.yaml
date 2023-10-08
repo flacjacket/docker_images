@@ -116,7 +116,7 @@ notify:
           data:
             type: tts
           target:
-            - media_player.sean_s_2nd_echo_show
+            - media_player.kitchen_echo_show
   - name: laundry_notify
     platform: group
     services:
@@ -125,7 +125,7 @@ notify:
           data:
             type: tts
           target:
-            - media_player.sean_s_2nd_echo_show
+            - media_player.kitchen_echo_show
   - name: security_notify
     platform: group
     services:
