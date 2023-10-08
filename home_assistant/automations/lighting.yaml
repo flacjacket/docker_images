@@ -33,8 +33,8 @@
               entity_id: sensor.upstairs_hall_motion_illuminance_lux
               below: 10
             - condition: time
-              after: "6:00:00"
-              before: "19:00:00"
+              after: "7:00:00"
+              before: "18:30:00"
   action:
     choose:
       - alias: "Turn light off"
