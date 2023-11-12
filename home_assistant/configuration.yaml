@@ -8,7 +8,8 @@ homeassistant:
   currency: USD
   country: US
 
-automation: !include_dir_merge_list automations/
+automation manual: !include_dir_merge_list automations/
+automation ui: !include automations.yaml
 scene: !include scenes.yaml
 script: !include_dir_merge_named scripts/
 
@@ -32,6 +33,9 @@ alexa:
         - "light.dryer_plug_light"
         - "light.hatch_light"
         - "light.washer_plug_light"
+        - "light.d3_led"
+        - "light.d3_led_2"
+        - "light.airgradient_open_air_status_led"
       exclude_entity_globs:
         - "light.*_follower"
         - "light.*_follower_*"
