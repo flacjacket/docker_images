@@ -12,7 +12,9 @@
   action:
     - service: switch.turn_on
       target:
-        entity_id: switch.front_porch_plugs
+        entity_id:
+          - switch.front_porch_plugs
+          - switch.outdoor_plug
 - alias: "[Holiday] Turn off porch lights"
   id: holiday_porch_lights_off
   trigger:
@@ -25,4 +27,6 @@
   action:
     - service: switch.turn_off
       target:
-        entity_id: switch.front_porch_plugs
+        entity_id:
+          - switch.front_porch_plugs
+          - switch.outdoor_plug
