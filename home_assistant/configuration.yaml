@@ -25,12 +25,14 @@ alexa:
         - "fan.living_room_fan"
         - "switch.front_porch_plugs"
         - "switch.printer_plug"
+        - "media_player.living_room_tv"
+        - "media_player.shield_2"
       include_entity_globs:
         - "cover.*_shade"
         - "input_boolean.alexa_*_occupancy"
       exclude_entities:
+        - "light.christmas_tree_plug_light"
         - "light.doorbell_led"
-        - "light.dryer_plug_light"
         - "light.hatch_light"
         - "light.washer_plug_light"
         - "light.d3_led"
