@@ -25,6 +25,7 @@ alexa:
         - "fan.living_room_fan"
         - "switch.front_porch_plugs"
         - "switch.printer_plug"
+        - "switch.christmas_tree_plug"
         - "media_player.living_room_tv"
         - "media_player.shield_2"
       include_entity_globs:
