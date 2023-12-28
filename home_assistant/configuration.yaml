@@ -34,7 +34,7 @@ alexa:
       exclude_entities:
         - "light.christmas_tree_plug_light"
         - "light.doorbell_led"
-        - "light.hatch_light"
+        # - "light.hatch_light"
         - "light.washer_plug_light"
         - "light.d3_led"
         - "light.d3_led_2"
@@ -165,12 +165,12 @@ recorder:
 
 #system_health:
 
-template:
-  - binary_sensor:
-      - name: Alexa Living Room Occupancy
-        unique_id: alexa_living_room_occupancy_motion
-        device_class: motion
-        state: "{{ states('input_boolean.alexa_living_room_occupancy') }}"
+#template:
+#  - binary_sensor:
+#      - name: Alexa Living Room Occupancy
+#        unique_id: alexa_living_room_occupancy_motion
+#        device_class: motion
+#        state: "{{ states('input_boolean.alexa_living_room_occupancy') }}"
 
 #tts:
 #  - platform: google_translate
