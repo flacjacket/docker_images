@@ -145,7 +145,7 @@
     - platform: numeric_state
       entity_id: sun.sun
       attribute: elevation
-      below: 2
+      below: -1
     - platform: time
       at: "22:30:00"
     - platform: time
@@ -170,7 +170,7 @@
       then:
         - service: light.turn_on
           target:
-            entity_id: light.living_room_switch
+            entity_id: light.living_room_light
           data:
             brightness_pct: 60
     - if:
@@ -179,7 +179,7 @@
       then:
         - service: light.turn_off
           target:
-            entity_id: light.living_room_switch
+            entity_id: light.living_room_light
     - if:
         - condition: trigger
           id: 3

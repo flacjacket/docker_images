@@ -25,7 +25,7 @@
         sequence:
           - service: climate.set_temperature
             target:
-              entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+              entity_id: climate.thermostat
             data:
               target_temp_high: 76
               target_temp_low: 65
@@ -36,7 +36,7 @@
         sequence:
           - service: climate.set_temperature
             target:
-              entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+              entity_id: climate.thermostat
             data:
               target_temp_high: 75
               target_temp_low: 65
@@ -47,7 +47,7 @@
         sequence:
           - service: climate.set_temperature
             target:
-              entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+              entity_id: climate.thermostat
             data:
               target_temp_high: 74
               target_temp_low: 65
@@ -58,7 +58,7 @@
         sequence:
           - service: climate.set_temperature
             target:
-              entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+              entity_id: climate.thermostat
             data:
               target_temp_high: 73
               target_temp_low: 65
@@ -72,7 +72,7 @@
   action:
     - service: climate.set_temperature
       target:
-        entity_id: climate.venstar_52c21a828fce0e3e7b05d14c446fdbc9
+        entity_id: climate.thermostat
       data:
         target_temp_high: 80
         target_temp_low: 60
