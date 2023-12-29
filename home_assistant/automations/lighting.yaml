@@ -5,7 +5,7 @@
     input:
       motion_entity: binary_sensor.entry_motion_occupancy
       brightness_entity: sensor.entry_motion_illuminance_lux
-      brightness_trigger: 20
+      brightness_trigger: 25
       no_motion_wait: 30
       light_target:
         entity_id: light.foyer_light
