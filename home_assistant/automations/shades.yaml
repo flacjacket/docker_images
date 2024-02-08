@@ -170,20 +170,20 @@
             - cover.office_left_shade
             - cover.office_right_shade
         direction: Down
-- alias: "[Shades] Bedroom Shades Up - morning"
-  id: bedroom_shades_up2
-  trigger:
-    - platform: time
-      at: "9:00:00"
-  action:
-    - service: script.move_shades
-      data:
-        shade_entities:
-          entity_id:
-            - cover.master_bedroom_side_shade
-            # - cover.master_bedroom_left_shade
-            # - cover.master_bedroom_right_shade
-        direction: Up
+#- alias: "[Shades] Bedroom Shades Up - morning"
+#  id: bedroom_shades_up2
+#  trigger:
+#    - platform: time
+#      at: "9:00:00"
+#  action:
+#    - service: script.move_shades
+#      data:
+#        shade_entities:
+#          entity_id:
+#            - cover.master_bedroom_side_shade
+#            # - cover.master_bedroom_left_shade
+#            # - cover.master_bedroom_right_shade
+#        direction: Up
 - alias: "[Shades] Bedroom Shades Up - afternoon"
   id: bedroom_shades_up
   trigger:
