@@ -28,15 +28,6 @@ index b543f6d947..c9ed007fda 100644
          addr=host,
          timeout=timeout,
          user=username,
-@@ -77,7 +87,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator):
-             hass,
-             _LOGGER,
-             name=DOMAIN,
--            update_interval=timedelta(seconds=60),
-+            update_interval=timedelta(seconds=10),
-         )
-         self.client = venstar_connection
-         self.runtimes: list[dict[str, int]] = []
 diff --git a/homeassistant/components/venstar/const.py b/homeassistant/components/venstar/const.py
 index 31eb572455..cef3a459cb 100644
 --- a/homeassistant/components/venstar/const.py
@@ -46,6 +37,19 @@ index 31eb572455..cef3a459cb 100644
  
  VENSTAR_TIMEOUT = 5
 -VENSTAR_SLEEP = 1.0
-+VENSTAR_SLEEP = 0.0
++VENSTAR_SLEEP = 0.1
  
  _LOGGER = logging.getLogger(__name__)
+diff --git a/homeassistant/components/venstar/coordinator.py b/homeassistant/components/venstar/coordinator.py
+index b825775de7..a191320930 100644
+--- a/homeassistant/components/venstar/coordinator.py
++++ b/homeassistant/components/venstar/coordinator.py
+@@ -28,7 +28,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator[None
+             hass,
+             _LOGGER,
+             name=DOMAIN,
+-            update_interval=timedelta(seconds=60),
++            update_interval=timedelta(seconds=10),
+         )
+         self.client = venstar_connection
+         self.runtimes: list[dict[str, int]] = []
