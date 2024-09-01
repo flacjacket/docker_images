@@ -19,5 +19,5 @@
 - platform: group
   name: "Phone group"
   services:
-    - action: mobile_phone_iphone
-    - action: mobile_phone_pixel_7
+    - action: mobile_app_iphone
+    - action: mobile_app_pixel_7
