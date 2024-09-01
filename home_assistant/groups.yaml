@@ -1,0 +1,23 @@
+- platform: group
+  name: doorbell_notify
+  services:
+    - action: alexa_media
+      data:
+        data:
+          type: tts
+        target:
+          - media_player.kitchen_echo_show
+- platform: group
+  name: laundry_notify
+  services:
+    - action: alexa_media
+      data:
+        data:
+          type: tts
+        target:
+          - media_player.kitchen_echo_show
+- platform: group
+  name: "Phone group"
+  services:
+    - action: mobile_phone_iphone
+    - action: mobile_phone_pixel_7

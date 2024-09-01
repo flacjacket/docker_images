@@ -8,10 +8,22 @@ homeassistant:
   currency: USD
   country: US
 
+default_config:
+
 automation manual: !include_dir_merge_list automations/
 automation ui: !include automations.yaml
+notify: !include groups.yaml
 scene: !include scenes.yaml
 script: !include_dir_merge_named scripts/
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - !secret proxy_url
+
+recorder:
+  db_url: !secret mariadb_url
+  purge_keep_days: 30
 
 alexa:
   smart_home:
@@ -43,18 +55,6 @@ alexa:
         - "light.*_follower"
         - "light.*_follower_*"
 
-    #filter:
-    #  include_domains:
-    #    - camera
-    #    - group
-    #    - scene
-    #    - switch
-    #  include_entities:
-    #    - binary_sensor.sensor
-    #    - binary_sensor.sensor_2
-    #    - binary_sensor.sensor_3
-    #    - binary_sensor.sensor_4
-
 #amcrest_nvr:
 #  - name: NVR
 #    host: !secret amcrest_url
@@ -82,88 +82,11 @@ alexa:
 #    name: Front RTSP Camera
 #    input: !secret front_camera_url
 
-#config:
-
-#conversation:
-
-default_config:
-
-#device_tracker:
-
-#discovery:
-
-#ecobee:
-#  api_key: !secret ecobee_api_key
-
-#frontend:
-
-#history:
-
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - !secret proxy_url
-
-#logbook:
-
-#logger:
-#  default: info
-
-#map:
-
-# enable the mobile app support
-#mobile_app:
-
-notify:
-  - name: doorbell_notify
-    platform: group
-    services:
-      - service: alexa_media
-        data:
-          data:
-            type: tts
-          target:
-            - media_player.kitchen_echo_show
-  - name: laundry_notify
-    platform: group
-    services:
-      - service: alexa_media
-        data:
-          data:
-            type: tts
-          target:
-            - media_player.kitchen_echo_show
-  - name: security_notify
-    platform: group
-    services:
-      - service: mobile_app_moto_x4
-        data:
-          data:
-            channel: security
-            importance: max
-      - service: mobile_app_iphone
-        data:
-          data:
-            push:
-              interruption-level: critical
-
 #panel_iframe:
 #  nodered:
 #    title: "Node-Red"
 #    icon: mdi:shuffle-variant
 #    url: !secret nodered_url
-
-#person:
-
-recorder:
-  db_url: !secret mariadb_url
-  purge_keep_days: 30
-
-#script: !include scripts.yaml
-
-#sensor:
-
-#system_health:
 
 #template:
 #  - binary_sensor:
@@ -175,15 +98,3 @@ recorder:
 #tts:
 #  - platform: google_translate
 #    service_name: google_say
-
-#updater:
-
-#zeroconf:
-
-#zone:
-
-#zoneminder:
-#  host: !secret zoneminder_url
-#  username: admin
-#  password: !secret zoneminder_pass
-#  ssl: true

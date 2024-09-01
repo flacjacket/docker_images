@@ -141,49 +141,76 @@
     - platform: numeric_state
       entity_id: sun.sun
       attribute: elevation
-      below: 3
+      below: -1
+      id: living_room_on
+    - platform: time
+      at: "22:00:00"
+      id: living_room_off
     - platform: numeric_state
       entity_id: sun.sun
       attribute: elevation
-      below: -1
-    - platform: time
-      at: "22:30:00"
+      below: 2
+      id: foyer_on
     - platform: time
       at: "23:30:00"
+      id: foyer_off
+    - platform: time
+      at: "23:15:00"
+      id: bedroom_on
+    - platform: time
+      at: "23:45:00"
+      id: bedroom_off
   condition:
     condition: state
     entity_id: input_boolean.vacation
     state: "on"
   action:
-    - if:
-        - condition: trigger
-          id: 0
-      then:
-        - service: light.turn_on
-          target:
-            entity_id: light.foyer_light
-          data:
-            brightness_pct: 60
-    - if:
-        - condition: trigger
-          id: 1
-      then:
-        - service: light.turn_on
-          target:
-            entity_id: light.living_room_light
-          data:
-            brightness_pct: 60
-    - if:
-        - condition: trigger
-          id: 2
-      then:
-        - service: light.turn_off
-          target:
-            entity_id: light.living_room_light
-    - if:
-        - condition: trigger
-          id: 3
-      then:
-        - service: light.turn_off
-          target:
-            entity_id: light.foyer_light
+    - choose:
+      - conditions:
+          - condition: trigger
+            id: foyer_on
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.foyer_light
+            data:
+              brightness_pct: 60
+      - conditions:
+          - condition: trigger
+            id: foyer_off
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.foyer_light
+      - conditions:
+          - condition: trigger
+            id: living_room_on
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.living_room_light
+            data:
+              brightness_pct: 60
+      - conditions:
+          - condition: trigger
+            id: living_room_off
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.living_room_light
+      - conditions:
+          - condition: trigger
+            id: bedroom_on
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.main_bedroom_light
+            data:
+              brightness_pct: 60
+      - conditions:
+          - condition: trigger
+            id: bedroom_off
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.main_bedroom_light
