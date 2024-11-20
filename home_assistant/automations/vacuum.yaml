@@ -18,6 +18,10 @@
   trigger:
     - platform: time
       at: '14:30'
+  condition:
+    - condition: state
+      entity_id: "input_boolean.visitors"
+      state: "off"
   action:
     - choose:
         - conditions:
@@ -28,7 +32,7 @@
               data:
                 sequence_id:
                   entity_id: sensor.valetudo_tom_servo_map_segments
-                room_names: ["Laundry", "Hallway", "Master Bedroom", "Master Bathroom"]
+                room_names: ["Laundry", "Hallway", "MasterBedroom", "MasterBathroom"]
                 vacuum_id: tom_servo
         - conditions:
             - condition: time
@@ -38,7 +42,7 @@
               data:
                 sequence_id:
                   entity_id: sensor.valetudo_tom_servo_map_segments
-                room_names: ["Laundry", "Hallway", "Front Bedroom", "Back Bedroom", "Center Bedroom"]
+                room_names: ["Laundry", "Hallway", "FrontBedroom", "BackBedroom", "CenterBedroom"]
                 vacuum_id: tom_servo
 - alias: "[Vacuum] Run Main Floor"
   id: vacuum_schedule_main
@@ -48,6 +52,9 @@
   condition:
     - condition: time
       weekday: [mon, wed, fri]
+    - condition: state
+      entity_id: "input_boolean.visitors"
+      state: "off"
   action:
     - service: script.vacuum_run_segments
       data:
@@ -65,5 +72,5 @@
       data:
         sequence_id:
           entity_id: sensor.valetudo_gypsy_map_segments
-        room_names: ["Game Room", "Bathroom"]
+        room_names: ["GameRoom", "Bathroom"]
         vacuum_id: gypsy
