@@ -12,7 +12,7 @@ RUN  cd /usr/src/homeassistant/ \
 RUN addgroup -g 1000 home_assistant \
  && adduser -D -u 1000 -h /config -G home_assistant home_assistant \
  && adduser home_assistant audio \
- && chown 1000:1000 /usr/local/lib/python3*/site-packages /usr/local/bin /tmp /tmp/* \
+ && chown 1000:1000 -R /usr/local/lib/python3*/site-packages /usr/local/bin /tmp /tmp/* \
  && chmod +x /etc/services.d/home-assistant/run \
  && chmod +x /etc/services.d/home-assistant/finish
 
