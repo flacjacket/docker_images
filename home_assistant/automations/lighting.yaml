@@ -4,7 +4,7 @@
     path: motion_brightness_light.yaml
     input:
       motion_entity: binary_sensor.entry_motion_occupancy
-      brightness_entity: sensor.entry_motion_illuminance_lux
+      brightness_entity: sensor.entry_motion_illuminance
       brightness_trigger: 25
       no_motion_wait: 30
       light_target:
@@ -30,7 +30,7 @@
         - "{{ trigger.to_state.state == 'off' }}"
         - and:
             - condition: numeric_state
-              entity_id: sensor.upstairs_hall_motion_illuminance_lux
+              entity_id: sensor.upstairs_hall_motion_illuminance
               below: 10
             - condition: time
               after: "7:00:00"
@@ -188,7 +188,7 @@
         sequence:
           - action: light.turn_on
             target:
-              entity_id: light.living_room_light
+              entity_id: light.living_room_lights
             data:
               brightness_pct: 60
       - conditions:
@@ -197,7 +197,7 @@
         sequence:
           - action: light.turn_off
             target:
-              entity_id: light.living_room_light
+              entity_id: light.living_room_lights
       - conditions:
           - condition: trigger
             id: bedroom_on
