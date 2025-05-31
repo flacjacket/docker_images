@@ -1,8 +1,8 @@
 diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
-index b543f6d947..c9ed007fda 100644
+index faa47bfc8e4..e33c079e089 100644
 --- a/homeassistant/components/venstar/__init__.py
 +++ b/homeassistant/components/venstar/__init__.py
-@@ -25,6 +25,16 @@ from .const import _LOGGER, DOMAIN, VENSTAR_SLEEP, VENSTAR_TIMEOUT
+@@ -21,6 +21,16 @@ from .coordinator import VenstarDataUpdateCoordinator
  PLATFORMS = [Platform.BINARY_SENSOR, Platform.CLIMATE, Platform.SENSOR]
  
  
@@ -16,12 +16,12 @@ index b543f6d947..c9ed007fda 100644
 +        pass
 +
 +
- async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
+ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
      """Set up the Venstar thermostat."""
-     username = config.data.get(CONF_USERNAME)
-@@ -34,7 +44,7 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
+     username = config_entry.data.get(CONF_USERNAME)
+@@ -30,7 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
      timeout = VENSTAR_TIMEOUT
-     protocol = "https" if config.data[CONF_SSL] else "http"
+     protocol = "https" if config_entry.data[CONF_SSL] else "http"
  
 -    client = VenstarColorTouch(
 +    client = VenstarColorTouchWrapper(
@@ -29,24 +29,24 @@ index b543f6d947..c9ed007fda 100644
          timeout=timeout,
          user=username,
 diff --git a/homeassistant/components/venstar/const.py b/homeassistant/components/venstar/const.py
-index 31eb572455..cef3a459cb 100644
+index a485adad8e7..2f94c1c5d0a 100644
 --- a/homeassistant/components/venstar/const.py
 +++ b/homeassistant/components/venstar/const.py
-@@ -14,6 +14,6 @@ HOLD_MODE_OFF = "off"
+@@ -15,6 +15,6 @@ HOLD_MODE_OFF = "off"
  HOLD_MODE_TEMPERATURE = "temperature"
  
  VENSTAR_TIMEOUT = 5
 -VENSTAR_SLEEP = 1.0
-+VENSTAR_SLEEP = 0.1
++VENSTAR_SLEEP = 0.0
  
  _LOGGER = logging.getLogger(__name__)
 diff --git a/homeassistant/components/venstar/coordinator.py b/homeassistant/components/venstar/coordinator.py
-index b825775de7..a191320930 100644
+index 1d0ff60c1e0..fd028920567 100644
 --- a/homeassistant/components/venstar/coordinator.py
 +++ b/homeassistant/components/venstar/coordinator.py
-@@ -28,7 +28,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator[None
-             hass,
+@@ -32,7 +32,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator[None
              _LOGGER,
+             config_entry=config_entry,
              name=DOMAIN,
 -            update_interval=timedelta(seconds=60),
 +            update_interval=timedelta(seconds=10),
