@@ -16,12 +16,7 @@ RUN addgroup -g 1000 home_assistant \
  && chmod +x /etc/services.d/home-assistant/run \
  && chmod +x /etc/services.d/home-assistant/finish
 
-RUN mkdir -p /static_config/custom_components/hacs && \
-    wget "https://github.com/hacs/integration/releases/latest/download/hacs.zip" && \
-    unzip hacs.zip -d /static_config/custom_components/hacs && \
-    rm -r hacs.zip
 COPY *.yaml /static_config/
-COPY automations /static_config/automations
 COPY blueprints /static_config/blueprints
 COPY scripts /static_config/scripts
 RUN chmod 444 /static_config/*.yaml

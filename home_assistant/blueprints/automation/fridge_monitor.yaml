@@ -1,0 +1,81 @@
+blueprints:
+  name: Monitor Fridge Temperature
+  description: Monitor fridge temperature and sent alerts based on time and temperature thresholds
+  input:
+    fridge_temp_entity:
+      name: Fridge Temp
+      selector:
+        entity:
+          domain: sensor
+          device_class: temperature
+    freezer_temp_entity:
+      name: Freezer Temp
+      selector:
+        entity:
+          domain: sensor
+          device_class: temperature
+    high_temp_fridge_threshold:
+      name: High temp fridge threshold
+      selector:
+        number:
+          min: 30
+          max: 60
+          unit_of_measurement: °F
+    high_temp_freezer_threshold:
+      name: High temp freezer threshold
+      selector:
+        number:
+          min: -10
+          max: 40
+          unit_of_measurement: °F
+    med_temp_fridge_threshold:
+      name: Mid temp fridge threshold
+      selector:
+        number:
+          min: 30
+          max: 60
+          unit_of_measurement: °F
+    med_temp_freezer_threshold:
+      name: Mid temp freezer threshold
+      selector:
+        number:
+          min: -10
+          max: 40
+          unit_of_measurement: °F
+    med_temp_trigger_time:
+      name: Mid temp wait time
+      selector:
+        number:
+          min: 0
+          max: 360
+          unit_of_measurement: minutes
+    low_temp_fridge_threshold:
+      name: Low temp fridge threshold
+      selector:
+        number:
+          min: 30
+          max: 60
+          unit_of_measurement: °F
+    low_temp_freezer_threshold:
+      name: Low temp freezer threshold
+      selector:
+        number:
+          min: -10
+          max: 40
+          unit_of_measurement: °F
+    low_temp_trigger_time:
+      name: Low temp wait time
+      selector:
+        number:
+          min: 0
+          max: 1440
+          unit_of_measurement: minutes
+
+mode: single
+
+trigger:
+  - platform: state
+    entity_id: !input fridge_temp_entity
+    above: !input low_temp_fridge_threshold
+    for:
+      minutes: !input low_temp_trigger_time
