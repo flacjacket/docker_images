@@ -16,10 +16,10 @@ notify: !include groups.yaml
 scene: !include scenes.yaml
 script: !include_dir_merge_named scripts/
 
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - !secret proxy_url
+#http:
+#  use_x_forwarded_for: true
+#  trusted_proxies:
+#    - !secret proxy_url
 
 recorder:
   db_url: !secret mariadb_url
