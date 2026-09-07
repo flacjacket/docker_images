@@ -1,8 +1,8 @@
 diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
-index e85bb83ce23..e3fc15c92c2 100644
+index ab10ce7ea0b..26d528c360a 100644
 --- a/homeassistant/components/venstar/__init__.py
 +++ b/homeassistant/components/venstar/__init__.py
-@@ -20,6 +20,16 @@ from .coordinator import VenstarConfigEntry, VenstarDataUpdateCoordinator
+@@ -18,6 +18,16 @@ from .coordinator import VenstarConfigEntry, VenstarDataUpdateCoordinator
  PLATFORMS = [Platform.BINARY_SENSOR, Platform.CLIMATE, Platform.SENSOR]
  
  
@@ -19,7 +19,7 @@ index e85bb83ce23..e3fc15c92c2 100644
  async def async_setup_entry(
      hass: HomeAssistant, config_entry: VenstarConfigEntry
  ) -> bool:
-@@ -31,7 +41,7 @@ async def async_setup_entry(
+@@ -29,7 +39,7 @@ async def async_setup_entry(
      timeout = VENSTAR_TIMEOUT
      protocol = "https" if config_entry.data[CONF_SSL] else "http"
  
@@ -29,7 +29,7 @@ index e85bb83ce23..e3fc15c92c2 100644
          timeout=timeout,
          user=username,
 diff --git a/homeassistant/components/venstar/const.py b/homeassistant/components/venstar/const.py
-index a485adad8e7..9750e075679 100644
+index ea2a7142665..f7a5344e1a1 100644
 --- a/homeassistant/components/venstar/const.py
 +++ b/homeassistant/components/venstar/const.py
 @@ -15,6 +15,6 @@ HOLD_MODE_OFF = "off"
@@ -39,13 +39,13 @@ index a485adad8e7..9750e075679 100644
 -VENSTAR_SLEEP = 1.0
 +VENSTAR_SLEEP = 0.5
  
- _LOGGER = logging.getLogger(__name__)
+ LOGGER = logging.getLogger(__name__)
 diff --git a/homeassistant/components/venstar/coordinator.py b/homeassistant/components/venstar/coordinator.py
-index 5438658c44b..e6d23a69df3 100644
+index 42dc63f0c74..04d14a01835 100644
 --- a/homeassistant/components/venstar/coordinator.py
 +++ b/homeassistant/components/venstar/coordinator.py
-@@ -34,7 +34,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator[None
-             _LOGGER,
+@@ -33,7 +33,7 @@ class VenstarDataUpdateCoordinator(update_coordinator.DataUpdateCoordinator[None
+             LOGGER,
              config_entry=config_entry,
              name=DOMAIN,
 -            update_interval=timedelta(seconds=60),
