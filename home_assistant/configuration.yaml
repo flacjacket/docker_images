@@ -1,12 +1,12 @@
-homeassistant:
-  name: Home
-  latitude: !secret latitude
-  longitude: !secret longitude
-  elevation: !secret elevation
-  unit_system: us_customary
-  time_zone: America/New_York
-  currency: USD
-  country: US
+#homeassistant:
+#  name: Home
+#  latitude: !secret latitude
+#  longitude: !secret longitude
+#  elevation: !secret elevation
+#  unit_system: us_customary
+#  time_zone: America/New_York
+#  currency: USD
+#  country: US
 
 default_config:
 
