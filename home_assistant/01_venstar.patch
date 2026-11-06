@@ -1,5 +1,5 @@
 diff --git a/homeassistant/components/venstar/__init__.py b/homeassistant/components/venstar/__init__.py
-index ab10ce7ea0b..26d528c360a 100644
+index 4947f0357a5..ab3133f622e 100644
 --- a/homeassistant/components/venstar/__init__.py
 +++ b/homeassistant/components/venstar/__init__.py
 @@ -18,6 +18,16 @@ from .coordinator import VenstarConfigEntry, VenstarDataUpdateCoordinator
@@ -18,7 +18,7 @@ index ab10ce7ea0b..26d528c360a 100644
 +
  async def async_setup_entry(
      hass: HomeAssistant, config_entry: VenstarConfigEntry
- ) -> bool:
+ ) -> None:
 @@ -29,7 +39,7 @@ async def async_setup_entry(
      timeout = VENSTAR_TIMEOUT
      protocol = "https" if config_entry.data[CONF_SSL] else "http"
